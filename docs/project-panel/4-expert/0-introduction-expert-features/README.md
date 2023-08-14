@@ -29,6 +29,6 @@ The **Expert Features** will cover topics from backups of Tenant database contai
 
 Expert Features for **non-Trial** SAP BTP accounts
 
-* [Multiple SAP HANA Cloud instances](./docu/4-expert/multiple-hana-cloud/README.md) (Trial - ✘)
+* [Multiple SAP HANA Cloud instances](../multiple-hana-cloud/README.md) (Trial - ✘)
 * [Deployment to multiple regions](../deploy-multiple-regions/README.md) (Trial - ✘)
 * [Custom domain for SAP IAS](../custom-domain-for-ias/README.md) (Trial - ✘)

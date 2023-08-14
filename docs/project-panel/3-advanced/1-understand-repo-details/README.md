@@ -58,7 +58,7 @@ srv:
 
 ### SAP API Management Integration
 
-By enabling and updating the following configuration, your application is ready for the integration with SAP API Management. Please make sure to read the respective [chapter](../8-integrate-sap-api-management/README.md) before you enable this scenario!
+By enabling and updating the following configuration, your application is ready for the integration with SAP API Management. Please make sure to read the respective [chapter](../5-integrate-sap-api-management/README.md) before you enable this scenario!
 
 > **Important** - The Integration with SAP API Management requires additional entitlements in your SAP BTP Subaccount.
 

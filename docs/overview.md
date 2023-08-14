@@ -21,45 +21,45 @@ Due to the technical and theoretical complexity of the topic, the sample applica
 
 Below you can find a solution architecture diagram of the sample application. As you can see, the app contains a lot of services and tools which you will use in this tutorial (click to enlarge).
 
-![<img src=" ./docs/4-expert/0-introduction-expert-features/images/App_Architecture_Expert.png" width="600" />]( ./project-panel/4-expert/0-introduction-expert-features/images/App_Architecture_Expert.png?raw=true)
+![<img src=" docs/project-panel/4-expert/0-introduction-expert-features/images/App_Architecture_Expert.png" width="600" />]( ./project-panel/4-expert/0-introduction-expert-features/images/App_Architecture_Expert.png?raw=true)
 
 
 ## Content
 
 To get started, we recommend to **Discover** some basic skills and learnings first. The following parts of the documentation will introduce you to the basics of this scenario, the concepts of multitenancy, and Software as a Service applications. 
 
-- [Discover the tutorial target]( ./docs/1-discover/1-discover-tutorial-target/README.md)
-- [Basics of SAP BTP, Kyma and CAP]( ./docs/1-discover/2-learn-basics-btp-kyma-cap/README.md)
-- [Partners in SAP BTP ecosystem]( ./docs/1-discover/3-partners-sap-btp-ecosystem/README.md)
-- [Get an idea of SaaS applications]( ./docs/1-discover/4-get-idea-saas-applications/README.md)
-- [Understand SAP BTP multitenancy]( ./docs/1-discover/5-understand-btp-multitenancy/README.md)
-- [What's New]( ./docs/1-discover/6-whats-new/README.md)
+- [Discover the tutorial target](docs/project-panel/1-discover/1-discover-tutorial-target/README.md)
+- [Basics of SAP BTP, Kyma and CAP](docs/project-panel/1-discover/2-learn-basics-btp-kyma-cap/README.md)
+- [Partners in SAP BTP ecosystem](docs/project-panel/1-discover/3-partners-sap-btp-ecosystem/README.md)
+- [Get an idea of SaaS applications](docs/project-panel/1-discover/4-get-idea-saas-applications/README.md)
+- [Understand SAP BTP multitenancy](docs/project-panel/1-discover/5-understand-btp-multitenancy/README.md)
+- [What's New](docs/project-panel/1-discover/6-whats-new/README.md)
 
 
 Continue your journey and deploy the **Basic Version** of the SaaS sample application to your SAP BTP Kyma environment, after preparing your Provider Subaccount by assigning the required entitlements. Learn about the different components used in the comprehensive SaaS sample app running in your environment now and subscribe a first Consumer Tenant. 
 
-- [Introduction of the Basic Version]( ./docs/2-basic/0-introduction-basic-version/README.md)
-- [Understand the repository structure]( ./docs/2-basic/1-understand-repo-structure/README.md)
-- [Prepare the Provider Subaccount]( ./docs/2-basic/2-prepare-provider-subaccount/README.md)
-- [Build your Docker images]( ./docs/2-basic/3-build-your-docker-images/README.md)
-- [Deploy the SaaS application]( ./docs/2-basic/4-deploy-saas-application/README.md)
-- [Subscribe a Consumer Subaccount]( ./docs/2-basic/5-subscribe-consumer-subaccount/README.md)
-- [Push data to the SaaS API]( ./docs/2-basic/6-push-data-to-saas-api/README.md)  
-- [Test the SaaS application]( ./docs/2-basic/7-test-the-application/README.md)
-- [Discover Helm and Kyma Resources]( ./docs/2-basic/8-kyma-resources-helm/README.md)
-- [Explore the application components]( ./docs/2-basic/9-explore-the-components/README.md)  
-- [Optional - Unsubscribe Consumer Subaccounts]( ./docs/2-basic/10-unsubscribe-consumer-subaccount/README.md)
-- [Optional - Undeploy the SaaS application]( ./docs/2-basic/11-undeploy-saas-application/README.md)
+- [Introduction of the Basic Version](docs/project-panel/2-basic/0-introduction-basic-version/README.md)
+- [Understand the repository structure](docs/project-panel/2-basic/1-understand-repo-structure/README.md)
+- [Prepare the Provider Subaccount](docs/project-panel/2-basic/2-prepare-provider-subaccount/README.md)
+- [Build your Docker images](docs/project-panel/2-basic/3-build-your-docker-images/README.md)
+- [Deploy the SaaS application](docs/project-panel/2-basic/4-deploy-saas-application/README.md)
+- [Subscribe a Consumer Subaccount](docs/project-panel/2-basic/5-subscribe-consumer-subaccount/README.md)
+- [Push data to the SaaS API](docs/project-panel/2-basic/6-push-data-to-saas-api/README.md)  
+- [Test the SaaS application](docs/project-panel/2-basic/7-test-the-application/README.md)
+- [Discover Helm and Kyma Resources](docs/project-panel/2-basic/8-kyma-resources-helm/README.md)
+- [Explore the application components](docs/project-panel/2-basic/9-explore-the-components/README.md)  
+- [Optional - Unsubscribe Consumer Subaccounts](docs/project-panel/2-basic/10-unsubscribe-consumer-subaccount/README.md)
+- [Optional - Undeploy the SaaS application](docs/project-panel/2-basic/11-undeploy-saas-application/README.md)
 
 
  Once you successfully deployed the Basic features of the SaaS sample application to your Kyma Cluster, feel free to enhance it with more features in the **Advanced Version**. This includes for example a SAP API Management integration to monitor and manage your SaaS API endpoints or SAP Identity Authentication to provide a central user management without relying on SAP ID service. Furthermore, you will learn and see a sample of how to integrate a backend system like SAP S/4HANA from a SaaS Consumer perspective. 
 
-- [Introduction of the Advanced Version]( ./docs/3-advanced/0-introduction-advanced-version/README.md)
-- [Understand the repository details]( ./docs/3-advanced/1-understand-repo-details/README.md)
-- [Prepare the Provider Subaccount]( ./docs/3-advanced/2-prepare-provider-subaccount/README.md)
-- [Central user management with SAP IAS]( ./docs/3-advanced/3-central-user-management-ias/README.md)
-- [Push data from SAP S/4HANA system]( ./docs/3-advanced/4-push-data-s4hana-system/README.md)
-- [Integrate with SAP API Management]( ./docs/3-advanced/5-integrate-sap-api-management/README.md)
+- [Introduction of the Advanced Version](docs/project-panel/3-advanced/0-introduction-advanced-version/README.md)
+- [Understand the repository details](docs/project-panel/3-advanced/1-understand-repo-details/README.md)
+- [Prepare the Provider Subaccount](docs/project-panel/3-advanced/2-prepare-provider-subaccount/README.md)
+- [Central user management with SAP IAS](docs/project-panel/3-advanced/3-central-user-management-ias/README.md)
+- [Push data from SAP S/4HANA system](docs/project-panel/3-advanced/4-push-data-s4hana-system/README.md)
+- [Integrate with SAP API Management](docs/project-panel/3-advanced/5-integrate-sap-api-management/README.md)
 
 
 After adding some or all of the advanced features, the following **Expert Features** contain a variety of different topics, which will make your application and life as a SaaS developer even more convenient. You will learn about management and backup of your Tenant database containers, multi-region deployments of SaaS applications and how to tackle topics like Custom Domain usage. 
@@ -68,20 +68,20 @@ After adding some or all of the advanced features, the following **Expert Featur
 The Expert Features are Work-in-Progress. The code and documentation are subject to change. 
 :::
 
-- [Introduction of the Expert Features]( ./docs/4-expert/0-introduction-expert-features/README.md)
-- [SaaS Feature Toggles]( ./docs/4-expert/feature-toggles/README.md)
-- [SaaS Consumer Extensibility]( ./docs/4-expert/consumer-extensibility/README.md)
-- [HDI container administration]( ./docs/4-expert/hdi-container-administration/README.md)
-- [How to do local/hybrid development]( ./docs/4-expert/local-hybrid-development/README.md)
-- [Manage Tenant database containers]( ./docs/4-expert/manage-tenant-containers/README.md)
-- [Backup database containers]( ./docs/4-expert/backup-database-containers/README.md)
-- [Update Tenant database containers]( ./docs/4-expert/update-tenant-containers/README.md)
-- [Setup custom domain usage]( ./docs/4-expert/custom-domain-usage/README.md)
-- [Custom domain for SAP IAS]( ./docs/4-expert/custom-domain-for-ias/README.md)
-- [Integrate a consumer's IdP]( ./docs/4-expert/integrate-consumers-idp/README.md)
-- [Deploy to multiple regions]( ./docs/4-expert/deploy-multiple-regions/README.md)
-- [Send email using Microsoft Graph API]( ./docs/4-expert/send-emails-graph-api/README.md)
-- [Multiple SAP HANA Cloud instances]( ./docs/4-expert/multiple-hana-cloud/README.md)
+- [Introduction of the Expert Features](docs/project-panel/4-expert/0-introduction-expert-features/README.md)
+- [SaaS Feature Toggles](docs/project-panel/4-expert/feature-toggles/README.md)
+- [SaaS Consumer Extensibility](docs/project-panel/4-expert/consumer-extensibility/README.md)
+- [HDI container administration](docs/project-panel/4-expert/hdi-container-administration/README.md)
+- [How to do local/hybrid development](docs/project-panel/4-expert/local-hybrid-development/README.md)
+- [Manage Tenant database containers](docs/project-panel/4-expert/manage-tenant-containers/README.md)
+- [Backup database containers](docs/project-panel/4-expert/backup-database-containers/README.md)
+- [Update Tenant database containers](docs/project-panel/4-expert/update-tenant-containers/README.md)
+- [Setup custom domain usage](docs/project-panel/4-expert/custom-domain-usage/README.md)
+- [Custom domain for SAP IAS](docs/project-panel/4-expert/custom-domain-for-ias/README.md)
+- [Integrate a consumer's IdP](docs/project-panel/4-expert/integrate-consumers-idp/README.md)
+- [Deploy to multiple regions](docs/project-panel/4-expert/deploy-multiple-regions/README.md)
+- [Send email using Microsoft Graph API](docs/project-panel/4-expert/send-emails-graph-api/README.md)
+- [Multiple SAP HANA Cloud instances](docs/project-panel/4-expert/multiple-hana-cloud/README.md)
 
 
 ## Requirements
@@ -144,7 +144,7 @@ The SAP Identity Authentication service Integration cannot be conducted to Trial
   - Automated Credential Rotation (Workaround available - 2023/06/09)
     - **Problem**: Users are facing a callback authentication error after successful login via SAP IAS as part of the One-Domain concept. 
     - **Issue**: Activating the automated credential rotation of the SAP BTP Service Operator renews the X.509 certificate of the respective SAP IAS service bindings. As the Application Router caches the binding details for performance reasons, the cached X.509 certificate is not valid anymore after rotation. This results in an authentication error between Application Router and SAP IAS. 
-    - **Workaround**: A restart of the Application Router after credential rotation will solve this issue and the latest X.509 certificate is being cached. This restart can be automated in a Kubernetes/Kyma CronJob, starting a new Deployment rollout according to your credential rotation cycle. You can find an example incl. roles and service accounts in the respective Expert Features ([click here]( ./docs/4-expert/onboard-automation-domain/code/deployment-restart.yaml)). Combined with an external Redis cache for Application Router session management, downtimes can be minimized or completely mitigated! Make sure to have a sufficient overlap of both, the old and new X.509 certificate (*rotatedBindingTTL: 24h* & *rotationFrequency: 48h*), so the cached credentials are still valid until the restart has happened!
+    - **Workaround**: A restart of the Application Router after credential rotation will solve this issue and the latest X.509 certificate is being cached. This restart can be automated in a Kubernetes/Kyma CronJob, starting a new Deployment rollout according to your credential rotation cycle. You can find an example incl. roles and service accounts in the respective Expert Features ([click here]( docs/project-panel/4-expert/onboard-automation-domain/code/deployment-restart.yaml)). Combined with an external Redis cache for Application Router session management, downtimes can be minimized or completely mitigated! Make sure to have a sufficient overlap of both, the old and new X.509 certificate (*rotatedBindingTTL: 24h* & *rotationFrequency: 48h*), so the cached credentials are still valid until the restart has happened!
     - **Solution**: Issue has been addressed and a potential notification mechanism might trigger an automated update of the Application Router cache in the future (subject to change). 
   - Consumer extension API issue (Workaround available - 2022/12/19)
     - **Problem**: Applying a Consumer extension currently results in the Push API not being usable by the extended Tenant anymore. 

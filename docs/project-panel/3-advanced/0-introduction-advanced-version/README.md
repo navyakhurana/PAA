@@ -5,7 +5,7 @@ sidebar_position: 1
 
 The **Basic** and **Advanced Version** of the sample application require the same setup, which means you have to get started with the **Basic** Version, before challenging yourself with the Advanced Version. The **Expert Features** contain additional components and tutorials that can be applied to both the Basic **and** Advanced Version.
 
-In the [Basic Version](../../2-basic/0-introduction-basic-version/README.md) we provided you with the core elements required for a **Kyma-based** Software as a Service (SaaS) application on SAP Business Technology Platform (SAP BTP). The idea of the **Advanced Version** is about taking all the features implemented in the **Basic Version** and extending them to the next level with other great services provided by SAP BTP. This will take you one step closer to an enterprise-read SaaS application
+In the [Basic Version](docs/project-panel/2-basic/0-introduction-basic-version/README.md) we provided you with the core elements required for a **Kyma-based** Software as a Service (SaaS) application on SAP Business Technology Platform (SAP BTP). The idea of the **Advanced Version** is about taking all the features implemented in the **Basic Version** and extending them to the next level with other great services provided by SAP BTP. This will take you one step closer to an enterprise-read SaaS application
 
 - [Advanced Version Introduction](#advanced-version-introduction)
   - [1. Step-by-Step Guide](#1-step-by-step-guide)
@@ -23,12 +23,12 @@ Take a look at the following screenshot to get an idea of the Advanced Version a
 
 For completing the **Advanced Version** of this tutorial please run through the steps described in the following Readme documents. 
 
-1. **Understand repository changes** compared to the Basic Version. ➜ ([click here](../1-understand-repo-structure/README.md))
-2. Prepare your Provider subaccount with **further entitlements**. ➜ ([click here](../2-prepare-provider-subaccount/README.md))
+1. **Understand repository changes** compared to the Basic Version. ➜ ([click here](docs/project-panel/3-advanced/1-understand-repo-details/README.md))
+2. Prepare your Provider subaccount with **further entitlements**. ➜ ([click here](docs/project-panel/3-advanced/2-prepare-provider-subaccount/README.md))
 3. Create an **SAP Identity Authentication Service** (SAP IAS) tenant. 
-   **Setup the trust** between SAP IAS and your subaccounts. ➜ ([click here](../3-central-user-management-ias/README.md))
-4. Configure an SAP S/4HANA system for an **automated sample data push**. ➜ ([click here](../7-push-data-s4hana-system/README.md))
-5. Integrate **SAP API Management** for API management and monitoring. ➜ ([click here](../8-integrate-sap-api-management/README.md))
+   **Setup the trust** between SAP IAS and your subaccounts. ➜ ([click here](docs/project-panel/3-advanced/3-central-user-management-ias/README.md))
+4. Configure an SAP S/4HANA system for an **automated sample data push**. ➜ ([click here](docs/project-panel/3-advanced/4-push-data-s4hana-system/README.md))
+5. Integrate **SAP API Management** for API management and monitoring. ➜ ([click here](docs/project-panel/3-advanced/5-integrate-sap-api-management/README.md))
 
 
 

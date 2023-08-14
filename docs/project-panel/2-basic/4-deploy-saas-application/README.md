@@ -48,7 +48,9 @@ Here a sample screenshot taken from Docker Hub.
 
 During Deployment, Helm will generate the required Kubernetes resources (manifest files) based on the provided Helm templates (again - feel free to check out our [Helm Introduction](../8-kyma-resources-helm/README.md)) and deploy them to your Kyma Cluster. This will result in various different objects like **Deployments**, **Jobs** or **SAP BTP Service Instances** or **Bindings**. 
 
-> **Hint** - To learn more about all the various Kyma and native Kubernetes resources utilized by our sample application, please check out the respective deep-dive chapters ([click here](../8-kyma-resources-helm/README.md))! 
+:::hint **Hint** 
+To learn more about all the various Kyma and native Kubernetes resources utilized by our sample application, please check out the respective deep-dive chapters ([click here](../8-kyma-resources-helm/README.md))! 
+:::
 
 **Kubernetes Deployments**
 
@@ -257,7 +259,7 @@ Let's get started with the preparation of our **Helm deployment** or **Helm inst
   
 * image.tag - Provide a different tag, if you do not want to use the latest image (default). 
 
-* apim - For now, do not provide any values for this section and keep the integration Disabled. The integration of SAP API Management will be explained as part of the **Advanced Version** ([click here](../../3-advanced/8-integrate-sap-api-management/README.md)).
+* apim - For now, do not provide any values for this section and keep the integration Disabled. The integration of SAP API Management will be explained as part of the **Advanced Version** ([click here](../../3-advanced/5-integrate-sap-api-management/README.md)).
 
 **broker**
 

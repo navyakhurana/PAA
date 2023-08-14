@@ -112,8 +112,8 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
-                to: '/docs/intro',
+                label: 'Overview',
+                to: '/docs/overview',
               },
             ],
           },
@@ -139,7 +139,7 @@ const config = {
               },
               {
                 label: 'GitHub Repo',
-                href: 'https://github.com/sap-samples',
+                href: 'https://github.com/SAP-samples/btp-kyma-cap-multitenant-susaas',
               },
             ],
           },
