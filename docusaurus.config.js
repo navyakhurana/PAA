@@ -66,7 +66,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       algolia: {
-        apiKey: 'f93aa760d3c581fea93ef30b23ce23e3',
+        apiKey: 'f8f941f3bffd5bf970ba1fa27550a06e',
         indexName: 'paadocs',
         contextualSearch: true,
         placeholder: 'Search',
