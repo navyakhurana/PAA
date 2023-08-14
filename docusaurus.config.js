@@ -11,15 +11,15 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://github.tools.sap',
+  url: 'https://navyakhurana.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/platform-adoption-advisory/paa-projects-gitrepos',
+  baseUrl: '/PAA/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'platform-adoption-advisory', // Usually your GitHub org/user name.
-  projectName: 'paa-projects-gitrepos', // Usually your repo name
+  organizationName: 'navyakhurana', // Usually your GitHub org/user name.
+  projectName: 'PAA', // Usually your repo name
   deploymentBranch: 'paa-doc',
   trailingSlash: false,
 
