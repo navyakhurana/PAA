@@ -1,8 +1,8 @@
 {
     "index_name": "paa_projects",
-    "start_urls":[ "https://pages.github.tools.sap/platform-adoption-advisory/paa-projects-gitrepos/" ],
+    "start_urls":[ "https://navyakhurana.github.io/PAA/" ],
     "sitemap_urls": [
-    "https://pages.github.tools.sap/platform-adoption-advisory/paa-projects-gitrepos/sitemap.xml"
+    "https://navyakhurana.github.io/PAA/sitemap.xml"
     ],
     "sitemap_alternate_links": true,
     "stop_urls": [
