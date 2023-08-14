@@ -1,5 +1,5 @@
 {
-    "index_name": "paa_projects",
+    "index_name": "paadocs",
     "start_urls":[ "https://navyakhurana.github.io/PAA/" ],
     "sitemap_urls": [
     "https://navyakhurana.github.io/PAA/sitemap.xml"

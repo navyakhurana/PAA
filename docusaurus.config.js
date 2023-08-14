@@ -67,7 +67,7 @@ const config = {
     ({
       algolia: {
         apiKey: 'f93aa760d3c581fea93ef30b23ce23e3',
-        indexName: 'paa_projects',
+        indexName: 'paadocs',
         contextualSearch: true,
         placeholder: 'Search',
         appId: 'SX6JA1B3F5',
