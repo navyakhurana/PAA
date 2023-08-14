@@ -992,7 +992,7 @@ spec:
             number: 443
 ```
 
-To learn more about the integration of SAP API Management, please read the respective chapter in the Advanced Features ([click here](../../../3-advanced/8-integrate-sap-api-management/README.md)).
+To learn more about the integration of SAP API Management, please read the respective chapter in the Advanced Features ([click here](../../../3-advanced/5-integrate-sap-api-management/README.md)).
 
 **Cluster Internal Routing**
 
