@@ -5,7 +5,7 @@ sidebar_position: 5
 
 :::info Support
 
-Join ur SAP Communities to get help, learn, innovate, and connectwith others, who have tried similar missions. 
+Join our SAP Communities to get help, learn, innovate, and connect with others. 
 
 [View SAP Community](https://blogs.sap.com/)
 
@@ -15,8 +15,8 @@ Join ur SAP Communities to get help, learn, innovate, and connectwith others, wh
 
 | Experts | &nbsp; | &nbsp; | 
 |:------:|:------------------------------|:------------|
-|![<img src="docs/img/contributors/Martin.png?raw=true" width="100">](./img/contributors/Martin.png?raw=true) | [Martin Frick](https://github.com/martinfrick) | Use case Expert |
-|![<img src="docs/img/contributors/Alper.png?raw=true" width="100">](./img/contributors/Alper.png?raw=true) | [Alper Dedeoglu](https://github.com/alperdedeoglu) | Use case Expert |
+|![<img src="docs/img/contributors/Martin.png?raw=true" width="100">](./img/contributors/Martin.png?raw=true) | [Martin Frick](https://github.com/martinfrick) | Use case |
+|![<img src="docs/img/contributors/Alper.png?raw=true" width="100">](./img/contributors/Alper.png?raw=true) | [Alper Dedeoglu](https://github.com/alperdedeoglu) | Use case |
 
 ### Report an Issue
 

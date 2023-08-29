@@ -50,7 +50,8 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {routeBasePath: '/',
-
+        showLastUpdateTime: true,
+        showLastUpdateAuthor: true,
           sidebarPath: require.resolve('./sidebars.js'),
         },
         // blog: {
@@ -90,7 +91,7 @@ const config = {
       },
       docs: {
         sidebar: {
-          hideable: true,
+          hideable: true
         },
       },
       // Replace with your project's social card
