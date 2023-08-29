@@ -677,7 +677,7 @@ In case of a (client-initiated or time-based) user logout or session expiry, a l
 apiVersion: extensions.istio.io/v1alpha1
 kind: WasmPlugin
 metadata:
-  name: <<release-name>>-< < namespace >>-basic-auth # <= Put your Release-Name here
+  name: <<release-name>>-<<namespace>>-basic-auth # <= Put your Release-Name here
 # name: susaas-default-basic-auth <= Example
   namespace: istio-system
 spec:
@@ -689,7 +689,7 @@ spec:
   pluginConfig:
     basic_auth_rules:
       - hosts: # <= Host(s) protected by Basic Authentication
-          - <<release-name>>-< < namespace >>.<<cluster-domain>>
+          - <<release-name>>-<<namespace>>.<<cluster-domain>>
           - onboarding-<<release-name>>-< < namespace >>.<<cluster-domain>>
         # - susaas-default.a1b2c3.kyma.ondemand.com  <= Example
         # - onboarding-susaas-default.a1b2c3.kyma.ondemand.com  <= Example
