@@ -3,8 +3,9 @@ sidebar_position: 12
 ---
 # Optional - Undeploy the SaaS Application
 
-> **Important** - If you are planning to setup the **Advanced Version** next, please consider this part of the tutorial optional!
-
+:::caution **Important** 
+If you are planning to setup the **Advanced Version** next, please consider this part of the tutorial optional!
+:::
 If you want to undeploy/uninstall the SaaS application and all related services and resources from your Kmya Cluster please follow the steps below. 
 
 - [Optional - Undeploy the SaaS Application](#optional---undeploy-the-saas-application)
@@ -12,15 +13,17 @@ If you want to undeploy/uninstall the SaaS application and all related services 
   - [2. Check successful Undeployment](#2-check-successful-undeployment)
   - [3. Further Information](#3-further-information)
 
-> **Important** - For the undeployment of a SaaS solutions from your Kyma Cluster, it is **essential** that all existing subscriptions are deleted beforehand! Otherwise, existing service clones (e.g., created by XSUAA during the subscription dependency callbacks) will not be properly removed and corresponding Services Instances cannot be deleted without further ado!
-
+:::caution **Important** 
+For the undeployment of a SaaS solutions from your Kyma Cluster, it is **essential** that all existing subscriptions are deleted beforehand! Otherwise, existing service clones (e.g., created by XSUAA during the subscription dependency callbacks) will not be properly removed and corresponding Services Instances cannot be deleted without further ado!
+:::
 
 ## 1. Undeploy the SaaS application
 
 1.1. Make sure you unsubscribed from the SaaS application in all **Consumer Subaccounts** before starting the undeployment. 
 
-> **Hint** - You can check and also remove existing subscriptions using the Subscription Management Dashboard ([click here](https://help.sap.com/docs/btp/sap-business-technology-platform/using-subscription-management-dashboard) for details). 
-
+:::tip **Hint** 
+You can check and also remove existing subscriptions using the Subscription Management Dashboard ([click here](https://help.sap.com/docs/btp/sap-business-technology-platform/using-subscription-management-dashboard) for details). 
+:::
 1.2. Delete all API Service Broker instances from the **Consumer Subaccounts** before undeploying.
 
 1.3. Ensure that your API Service Broker is unregistered ([click here](../10-unsubscribe-consumer-subaccount/README.md#2-check-successful-unsubscription)) from all **Consumer Subaccounts**. 

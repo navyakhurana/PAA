@@ -6,11 +6,11 @@ While you can find comprehensive details for all of these resources online, in t
 
 In the following visualizations, you can allocate most of the documented resources. Some of them, which are consumed most Pods in a similar fashion, have been removed from the high-level architecture diagram for readability purposes. Their usage is described in the secondary visualization.
 
-[<img src="./images/ResourceDetailsArch.png" width="700"/>](./images/ResourceDetailsArch.png?raw=true)
+![<img src="./images/ResourceDetailsArch.png" width="700"/>](./images/ResourceDetailsArch.png?raw=true)
 
 Our assumption is the following - if you understand the basic ideas and concepts of all resources in the context of our sample scenario, this will make it much easier for you to understand the comprehensive but very generic official documentations. If you are new to the Kyma and Kubernetes ecosphere (as we were to the beginning of this project), an explanation focused on an exemplary sample use-case is often more beneficial than pages of generic resource documentation. If you have never worked with **Kubernetes** before, we suggest to equip yourself with at least some [basic concepts](https://kubernetes.io/docs/concepts/) before you continue. Learn about Clusters, Nodes, Pods and how the basic Kubernetes resources relate to each other. This will ease your upcoming trip through our content. 
 
-[<img src="./images/KymaObjectsGeneral.png" width="700"/>](./images/KymaObjectsGeneral.png?raw=true)
+![<img src="./images/KymaObjectsGeneral.png" width="700"/>](./images/KymaObjectsGeneral.png?raw=true)
 
 Once you have gained some basic understanding of Kubernetes, we highly recommend getting started with the [**Deployment**](#deployment) resource type and continuing your journey with the [**Istio Service Mesh**](#istio-service-mesh), before deep-diving into topics like [**Service Accounts**](#service-account), [**Network Policies**](#network-policy) or [**Horizontal Pod Autoscalers**](#pod-autoscaler). Feel free to use the provided high-level architecture diagram, to follow along the path which an incoming request takes, when targeting the different components of the sample application.
 
@@ -48,16 +48,18 @@ So much for the introduction. Below you can find the alphabetical list of the mo
 
 This custom Kyma Resource allows you to simplify the public exposure of workloads. An API Rule will automatically setup a Istio [Virtual Service](#virtual-service) and so-called [Ory](#ory) rules. While the [Virtual Service](#virtual-service) handles the routing of traffic arriving through the so-called [Istio](#istio-service-mesh) Ingress Gateway, [Ory](#ory) facilitates the mutation of header values or to apply access policies like OAuth2 or JWT validation strategies. Please check the details of the respective components to learn more. 
 
-> **Hint** - Access strategies are currently not being used in our scenario, as authentication and authorization take place within CAP workloads. The usage of [Ory](#ory) Mutators to set custom headers is being used as part of the Subscriber API Rules. 
-
+:::tip **Hint** 
+Access strategies are currently not being used in our scenario, as authentication and authorization take place within CAP workloads. The usage of [Ory](#ory) Mutators to set custom headers is being used as part of the Subscriber API Rules. 
+:::
 In our sample, API Rules are defined for the Application Router, the Backend Service, the API Service and the API Service Broker. Only the integration of SAP API Management makes use of a dedicated [Virtual Service](#virtual-service) definition instead of an API Rule. This results from the fact, that API Rules indeed simplify the process of exposing your workloads, nevertheless they do not provide all features that the native usage of [Virtual Services](#virtual-service) offers (e.g., having different target routes for the same request host). 
 
 **Example**
 
 Upon deployment, the following Kyma API Rule definition will create an [Istio](#istio-service-mesh) [Virtual Service](#virtual-service) instance, defining traffic rules for the [Istio](#istio-service-mesh) Ingress Gateway **sap-demo-gateway** (defined in namespace **demo-dns**). This [Virtual Service](#virtual-service) will route any traffic arriving for host **susaas-router-default.sap-demo.com** to the [Cluster IP Service](#service) **susaas-router** on port **5000**. 
 
-> **Hint** - As the usage of a custom domain is not part of the Basic Version, your gateway and host might look a bit different as the default Kyma domain will be used. Furthermore, you might see [Virtual Services](#virtual-service) samples which are using the hostname instead of the FQDN (full qualified domain name) in the host field. We recommend to use the FQDN whenever possible, to prevent any unforeseen behavior caused by automated determination of the correct domain.
-
+:::tip **Hint** 
+As the usage of a custom domain is not part of the Basic Version, your gateway and host might look a bit different as the default Kyma domain will be used. Furthermore, you might see [Virtual Services](#virtual-service) samples which are using the hostname instead of the FQDN (full qualified domain name) in the host field. We recommend to use the FQDN whenever possible, to prevent any unforeseen behavior caused by automated determination of the correct domain.
+:::
 ```yaml
 apiVersion: gateway.kyma-project.io/v1beta1
 kind: APIRule
@@ -218,11 +220,12 @@ spec:
 
 [Ory](#ory) Oathkeeper will apply the defined mutator by setting the **x-custom-host** header and forward traffic to the Application Router Cluster IP Service. Combined with the Application Router environment variable **EXTERNAL_REVERSE_PROXY**, this allows us to provide dynamic custom domains to Subscriber tenants, while retaining the original Tenant subdomain in the **x-custom-host** header to comply with our TENANT_HOST_PATTERN deriving the Tenant identifier. 
 
-> **Hint** 
-> Tenant-Host-Pattern: (.*)-susaas-router-default.sap-demo.com 
-> Custom Domain: subscriber.sap-demo.com     
-> X-Custom-Host: subscriber-a1b2c3-susaas-router-default.sap-demo.com     
-> Identified Tenant: **subscriber-a1b2c3**
+:::tip **Hint** 
+ Tenant-Host-Pattern: (.*)-susaas-router-default.sap-demo.com 
+ Custom Domain: subscriber.sap-demo.com     
+ X-Custom-Host: subscriber-a1b2c3-susaas-router-default.sap-demo.com     
+ Identified Tenant: **subscriber-a1b2c3**
+:::
 
 Please note, as [Ory](#ory) is subject to depreciation, the header mutator feature will be replaced in a future release. A potential candidate might be the usage of respective Istio features.  
 
@@ -233,9 +236,10 @@ Please note, as [Ory](#ory) is subject to depreciation, the header mutator featu
 
 A Cluster Role allows you to define a collection of custom permissions for your Cluster. In our sample scenario, this is essential for the creation of [API Rules](#api-rule) at runtime. Whenever a new Subscriber is onboarded to the Sustainable SaaS application, a new [API Rule](#api-rule) is created at runtime. This new Rule will expose a tenant-specific URI (e.g., customer-xyz.sap-demo.com) reachable from the public internet. If configured during subscription, the [API Rule](#api-rule) and the corresponding (auto-generated) [Virtual Service](#virtual-service) will act as an *External Reverse Proxy*, allowing you to define custom domains, which do not necessarily match the subscriber's subaccount subdomain. 
 
-> **Hint** - Check the */srv/utils/apiRule.js* coding to learn more. Additionally, the [Application Router documentation](https://www.npmjs.com/package/@sap/approuter#Configurations) provides further information on the EXTERNAL_REVERSE_PROXY flag, which is enabled for the reverse proxy feature. 
-
-[<img src="./images/KOCustomDomain.png" width="400"/>](./images/KOCustomDomain.png?raw=true)
+:::tip **Hint** 
+Check the */srv/utils/apiRule.js* coding to learn more. Additionally, the [Application Router documentation](https://www.npmjs.com/package/@sap/approuter#Configurations) provides further information on the EXTERNAL_REVERSE_PROXY flag, which is enabled for the reverse proxy feature. 
+:::
+![<img src="./images/KOCustomDomain.png" width="400"/>](./images/KOCustomDomain.png?raw=true)
 
 The required [Cluster Role](../../../../code/charts/sustainable-saas/charts/susaas-srv/templates/cluster-role.yaml) in oru sample scenario, contains permissions to create, delete and modify [API Rules](#api-rule). This Cluster Role is assigned to a dedicated [Service Account](#service-account) using a so-called [Role Binding](#role-binding). In our example, the Cluster Role is bound to a [Service Account](#service-account), which is (in turn) assigned to the SaaS Backend Application workload (Pod). At runtime, the Backend Application can interact with the Kyma Cluster on behalf of this [Service Account](#service-account), as the respective [Service Account](#service-account) token is so-called auto-mounted to the workload. 
 
@@ -247,8 +251,9 @@ Auto-mounting a [Service Account](#service-account) token to your workload, lets
   ...
 ```
 
-> **Hint** - Check out the [Deployment](#deployment) section of this tutorial to learn more about the binding of [Service Accounts](#service-account) to a workload and how a [Service Account](#service-account) token can be auto-mounted for usage at runtime. 
-
+:::tip **Hint** 
+Check out the [Deployment](#deployment) section of this tutorial to learn more about the binding of [Service Accounts](#service-account) to a workload and how a [Service Account](#service-account) token can be auto-mounted for usage at runtime. 
+:::
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -339,8 +344,9 @@ data:
 
 Mounting this ConfigMap to the file system of a container, will create a respective *catalog.json* file in the */etc/config* path. This path is then being referenced in the environment variable. 
 
-> **Hint** - The file name is based on the property value **catalog.json** in your ConfigMap instance. 
-
+:::tip **Hint** 
+The file name is based on the property value **catalog.json** in your ConfigMap instance. 
+:::
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -534,17 +540,17 @@ Istio is among the most widely and adopted Service Mesh solutions for Kubernetes
 
 If you enable the **Istio-Injection** in a certain Kyma namespace (by setting the required namespace annotation), whenever you create a new Pod in that namespace, a so called Istio Sidecar [Proxy](https://istio.io/latest/docs/ops/deployment/architecture/#envoy) (based on **Envoy** - [see details](https://www.envoyproxy.io/)) will be automatically injected into the workload. This Proxy ensures that in- and outgoing communication between services (and associated workloads) always traverses through these Istio Proxies. For this purpose, Istio supports all kind of Kubernetes [Service](#service) types, but in our scenario, we are always referring to a Cluster IP [Service](#service) when talking about [Services](#service). To get a better understanding of how Proxies enrich and control the communication flow between workload, check out the following visualization taken from the official Istio documentation. 
 
-[<img src="./images/IstioArchitecture.svg" width="300"/>](./images/IstioArchitecture.svg)    
+![<img src="./images/IstioArchitecture.svg" width="300"/>](./images/IstioArchitecture.svg)    
 *Source: https://istio.io/latest/docs/ops/deployment/architecture/*
 
 So you might ask yourself, what is the benefit of this additional Proxy handling the communication between services? Well, besides great traffic monitoring features, this architecture allows an encrypted, secure and transparent communication within or even across different Nodes of your Cluster, which otherwise could happen unencrypted (if not enforced by workload itself). Furthermore, Istio comes with a bagful of handy tools, that allow you to define traffic routing policies or authorization checks for your [Services](#service). To learn more about the idea of Sidecar Proxies and how so-called mutual TLS (mTLS) communication can be enforced across your Service Mesh, check out the following documentation ([click here](https://istio.io/latest/docs/ops/configuration/traffic-management/tls-configuration/)). 
 
-[<img src="./images/IstioArchitectureDetails.svg" width="500"/>](./images/IstioArchitectureDetails.svg)    
+![<img src="./images/IstioArchitectureDetails.svg" width="500"/>](./images/IstioArchitectureDetails.svg)    
 *Source: https://istio.io/latest/docs/concepts/security/*
 
 Besides handling [Service](#service) to [Service](#service) communication within your Cluster, Istio also simplifies workload exposure to external stakeholders. By positioning dedicated Envoy Proxy at the edge of your Cluster (called Gateway - [see details](https://istio.io/latest/docs/concepts/traffic-management/#gateways)), Istio supports you in making [Services](#service) reachable through the public internet in a secure manner. As a nice side-effect, it saves you from spending a lot of money on public IP addresses, as Load Balancer [Services](#service) are not required anymore to expose your workloads. The below screenshot shows a sample of using a tool called **Kiali** ([learn more](https://kiali.io/)), to monitor traffic flows managed by Istio. 
 
-[<img src="./images/KOKialiIstioIngress.png" width="700"/>](./images/KOKialiIstioIngress.png?raw=true)    
+![<img src="./images/KOKialiIstioIngress.png" width="700"/>](./images/KOKialiIstioIngress.png?raw=true)    
 *Source: https://istio.io/latest/docs/examples/microservices-istio/istio-ingress-gateway/*
 
 The visualization contains a sample for such an (Ingress) Gateway, allowing external access to the [Services](#service) in your Service Mesh. Istio provides an extremely powerful toolset and within this sample scenario, we are only using it to a very reduced scope. For productive workloads, it is essential to acquaint yourself in detail with the comprehensive Istio Documentation ([click here](https://istio.io/latest/docs/)). 
@@ -553,7 +559,7 @@ The visualization contains a sample for such an (Ingress) Gateway, allowing exte
 
 To get a better understanding of how Istio manages the communication between your [Services](#service) or any incoming external traffic, let us have another brief look at the data flow visualization and some high-level details provided below. Feel free to swing along and learn more about the different Istio components used to secure the interaction of external stakeholders with your workloads. 
 
-[<img src="./images/ResourceDetailsArch.png" width="700"/>](./images/ResourceDetailsArch.png?raw=true)
+![<img src="./images/ResourceDetailsArch.png" width="700"/>](./images/ResourceDetailsArch.png?raw=true)
 
 **Ingress Traffic**
 
@@ -571,7 +577,9 @@ Let's check what is happening under the hood, when a request from the public int
    - [Virtual Services](#virtual-service) define flexible rules, of how traffic is routed to [Services](#service) within the Service Mesh. 
    - Besides mesh-internal [Services](#service), you can also route traffic to mesh-external services like SAP API Management using [Service Entries](#service-entry).
    - While not used in our sample scenario, [Virtual Services](#virtual-service) can also be used for sophisticated mesh-internal routing requirements.
-      > **Hint** - In this case *mesh* needs to be added as a [Virtual Service](#virtual-service) Gateway and the corresponding target [Service](#service) host value needs to be added like *susaas-router* (or even better *susaas-router.default.svc.cluster.local*).
+:::tip **Hint** 
+In this case *mesh* needs to be added as a [Virtual Service](#virtual-service) Gateway and the corresponding target [Service](#service) host value needs to be added like *susaas-router* (or even better *susaas-router.default.svc.cluster.local*).
+:::
    - In our sample scenario, [Virtual Services](#virtual-service) are mostly auto-generated by so-called Kyma [API Rules](#api-rule), hiding the Istio details from developers. For default scenarios, this is just fine and simplifies the whole routing and service exposure setup.
    - Only for the Integration of SAP API Management, a dedicated [Virtual Service](#virtual-service) is being used in our sample scenario. The feature scope offered by [API Rules](#api-rule) is not sufficient for this requirement. 
 
@@ -580,16 +588,21 @@ Let's check what is happening under the hood, when a request from the public int
 3) After identifying the correct routing target, so-called [**Destination Rules**](#destination-rule) come into play. 
    - [Destination Rules](#destination-rule) allow you to specify further traffic-related policies after successful routing. The rule you configured is applied on the destination given by your [Virtual Service](#virtual-service).  
    - In a lot of scenarios, this includes e.g., load-balancing between different subsets of a target workload. 
-      > **Hint** - This can be especially useful for A/B testing scenarios or [locality failover scenarios](https://istio.io/latest/docs/tasks/traffic-management/locality-load-balancing/failover/).
+      :::tip **Hint** 
+      This can be especially useful for A/B testing scenarios or [locality failover scenarios](https://istio.io/latest/docs/tasks/traffic-management/locality-load-balancing/failover/).
+      :::
    - The source of the traffic (mesh internal or external) is not of importance for the [Destination Rule](#destination-rule).
    - In our sample scenario, Destination Rules are used to ensure session-stickiness for traffic targeting the Application Router. 
-      > **Hint** - This ensures that clients are always routed to the same Pod based on a session cookie. 
-
+:::tip **Hint** 
+This ensures that clients are always routed to the same Pod based on a session cookie. 
+:::
       > **Istio-Documentation** - You can think of [Virtual Services](#virtual-service) as how you route your traffic to a given destination, and then you use [Destination Rules](#destination-rule) to configure what happens to traffic for that destination. [Destination Rules](#destination-rule) are applied after [Virtual Service](#virtual-service) routing rules are evaluated, so they apply to the traffic’s “real” destination ([see details](https://istio.io/latest/docs/concepts/traffic-management/#destination-rules)).
 
 4) Depending on your use-case, further Istio features are applied before a request finally reaches a target [Service](#service). 
    
-   > **Hint** - While [Virtual Services](#virtual-service) and [Destination Rules](#destination-rule) are always tied to certain hosts and ensure proper routing to target [Services](#service), [Request Authentication](#request-authentication) and [Authorization Policy](#authorization-policy) definitions are applied to workloads. They specify what authentication methods are supported by workloads and enable access control on workloads in the Service Mesh. If desired, they can also be applied at e.g., namespace or even mesh-level (like enforcing mTLS across a Service Mesh). 
+:::tip **Hint** 
+While [Virtual Services](#virtual-service) and [Destination Rules](#destination-rule) are always tied to certain hosts and ensure proper routing to target [Services](#service), [Request Authentication](#request-authentication) and [Authorization Policy](#authorization-policy) definitions are applied to workloads. They specify what authentication methods are supported by workloads and enable access control on workloads in the Service Mesh. If desired, they can also be applied at e.g., namespace or even mesh-level (like enforcing mTLS across a Service Mesh). 
+:::
 
    - If you need to validate whether a request is properly authenticated you can for example use [**Request Authentication**](#request-authentication).  
      - In our scenario, this allows us to ensure that requests targeting the SaaS API Service, contain a valid JWT token, issued by the SAP XSUAA tenant of the Provider Subaccount. If the authentication details are valid, the request will contain a so-called **authenticated identity** for further checks. In combination with an [**Authorization Policy**](#authorization-policy), this prevents our API from being accessed by malicious, unauthorized attackers.
@@ -598,21 +611,24 @@ Let's check what is happening under the hood, when a request from the public int
 
 5) Finally, after all policies have been applied, the request has been authenticated and the correct incoming identity was confirmed, the traffic reaches your workloads through the Istio Sidecar Proxy residing in the same Pod. 
   
-  > **Important** - As stated in the beginning - the mesh-internal traffic all along the way (from your Ingress Gateway to the Istio Sidecar Proxy of your workload) will be mTLS encrypted! 
-
+:::caution **Important** 
+As stated in the beginning - the mesh-internal traffic all along the way (from your Ingress Gateway to the Istio Sidecar Proxy of your workload) will be mTLS encrypted! 
+:::
 
 **Egress Traffic**
 
 Also outbound communication can be handled by Istio Service Mesh. In our scenario, traffic is leaving the Service Mesh, when we forward requests to SAP API Management where our API Policies are applied. This happens, any time a user tries to call the SaaS API Service and ensures, that traffic policies like Rate Limiting are being enforced by SAP API Management. Once the request has passed through SAP API Management, it will be redirected to Kyma again and can be served by our API Service. 
 
-> **Hint** - The setup details of this SAP API Management integration scenario, are described as part of the Advanced Features.
-
+:::tip **Hint** 
+The setup details of this SAP API Management integration scenario, are described as part of the Advanced Features.
+:::
 1) As for any other ingress traffic, the external request targeting our API Service reaches our KymaCluster via the Istio (Ingress) Gateway.
    
 2) In this case, a [Virtual Service](#virtual-service) handling the traffic for our API Service workloads, will (in a first iteration) route the request to SAP API Management. 
    
-   > **Hint** - The [Virtual Service](#virtual-service) decides based on a custom header, whether the request has already passed through SAP API Management or not. 
-   
+:::tip **Hint** 
+The [Virtual Service](#virtual-service) decides based on a custom header, whether the request has already passed through SAP API Management or not. 
+::: 
 3) The required SAP API Management host is defined as so-called [Service Entry](#service-entry) and can be addressed by Istio (e.g., in [Virtual Service](#virtual-service)) like a mesh-internal [Service](#service).
 
 4) A separate [Destination Rule](#destination-rule) (specifying how to handle traffic targeting the [Service Entry](#service-entry)) allows an exception from the default mesh-internal mTLS communication for the external traffic. 
@@ -674,8 +690,9 @@ spec:
 
 An external request which is trying to reach the API Service after passing through our SAP API Management policies, can be check for an authenticated identity based on the *requestPrincipal* property. In the below sample, an Authorization Policy restricts access to the SaaS API workloads to requests that can prove their identity using a JWT token that was issued by *https://ci-us20.authentication.us20.hana.ondemand.com/oauth/token* and contains a subject starting with *sb-susaas-api-default!*. In our scenario, this allows us to protect endpoints from being accessed by requestors that are not in possession of valid SAP XSUAA Client Credentials. The respective JWT token is injected by SAP API Management after all traffic policies have been successfully applied. 
 
-> **Hint** - As you can see, for mesh-internal communication between two Sidecar Proxies (using mTLS), we can rely on the *principal* property of the source (to securely identify the origin of the request). Additionally, we can check the *requestPrincipals* property to restrict access, based on the authenticated identity which a request provides in a valid JWT token of a trusted issuer. 
-
+:::tip **Hint** 
+As you can see, for mesh-internal communication between two Sidecar Proxies (using mTLS), we can rely on the *principal* property of the source (to securely identify the origin of the request). Additionally, we can check the *requestPrincipals* property to restrict access, based on the authenticated identity which a request provides in a valid JWT token of a trusted issuer. 
+:::
 ```yaml
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -716,8 +733,9 @@ spec:
           - cluster.local/ns/kyma-system/sa/oathkeeper-maester-account
 ```
 
-> **Hint** - To retain Application Router access without the necessity of using a dedicated Subscriber tenant, another default [API Rule](#api-rule) was defined which is bypassing [Ory](#ory) and can be used for development or test-purposes. Therefore, also the Istio Ingress Gateway Principal is still part of the Authorization Policy.
-
+:::tip **Hint** 
+To retain Application Router access without the necessity of using a dedicated Subscriber tenant, another default [API Rule](#api-rule) was defined which is bypassing [Ory](#ory) and can be used for development or test-purposes. Therefore, also the Istio Ingress Gateway Principal is still part of the Authorization Policy.
+:::
 
 ### Destination Rule
 
@@ -743,8 +761,9 @@ spec:
 
 Another scenario requiring Destination Rules, is the mesh-external communication with SAP API Management. Whenever we reach out to SAP API Management from our Service Mesh, the following Destination Rule ensures that a simple TLS connection is being used for the upstream communication (instead of the default Cluster internal mTLS communication). 
 
-> **Hint** - For communication within the Service Mesh, Istio enforces mTLS communication if not explicitly overridden by a Destination Rule. 
-
+:::tip **Hint** 
+For communication within the Service Mesh, Istio enforces mTLS communication if not explicitly overridden by a Destination Rule. 
+:::
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -762,8 +781,9 @@ spec:
 
 Another use-case for using Destination Rules is the Load Balancing between different workload versions using so-called subsets. While not being used in our sample scenario, this allows scenarios like A/B testing by only forwarding a certain percentage of your traffic to latest workload versions. The remaining traffic continuously targets the legacy workload version. [Click here](https://istio.io/latest/docs/reference/config/networking/destination-rule/#Subset) for more details.
 
-> **Hint** - Make sure the respective label is added by the [Virtual Service](#virtual-service) to enable subset routing. 
-
+:::tip **Hint** 
+Make sure the respective label is added by the [Virtual Service](#virtual-service) to enable subset routing. 
+:::
 ```yaml
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -792,8 +812,9 @@ An Istio Request Authentication allows you to check an incoming request for vali
 
 This means, whenever a request is able to present a JWT token (in the custom x-jwt-assertion header) which is issued by a trusted issuer (in our case the XSUAA tenant of the Provider Subaccount), the respective authentication details are considered **valid**. Consequently, the respective authentication details will be available for further processing (e.g., the authenticated identity). If the request is not able to provide a valid JWT token, it will not be rejected, but will just simply not contain **valid** authentication information (like the authenticated identity). 
 
-> **Hint** - Request Authentication definitions are especially useful in combination with so-callled [Authorization Policies](#authorization-policy). Based on the extracted authentication details, those policies define, whether or not a request is ultimately allowed to reach a service. 
-
+:::tip **Hint** 
+Request Authentication definitions are especially useful in combination with so-callled [Authorization Policies](#authorization-policy). Based on the extracted authentication details, those policies define, whether or not a request is ultimately allowed to reach a service. 
+:::
 ```yaml
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
@@ -853,8 +874,9 @@ By default, Istio enables communication between all [Services](#service) in the 
 
 Those Sidecars resources allow you to specify which [Services](#service) a certain workload needs to reach within the mesh. In the below sample, we tell the Istio, that the Sidecar Proxy of our Application Router only needs to reach out to [Services](#service) in the same (./*) and in the istio-system namespace. So even if there are thousands of [Services](#service) in your Mesh one day, only the required configurations for a few [Services](#service) would be fetched from the Istio Control Plane and stored in the Sidecar Proxy. This will reduce CPU, memory and disk usage in the Istio Control Plane as well as the Sidecar Proxies. 
 
-> **Hint** - While this is not part of our sample scenario, even Ingress traffic settings could be further specified in this context. Check the official documentation to learn more.  
-
+:::tip **Hint** 
+While this is not part of our sample scenario, even Ingress traffic settings could be further specified in this context. Check the official documentation to learn more.  
+:::
 ```yaml
 apiVersion: networking.istio.io/v1beta1
 kind: Sidecar
@@ -880,7 +902,9 @@ spec:
 
 Virtual Services allow you to route traffic to the [Services](#service) associated with your workloads based on various conditions. In our sample scenario, the majority of Virtual Services define traffic rules based on the initial host which the incoming request is targeting. In the below example, whenever a request for the **susaas-router-default.sap-demo.com** host arrives through Istio Ingress Gateway, we need to instruct Istio to which [Service](#service) this traffic has to be routed. Obviously, in this case the traffic is intended for our Application Router workload. So we can simply provide the Cluster IP [Service](#service) details of our Application Router workload in the destination details of the route. 
 
-> **Hint** - In this example, a custom domain is being used. In a default setup, the default Kyma **kyma-system/kyma-gateway** Gateway as well as the default Cluster domain would be used (e.g., susaas-router-default.a1b2c3d4.kyma.ondemand.com).
+:::tip **Hint** 
+In this example, a custom domain is being used. In a default setup, the default Kyma **kyma-system/kyma-gateway** Gateway as well as the default Cluster domain would be used (e.g., susaas-router-default.a1b2c3d4.kyma.ondemand.com).
+:::
 
 The Virtual Services required for this sample scenario, are (except for one exception) automatically created and manged by so-called Kyma [API Rules](#api-rule). This means, whenever you create or update an [API Rule](#api-rule), a corresponding Virtual Service is created or updated. While this reduced flexibility (as [API Rules](#api-rule) only offer a subset of the Virtual Service features) it simplifies the majority of scenarios, which are just about a simple exposure of workloads. 
 
@@ -951,8 +975,9 @@ The integration of SAP API Management is the only exception for which a dedicate
 
 This custom header is added by SAP API Management after validating associated API Policies (e.g., Rate Limiting). Only requests that have passed through SAP API Management and contain this custom header, will match the second HTTP match pattern and are consequently routed to the Cluster IP [Service](#service) of the API Service workload. In any other case, requests (missing the custom header) are routed to SAP API Management (defined as mesh external [Service Entry](#service-entry)). 
 
-> **Important** - As of today, [API Rules](#api-rule) do not allow multiple routes for the same host, therefore a dedicated Virtual Service is necessary to provide this routing requirements. 
-
+:::caution **Important** 
+As of today, [API Rules](#api-rule) do not allow multiple routes for the same host, therefore a dedicated Virtual Service is necessary to provide this routing requirements. 
+:::
 ```yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -1099,8 +1124,9 @@ spec:
 
 The deletion of Jobs after successful termination is triggered by respective Helm Hooks. The below sample triggers a deletion of the associated Kubernetes artifact (in our case the Job), before a new Job artifact is created in the Cluster and after the Job successfully terminated. This will ensure that you are not ending up with dozens of orphaned jobs when upgrading your Helm installation several times. 
 
-> **Hint** - In case you would like to retain your Jobs, you need to modify or remove the respective hook-delete-policy in the Helm templates. 
-
+:::tip **Hint** 
+In case you would like to retain your Jobs, you need to modify or remove the respective hook-delete-policy in the Helm templates. 
+:::
 ```yaml
 annotations:
   "helm.sh/hook": "post-install,post-upgrade"
@@ -1285,7 +1311,9 @@ spec:
 
 Below you can see a simple definition of a custom so-called **Ory Rule** (which is automatically created in a similar fashion when deploying the above [API Rule](#api-rule)). In this sample, the Ory Rule ensures that requests targeting the **susaas-api-default.sap-demo.com** host, have to provide a valid JWT token, issued by a trusted XSUAA tenant. Otherwise, the request will not be granted access to the so-called upstream target (Cluster IP [Service](#service) of our API Service). 
 
-> **Important** - The Ory components (first of all the Ory Hydra OAuth Server) will be removed in upcoming Kyma releases. While the majority of existing features provided by Kyma [API Rules](#api-rule) will be replaced (e.g., by corresponding [Istio](#istio-service-mesh) features), we strongly recommend not to use **native Ory objects** anymore. The Ory-related details are only mentioned to give you an idea of what is happening under the hood, when creating a new [API Rule](#api-rule) including access strategies. 
+:::caution **Important** 
+The Ory components (first of all the Ory Hydra OAuth Server) will be removed in upcoming Kyma releases. While the majority of existing features provided by Kyma [API Rules](#api-rule) will be replaced (e.g., by corresponding [Istio](#istio-service-mesh) features), we strongly recommend not to use **native Ory objects** anymore. The Ory-related details are only mentioned to give you an idea of what is happening under the hood, when creating a new [API Rule](#api-rule) including access strategies. 
+:::
 
 ```yaml
 apiVersion: oathkeeper.ory.sh/v1alpha1
@@ -1311,8 +1339,9 @@ spec:
 
 Another **Ory** feature set which is actively being used in the [API Rules](#api-rule) of our Subscriber tenants, are so-called [mutators](https://www.ory.sh/docs/oathkeeper/pipeline/mutator#header). In our scenario, mutators facilitate the injection of the **x-custom-host** header required for Tenant identification. Check out the sample below to find a respective mutator definition. 
 
-> **Hint** - In the future this might be replaced by an Istio-based approach setting the custom header. 
-
+:::tip **Hint** 
+In the future this might be replaced by an Istio-based approach setting the custom header. 
+:::
 ```yaml
 apiVersion: gateway.kyma-project.io/v1beta1
 kind: APIRule
@@ -1355,8 +1384,9 @@ The Horizontal Pod Autoscaler (as the name suggests) horizontally scales your wo
 
 The following Autoscaler definition ensures, that at least one Pod of our API Service workload is constantly running in the Cluster. Furthermore, it will automatically create up to three pods, in case the average CPU utilization across the existing API Service workloads reaches 80 percent. 
 
-> **Hint** - In simple sample scenarios, a Horizontal Pod Autoscaler is probably not required but becomes highly relevant with an increasing workload! Please be aware, that **high-availability** scenarios cannot be achieved with a minReplica setting of 1. At least two Pods (ideally on different Nodes) have to be available in this case.
-
+:::tip **Hint** 
+In simple sample scenarios, a Horizontal Pod Autoscaler is probably not required but becomes highly relevant with an increasing workload! Please be aware, that **high-availability** scenarios cannot be achieved with a minReplica setting of 1. At least two Pods (ideally on different Nodes) have to be available in this case.
+:::
 ```yaml
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -1391,8 +1421,9 @@ Pod Disruption Budgets are - like Horizontal [Pod Autoscalers](#pod-autoscaler) 
 
 In the following sample, the Pod Disruption Budget ensures, that at least two Pods of our Service Broker workload are still available across the remaining Nodes of your Cluster, in case of voluntary disruptions. While an Horizontal [Pod Autoscaler](#pod-autoscaler) will step in and spin up new Pods (in case you are taking down a Node with a certain number of Pods), this scaling process will take some time until the new Pods are available. Using a Pod Disruption Budget, your Administrator will not be able to take down a Node, if the remaining Nodes do not provide the minimal number of required Pods for the associated workload. 
 
-> **Important** - The Pod Disruption Budgets does not cover unplanned disruptions like power-outages. In this case, you might face situations in which the minimum number of Pods in your Cluster is temporarily lower than required, until your [Deployment](#deployment) or Autoscaler spins up new pods in the remaining Nodes.
-
+:::caution **Important** 
+The Pod Disruption Budgets does not cover unplanned disruptions like power-outages. In this case, you might face situations in which the minimum number of Pods in your Cluster is temporarily lower than required, until your [Deployment](#deployment) or Autoscaler spins up new pods in the remaining Nodes.
+:::
 ```yaml
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -1405,8 +1436,9 @@ spec:
       app.kubernetes.io/name: broker
 ```
 
-> **Hint** - A Pod Disruption Budget with a minAvailable value of 1 and a corresponding replica/minReplica (Deployment/Autoscaler) of 1 will not guarantee high availability. Only if at least 2 Pods are running on different Nodes in your Cluster, a minAvailable value of 1 will ensure high availability in case of voluntary disruptions. In case of 1-1 scenarios, the a Pod will only be instantiated, once the existing Pod successfully terminated. 
-
+:::tip **Hint** 
+A Pod Disruption Budget with a minAvailable value of 1 and a corresponding replica/minReplica (Deployment/Autoscaler) of 1 will not guarantee high availability. Only if at least 2 Pods are running on different Nodes in your Cluster, a minAvailable value of 1 will ensure high availability in case of voluntary disruptions. In case of 1-1 scenarios, the a Pod will only be instantiated, once the existing Pod successfully terminated. 
+:::
 
 ## Role Binding
 
@@ -1537,12 +1569,14 @@ spec:
 
 A Kubernetes Service provides a stable communication interface for your workloads and can have various facets. While our scenario is using the default Service type called Cluster IP (stable internal IP within the Cluster), there are also other Service types like Load Balancer. A Load Balancer Service assigns a static external IP to your workloads, while a Cluster IP Service uses an internal IP range only. 
 
-> **Hint** - While your workloads typically consist of multiple Pods (which all have different and changing internal IP addresses), a Cluster IP Service provides a stable internal IP address and load-balances traffic to the various Pods of your target workload (e.g., in a Round Robin approach). 
-
+:::tip **Hint** 
+While your workloads typically consist of multiple Pods (which all have different and changing internal IP addresses), a Cluster IP Service provides a stable internal IP address and load-balances traffic to the various Pods of your target workload (e.g., in a Round Robin approach). 
+:::
 For our scenario, internal IP addresses are sufficient, as all external traffic targeting our workloads is handled by [Istio](#istio-service-mesh) Ingress Gateway. Therefore, our Cluster only requires one single Service Instance of type Load Balancer, which is used by [Istio](#istio-service-mesh) Ingress Gateway. Once the traffic has passed through the Gateway, the requests are internally routed to the respective Cluster IP Service instances based on the initial target host. 
 
-> **Hint** - On the one hand, this allows us to leverage the powerful [Istio](#istio-service-mesh) features, on the other hand we also save a lot of money compared to reserving external IP addresses for all of our workloads! 
-
+:::tip **Hint** 
+On the one hand, this allows us to leverage the powerful [Istio](#istio-service-mesh) features, on the other hand we also save a lot of money compared to reserving external IP addresses for all of our workloads! 
+:::
 ```yaml
 apiVersion: v1
 kind: Service
@@ -1646,9 +1680,12 @@ Like [Service Bindings](#service-binding), also SAP BTP Service Instances are cu
 
 Besides providing the name of the required service offering (e.g., xsuaa or hana) and corresponding plan (e.g., application or hdi-shared), you can define all required Service Instance parameters. This applies for any kind of service type available for the Kyma runtime, like the Destination Service example which you can find below. 
 
-> **Hint** - If you are referencing a json file containing your instance parameters (like often done for xsuaa), please make sure the file resides in the same directory as your Helm template for this Service Instance. 
-
-> **Hint** - Before creating Service Instances from within your Kyma Cluster, please assign the required entitlements to the respective SAP BTP subaccount. Most SAP BTP Services are available for the Kyma Runtime already, still there are a few exceptions like SAP Build Workzone. In those cases, you have to create a Service Instance in Cloud Foundry and and manually provide the generated [Service Binding](#service-binding) credentials as a [Secret](#secret) to your Kyma Cluster. 
+:::tip **Hint** 
+If you are referencing a json file containing your instance parameters (like often done for xsuaa), please make sure the file resides in the same directory as your Helm template for this Service Instance. 
+:::
+:::tip **Hint** 
+Before creating Service Instances from within your Kyma Cluster, please assign the required entitlements to the respective SAP BTP subaccount. Most SAP BTP Services are available for the Kyma Runtime already, still there are a few exceptions like SAP Build Workzone. In those cases, you have to create a Service Instance in Cloud Foundry and and manually provide the generated [Service Binding](#service-binding) credentials as a [Secret](#secret) to your Kyma Cluster. 
+:::
 
 
 ```yaml

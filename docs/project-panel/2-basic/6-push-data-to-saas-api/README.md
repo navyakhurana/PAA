@@ -33,16 +33,19 @@ To connect to the SaaS API as a subscriber, make sure you followed all steps des
 
 1.2. Each of the HTTP files contains a header section, in which you can provide the tenant-specific Client Credentials. Those are used to connect to the SaaS API as a specific Tenant. Please update the parameters using your Service Binding details. 
 
-> **Important** - Make sure **not to commit** these details to GitHub! Either remove the credentials before saving or rename your HTTP files to **-private.http** (e.g., apiProducts-private.http), which are excluded by the *.gitignore* file. 
-
+:::caution **Important** 
+Make sure **not to commit** these details to GitHub! Either remove the credentials before saving or rename your HTTP files to **-private.http** (e.g., apiProducts-private.http), which are excluded by the *.gitignore* file. 
+:::
  ![<img src="./images/API_HttpCreds.png" width="900" />](./images/API_HttpCreds.png?raw=true)
 
-> **Hint** - The *xsuaaHostname* is equal to the *uaa.url* parameter. The *apiEndpointBtp* equals the *apiUrl* parameter.
-
+:::tip **Hint** 
+The *xsuaaHostname* is equal to the *uaa.url* parameter. The *apiEndpointBtp* equals the *apiUrl* parameter.
+:::
 1.3. After updating the relevant parameters based on your Tenant Subaccount Client Credentials, you can request an OAuth token for accessing the SaaS API. Therefore, execute the following request which will return a Bearer access token that can be used for the upcoming API calls. This token will allow the CAP framework to uniquely identify a certain Tenant and to connect it to the correct Tenant database container.
 
-> **Important** - If you're facing an **Unauthorized** error, please try to URL-encode (various web-tools or npm packages available to do so) your Client ID and Secret and try to fetch a token again!
-
+:::tip **Important** 
+If you're facing an **Unauthorized** error, please try to URL-encode (various web-tools or npm packages available to do so) your Client ID and Secret and try to fetch a token again!
+:::
 ```http
 # @name getXsuaaToken
 
@@ -57,8 +60,9 @@ client_id={{btpXsuaaClient}}
 
 1.4. Once you obtained an access token, run the following request to upload sample products to the SaaS API on behalf of your current Subscriber Tenant. The respective product data will be stored in the Tenant database container and can be used to create new assessments in the SaaS sample application instance of the Tenant. The required access token is taken from the results of the previous OAuth request. 
 
-> **Hint** - In the **Advanced Features**, you will learn that the sample EPM model provides the same data values, and that your subscriber's on-premise solutions like SAP S/4HANA can use the same SaaS API endpoints to push this sample product data. 
-
+:::tip **Hint** 
+In the **Advanced Features**, you will learn that the sample EPM model provides the same data values, and that your subscriber's on-premise solutions like SAP S/4HANA can use the same SaaS API endpoints to push this sample product data. 
+:::
 ```http
 @access_token = {{getXsuaaToken.response.body.$.access_token}}
 
@@ -85,10 +89,12 @@ Content-type: application/json
 
 1.5. Enrich the product data stored in your Tenant database container with further details, by using the following request. It will update existing product records with sales split details and additional sustainability notions. 
 
-> **Hint** - You might ask yourself why these additional details are not part of the initial product data request?! Unfortunately, this advanced product information is not part of the EPM model and has been added for illustration purposes of a potential sustainability use-case. Therefore, it has to be provided by a manual upload or maintained in the SaaS application itself. 
-
-> **Important** - Do not use this API endpoint with a huge payload, as it processes the records one after another as the CAP CQL UPDATE feature does not yet allow us to provide multiple entity values at once.
-
+:::tip **Hint** 
+You might ask yourself why these additional details are not part of the initial product data request?! Unfortunately, this advanced product information is not part of the EPM model and has been added for illustration purposes of a potential sustainability use-case. Therefore, it has to be provided by a manual upload or maintained in the SaaS application itself. 
+:::
+:::caution **Important** 
+Do not use this API endpoint with a huge payload, as it processes the records one after another as the CAP CQL UPDATE feature does not yet allow us to provide multiple entity values at once.
+:::
 ```http
 # @name uploadProductsExtendedBtp
 

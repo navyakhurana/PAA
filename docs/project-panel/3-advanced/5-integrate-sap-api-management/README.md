@@ -22,8 +22,9 @@ In this part of the tutorial, you will learn how to ensure that each and every r
   - [6. Test the setup](#6-test-the-setup)
   - [7. Further Information](#7-further-information)
 
-> **Important** - SAP API Management limits the payload size of a single HTTP request to 10 MB for non-streamed HTTP requests and responses ([see details](https://me.sap.com/notes/0003087398)). If you want to transfer larger files, please consider streaming! 
-
+:::caution **Important** 
+SAP API Management limits the payload size of a single HTTP request to 10 MB for non-streamed HTTP requests and responses ([see details](https://me.sap.com/notes/0003087398)). If you want to transfer larger files, please consider streaming! 
+:::
 
 ## 1. Architecture
 
@@ -132,8 +133,9 @@ helm upgrade <ReleaseName> ./charts/sustainable-saas -n <Namespace>
 
 3.10. Once uploaded, please open the susaas-api **API Proxy** definition and update the **Target Endpoint** with your Kyma API Service URI (e.g., susaas-api-default.a1b2c3d4.kyma.ondemand.com) as you can see in the following screenshots. 
 
-> **Hint** - If you are using a **custom domain** in your Kyma environment, please also use in this context (e.g., susaas-api-default.sap-demo.com).
-
+:::tip **Hint** 
+If you are using a **custom domain** in your Kyma environment, please also use in this context (e.g., susaas-api-default.sap-demo.com).
+:::
  ![<img src="./images/API_Proxy01.png" width="300" />](./images/API_Proxy01.png?raw=true)
  ![<img src="./images/API_Proxy03.png" width="300" />](./images/API_Proxy03.png?raw=true)
 
@@ -162,12 +164,14 @@ That summary already gave you a glimpse of an idea how things will gear into eac
 
 - Everything starts with an API request arriving in our Kyma Cluster through the **Istio Ingress Gateway**. While you can also provide your Tenants the API Proxy endpoints, we decided to leverage the additional flexibility offered by Istio when it comes to an end-to-end routing scenario.
 
-  > **Important** - The additional hop from Kyma to SAP API Management will result in slightly longer response times, so if your use-case targets minimal response times, you might think about equipping your subscribers with the API Proxy endpoints. If your scenario is all about latency and you are transferring huge loads through the API endpoints, you might also think about API Rule checks as part of your API Service implementation or leveraging Istio features for Rate Limiting.   
-
+:::caution **Important** 
+The additional hop from Kyma to SAP API Management will result in slightly longer response times, so if your use-case targets minimal response times, you might think about equipping your subscribers with the API Proxy endpoints. If your scenario is all about latency and you are transferring huge loads through the API endpoints, you might also think about API Rule checks as part of your API Service implementation or leveraging Istio features for Rate Limiting.   
+:::
 - To integrate **SAP API Management** with our Service Mesh, a dedicated **Istio Virtual Service** is used. This Virtual Service defines routing rules for all requests arriving for our API Service through **Istio Ingress Gateway**. The routing rules are based on the availability of the custom **x-jwt-assertion** header. If the header is missing (initial request), traffic is routed to the SAP API Management API Proxy. If the custom header is part of the request, traffic is routed to our Kyma API Service. 
 
-  > **Important** - The **x-jwt-assertion** custom header is injected by SAP API Management, once the request has successfully passed all Traffic Policies (like Rate Limiting).
-
+:::caution **Important** 
+The **x-jwt-assertion** custom header is injected by SAP API Management, once the request has successfully passed all Traffic Policies (like Rate Limiting).
+:::
   ```yaml
   apiVersion: networking.istio.io/v1beta1
   kind: VirtualService
@@ -208,14 +212,16 @@ That summary already gave you a glimpse of an idea how things will gear into eac
 
 - Once a request has successfully passed all Policies in SAP API Management, the API Proxy will request a new JWT **access token** using XSUAA Client Credentials, which are securely stored in respective Key Value Maps. Those have already been set up by you in the introduction of this tutorial. Only SAP API Management is in possession of those Client Credentials, so no Tenant will ever be able to generate a valid access token himself. By checking the validity of this JWT token (passed in the x-jwt-assertion header), you can ensure, that a request has successfully passed through SAP API Management. The request incl. the custom header is finally send back to Kyma. 
 
-  > **Important** - Your SaaS subscribers nor any other person should never get access to those Client Credentials. Also make sure to rotate them on a regular basis. 
-
+:::caution **Important** 
+Your SaaS subscribers nor any other person should never get access to those Client Credentials. Also make sure to rotate them on a regular basis. 
+:::
 As a smart and knowledgeable security enthusiast, you will probably wonder about the following question... "Well, the routing based on a custom header is nice, but does it protect me from anyone just adding the respective custom header manually to the request?!" You are absolutely right and this would bypass the routing to SAP API Management... but no worries, our API Service wouldn't budge an inch, as the probability of generating a valid JWT token is close to zero. Read along, to learn how the token validation is implemented in Kyma using various Istio components. 
 
 - First of all, an Istio **Request Authentication** checks, whether a request targeting the API Service provides a **valid** JWT token in the **x-jwt-assertion** header, which is issued by a trusted issuer. If this is the case, the request is **considered authenticated** and respective **identity details** can be used by subsequent authorization checks in Authorization Policies. 
 
-  > **Hint** - A standalone Request Authentication does not necessarily restrict access to your Services. It only allows you to **authenticate** requests and ensures that JWT tokens are issued by a trusted issuer. The extracted identity details (like the **requestPrincipals** property) still have to be validated in respective Authorization Policies. In case of untrusted JWT issuers or an invalid token, the request will still be forwarded, but is considered "un-authenticated". Therefore, the required **identity details** to pass an Authorization Policy are missing!
-
+:::tip **Hint** 
+A standalone Request Authentication does not necessarily restrict access to your Services. It only allows you to **authenticate** requests and ensures that JWT tokens are issued by a trusted issuer. The extracted identity details (like the **requestPrincipals** property) still have to be validated in respective Authorization Policies. In case of untrusted JWT issuers or an invalid token, the request will still be forwarded, but is considered "un-authenticated". Therefore, the required **identity details** to pass an Authorization Policy are missing!
+:::
   ```yaml
   apiVersion: security.istio.io/v1beta1
   kind: RequestAuthentication
@@ -235,8 +241,9 @@ As a smart and knowledgeable security enthusiast, you will probably wonder about
  
 - An Istio **Authorization Policy** ensures, that our API Service can only be reached by requests proving a dedicated Issuer and Subject claim as part of the **validated identity details**. In our sample scenario, we check the **requestPrincipals** property, which is following the structure - **\<JWT-Issuer\>/\<JWT-Subject\>**. Keep in mind, if the JWT token in the **x-jwt-assertion** header is invalid or has not been issued by a trusted XSUAA tenant, this property will be empty and the request is blocked!
 
-  > **Hint** - In case of XSUAA, the JWT issuer equals the **token endpoint** of the Provider Subaccount XSUAA Tenant (like https://sap-demo.authentication.us20.hana.ondemand.com/oauth/token) and the **Subject claim** contains the Client Id of the API XSUAA Service Instance. The default Subject structure follows **sb-\<Release-Name\>-api-\<Release-Namespace\>** and has to be provided in the *values.yaml* file (like **sb-susaas-api-default**). The asterisk is used on purpose in this case, as the Client Ids generated by XSUAA always contain a random character sequence after the exclamation mark! 
-
+:::tip **Hint** 
+In case of XSUAA, the JWT issuer equals the **token endpoint** of the Provider Subaccount XSUAA Tenant (like https://sap-demo.authentication.us20.hana.ondemand.com/oauth/token) and the **Subject claim** contains the Client Id of the API XSUAA Service Instance. The default Subject structure follows **sb-\<Release-Name\>-api-\<Release-Namespace\>** and has to be provided in the *values.yaml* file (like **sb-susaas-api-default**). The asterisk is used on purpose in this case, as the Client Ids generated by XSUAA always contain a random character sequence after the exclamation mark! 
+:::
   ```yaml
   apiVersion: security.istio.io/v1beta1
   kind: AuthorizationPolicy
@@ -290,8 +297,9 @@ While you are an expert for the theoretical concept now, let's face the school o
 
 The API Policies of our sample API Proxy are primarily based on SAP API Management Standard features. In the following section of the tutorial, you will learn how to set up some of the used API Policies yourself. This includes a Spike Arrest component for rate limiting and different Quotas based on the plan (standard/premium) selected by a Subscriber. 
 
-> **Important** - The following steps have already been completed in the sample API Proxy which you deployed in the beginning of this tutorial (**APIProxy.zip**). If you want to redo the following part of the step-by-step guide, feel free to remove the existing API Proxy and upload the **APIProxyPolicies.zip**. Otherwise, just follow along and try to reflect the steps and components in your existing API Proxy.  
-
+:::caution **Important** 
+The following steps have already been completed in the sample API Proxy which you deployed in the beginning of this tutorial (**APIProxy.zip**). If you want to redo the following part of the step-by-step guide, feel free to remove the existing API Proxy and upload the **APIProxyPolicies.zip**. Otherwise, just follow along and try to reflect the steps and components in your existing API Proxy.  
+:::
 To view and change the policies of an API Proxy, just click on **Policies** in the top right of your API Proxy.
 
  ![<img src="./images/API_Policies.png" width="300" />](./images/API_Policies.png?raw=true)
@@ -355,8 +363,9 @@ Besides an API Rate Limit (protecting our SaaS API from DoS attacks), we enhance
 
 5.3.3. Once again, we differentiate our requests by using the decoded JWT token data. Our SaaS API Service Broker ensures, that the selected **service plan** is injected as a **scope** to all issued JWT tokens. This allows you to read the service plan details and to include it in the **Flow Condition** as follows: 
 
-> **Hint** - If you are rebuilding the API Policies from scratch, please select the **standardPlanFlow** before adding the condition. 
-
+:::tip **Hint** 
+If you are rebuilding the API Policies from scratch, please select the **standardPlanFlow** before adding the condition. 
+:::
   ```jwt.decodeJwt.claim.scope ~ "*plan_standard"```
 
  ![<img src="./images/API_Quota03.png" width="600" />](./images/API_Quota03.png?raw=true)
@@ -370,16 +379,18 @@ Besides an API Rate Limit (protecting our SaaS API from DoS attacks), we enhance
   ```jwt.decodeJwt.claim.scope ~ "*plan_trial"```
 
 
-> **Hint** - Reading the service plan from the JWT token scopes might be improved by a different approach in the future.
-
+:::tip **Hint** 
+Reading the service plan from the JWT token scopes might be improved by a different approach in the future.
+:::
 5.3.6. Now requests will be handled by the different Subflows depending on the consumer's service plan selection. In those Subflows, we can define different **Quota** allowances. To add a very simple **Quota limit** to the API, we use the **Quota** feature from the policies toolbox. If you are rebuilding the API Policies from scratch, name the new flow elements **quotaStandard** in the standard, **quotaPremium** in the premium and **quotaTrial** in the trial flow. 
 
  ![<img src="./images/API_Quota04.png" width="600" />](./images/API_Quota04.png?raw=true)
 
 5.3.7. For our sample application, the **standard** and **trial** quota is configure as below. This configuration allows API customers exactly 1200 daily requests to your API. The comprehensive configuration options of the **Quota** policy can be found in the respective documentation [click here](https://docs.apigee.com/api-platform/reference/policies/quota-policy). 
 
-> **Important** - Please ensure, the **Quota** policy configuration once again contains the **Client Id** identifier as in the following sample.
-
+:::caution **Important** 
+Please ensure, the **Quota** policy configuration once again contains the **Client Id** identifier as in the following sample.
+:::
 ```xml
 <Quota async="false" continueOnError="false" enabled="true" type="calendar" xmlns="http://www.sap.com/apimgmt">
  	<Identifier ref="jwt.decodeJwt.claim.client_id"/>
@@ -392,8 +403,9 @@ Besides an API Rate Limit (protecting our SaaS API from DoS attacks), we enhance
 </Quota>
 ```
 
-> **Hint** - For the **premium plan**, you we double the number of daily requests to 2400, but feel free to update it to a configuration of your choice.  
-
+:::tip **Hint** 
+For the **premium plan**, you we double the number of daily requests to 2400, but feel free to update it to a configuration of your choice.  
+:::
  ![<img src="./images/API_Quota05.png" width="600" />](./images/API_Quota05.png?raw=true)
 
 

@@ -14,8 +14,9 @@ In this tutorial, you will learn how to send e-mails from your SaaS application 
   - [6. Resource Owner Password Flow](#6-resource-owner-password-flow)
   - [7. Further Information](#7-further-information)
 
-> **Important** - The below sample approach works with a very powerful Graph API permission on Application-level. In a productive environment, this permission should be immediately restricted after setup, to prevent misuse by application developers. Otherwise, this setup allows anyone in possession of the respective credentials to send e-mails on behalf of any Active Directory user! Please follow the official Microsoft documentation ([click here](https://learn.microsoft.com/en-us/graph/auth-limit-mailbox-access)) to set up a corresponding restriction. 
-
+:::caution **Important** 
+The below sample approach works with a very powerful Graph API permission on Application-level. In a productive environment, this permission should be immediately restricted after setup, to prevent misuse by application developers. Otherwise, this setup allows anyone in possession of the respective credentials to send e-mails on behalf of any Active Directory user! Please follow the official Microsoft documentation ([click here](https://learn.microsoft.com/en-us/graph/auth-limit-mailbox-access)) to set up a corresponding restriction. 
+:::
 
 ## 1. Introduction
 
@@ -29,8 +30,9 @@ As a consequence, IMAP or POP protocol usage with basic authentication will not 
 
 Given all these security-related restrictions, Microsoft recommends switching to alternative protocols like the **Microsoft Graph API** which will be covered by the following Expert Feature tutorial. 
 
-> **Hint** - If you are using a different e-mail service provider, enabled SMTP AUTH and Basic Authentication in your environment, or host your own e-mail server in an On-Premise landscape, considering a destination of type **MAIL** or usage of **SAP Cloud Integration** might still be an option for you ([click here](https://blogs.sap.com/2020/01/08/cloud-integration-connect-cpi-with-your-on-premise-mail-server/)). SAP Cloud Integration also offers an OAuth2 based integration with Microsoft Exchange ([click here](https://blogs.sap.com/2020/08/20/cloud-intgration-connect-to-microsoft-365-mail-with-oauth2/)).
-
+:::tip **Hint** 
+If you are using a different e-mail service provider, enabled SMTP AUTH and Basic Authentication in your environment, or host your own e-mail server in an On-Premise landscape, considering a destination of type **MAIL** or usage of **SAP Cloud Integration** might still be an option for you ([click here](https://blogs.sap.com/2020/01/08/cloud-integration-connect-cpi-with-your-on-premise-mail-server/)). SAP Cloud Integration also offers an OAuth2 based integration with Microsoft Exchange ([click here](https://blogs.sap.com/2020/08/20/cloud-intgration-connect-to-microsoft-365-mail-with-oauth2/)).
+:::
 
 ## 2. Prerequisites
 
@@ -38,14 +40,16 @@ Given all these security-related restrictions, Microsoft recommends switching to
 
 To create an application registration that can be used to send e-mails via Microsoft Graph, you will need an active Microsoft Azure account including an Azure Active Directory.  You can sign up for a free Microsoft Azure account here [https://azure.microsoft.com/en-in/free](https://azure.microsoft.com/en-in/free).
 
-> **Hint** - For testing purposes, you can go with a free Azure account and you don't need a paid Azure subscription.
-
+:::tip **Hint** 
+For testing purposes, you can go with a free Azure account and you don't need a paid Azure subscription.
+:::
 **Exchange Online**
 
 You can send e-mails by either using a shared mailbox or a regular user's inbox. For both scenarios, you need to have at least one valid license including Exchange Online access (like Office 365 F3). After creating a Microsoft Azure account, log in to the Microsoft 365 Admin Center here [https://admin.microsoft.com/#/homepage](https://admin.microsoft.com/#/homepage). This is where you can buy and see your licensed products like an Office 365 F3 subscription. 
 
-> **Hint** - For testing purposes, check if you're eligible for a free [Microsoft Teams Exploratory](https://learn.microsoft.com/en-us/microsoftteams/teams-exploratory) license. This license also contains the required Exchange Online access. 
-
+:::tip **Hint** 
+For testing purposes, check if you're eligible for a free [Microsoft Teams Exploratory](https://learn.microsoft.com/en-us/microsoftteams/teams-exploratory) license. This license also contains the required Exchange Online access. 
+:::
 
 ## 3. Create a Shared Mailbox
 
@@ -55,8 +59,9 @@ In the below sample, we created two shared mailboxes. One is for automated messa
 
 ![<img src="./images/Mail_SharedMailbox.png" width="500" />](./images/Mail_SharedMailbox.png?raw=true)
 
-> **Hint** - In this case, susaas.com was registered as a custom Domain in the respective Admin Center settings. For test scenarios, you can also go with the default *.onmicrosoft.com domain assigned to your account. 
-
+:::tip **Hint** 
+In this case, susaas.com was registered as a custom Domain in the respective Admin Center settings. For test scenarios, you can also go with the default *.onmicrosoft.com domain assigned to your account. 
+:::
 The Exchange Admin Center provides a lot of options that we cannot cover in this tutorial like the rule used in our DoNotReply mailbox which automatically deletes all messages arriving in the mailbox. Feel free to explore further options of Exchange Online.
 
 ![<img src="./images/Mail_DoNotReply.png" width="500" />](./images/Mail_DoNotReply.png?raw=true)
@@ -69,8 +74,9 @@ Each delegate user needs to have a valid license assigned that contains Exchange
 
 ![<img src="./images/Mail_ActivateMail.png" width="500" />](./images/Mail_ActivateMail.png?raw=true)
 
-> **Important** - Each shared mailbox results in a new user in your Microsoft 365 Admin Center. This user is not supposed to be used for logins and the password must not be changed! Furthermore, you don't need to assign any licenses to the shared mailbox users. 
-
+:::caution **Important** 
+Each shared mailbox results in a new user in your Microsoft 365 Admin Center. This user is not supposed to be used for logins and the password must not be changed! Furthermore, you don't need to assign any licenses to the shared mailbox users. 
+:::
 
 ## 4. Create an Application Registration
 
@@ -90,8 +96,9 @@ You can use a standard Azure Active Directory **Application Registration** to se
 
 4.4. Your Application Registration is created and you are redirected to the Overview page. 
 
-> **Hint** - Note the **Application (client) ID** and the **Directory (tenant) ID**. You will need these values for authentication in your sample application.
-
+:::tip **Hint** 
+Note the **Application (client) ID** and the **Directory (tenant) ID**. You will need these values for authentication in your sample application.
+:::
 ![<img src="./images/Azure_AppReg04.png" width="500" />](./images/Azure_AppReg04.png?raw=true)
 
 4.5. Switch to **API permissions** and click on **Add a permission**.
@@ -104,8 +111,9 @@ You can use a standard Azure Active Directory **Application Registration** to se
 
 4.7. This is a very powerful permission, as it is set on Application-level and allows you to send e-mails on behalf of any user in your directory. For that reason, **admin consent** has to be given for this permission. 
 
-> **Important** - Please check the official [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access) to learn more about how to restrict the application's access permissions to certain mailboxes! 
-
+:::caution **Important** 
+Please check the official [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access) to learn more about how to restrict the application's access permissions to certain mailboxes! 
+:::
 ![<img src="./images/Azure_AppReg07.png" width="500" />](./images/Azure_AppReg07.png?raw=true)
 
 4.8. You can remove the **User.Read** permission and admin consent from the API permissions list as you can see in the below screenshots. 
@@ -181,8 +189,9 @@ client.api('/users/<<mail.address@of.mailbox>>/sendMail')   // Shared mailbox e-
 
 5.7. You can now integrate the above coding into your application by using e.g., a new helper class in your Business Application Service. 
 
-> **Important** - Make sure to store your credential values securely in your SAP Credential Store and rotate the values on a regular basis! Furthermore, you might think about improving your security setup by using an X.509 certificate to obtain the access token instead of Client Credentials. 
-
+:::caution **Important** 
+Make sure to store your credential values securely in your SAP Credential Store and rotate the values on a regular basis! Furthermore, you might think about improving your security setup by using an X.509 certificate to obtain the access token instead of Client Credentials. 
+:::
 ## 6. Resource Owner Password Flow
 
 Although Microsoft does not recommend the usage of the following alternative approach ([see here](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc)), we still want to quickly mention it here. Instead of using the Client Credentials Flow in combination with permissions on Application-level, you can also make use of the Resource Owner Password Flow, combined with Delegate permissions. 

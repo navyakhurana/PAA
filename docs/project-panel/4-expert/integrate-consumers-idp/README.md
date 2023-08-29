@@ -15,8 +15,9 @@ In this part of the **Expert Features** you will learn how to integrate Consumer
     - [3b. Integration with SAP XSUAA](#3b-integration-with-sap-xsuaa)
   - [4. Further Information](#4-further-information)
 
-> **Hint** - We highly appreciate your feedback/input/problems/issues in case you try to set up such a scenario yourself. 
-
+:::tip **Hint** 
+We highly appreciate your feedback/input/problems/issues in case you try to set up such a scenario yourself. 
+:::
 
 ## 1. Introduction
 
@@ -28,8 +29,9 @@ In the following, we will discuss different approaches to how such an integratio
 
 ![<img src="./images/CIAS_Architecture.png" width="500" />](./images/CIAS_Architecture.png?raw=true)
 
-> **Important** - All approaches will require coding changes in the application logic, as the current implementation relies on the In-App User Management to create users in SAP IAS and/or Shadow Users in SAP XSUAA. 
-
+:::caution **Important** 
+All approaches will require coding changes in the application logic, as the current implementation relies on the In-App User Management to create users in SAP IAS and/or Shadow Users in SAP XSUAA. 
+:::
 
 ## 2. Provider-driven integration
 
@@ -48,8 +50,9 @@ As the SaaS users will no longer be maintained in the In-App User Management, th
 
 Instead of an In-App User Management, you can e.g., provide your consumers an option to maintain Group Mappings between SAP XSUAA Role Collections and their Active Directory Groups from within the SaaS application. Furthermore, you have to think about a logic to assign **Member** users to projects properly. As users are not maintained within the SaaS application anymore, you can e.g., pass the project assignment as an additional attribute in the SAML assertion. Alternatively, you can still maintain the assignments in a separate table and offer administrators an option to select from all available SAP XSUAA Shadow Users. 
 
-> **Hint** - When a user authenticates using a Consumer IdP and the central SAP IAS tenant (acting as a proxy), a Shadow User will be automatically created in SAP XSUAA. 
-
+:::tip **Hint** 
+When a user authenticates using a Consumer IdP and the central SAP IAS tenant (acting as a proxy), a Shadow User will be automatically created in SAP XSUAA. 
+:::
 Keeping potential code changes in mind, this is the first option to outsource the user management and role assignment to the consumers and their existing Identity Providers. 
 
 A great step-by-step guide on how to set up a **Corporate Identity Provider** in SAP IAS can be found in the Tutorial Navigator ([click here](https://developers.sap.com/tutorials/cp-ias-azure-ad.html)) or in the SAP HANA Academy ([click here](https://www.youtube.com/watch?v=4qo8acsxRgU)). Further details on the integration of SAP BTP with Microsoft Azure Active Directory can be found in the official Microsoft documentation ([click here](https://learn.microsoft.com/en-us/azure/active-directory/fundamentals/scenario-azure-first-sap-identity-integration)).
@@ -76,8 +79,9 @@ Similar to using a central SAP IAS tenant to manage the users and Corporate Iden
 
 Compared to a central SAP IAS instance, you can give your SaaS Consumer access to the consumer-specific SAP IAS tenant. This allows your SaaS Consumer to manage Corporate Identity Providers, groups, and users themselves. When setting up the respective Consumer SAP BTP Subaccounts, make sure to select the consumer-specific SAP IAS tenant when setting up the SAP XSUAA - SAP IAS trust.  
 
-> **Important** - You are charged a fee for additional SAP IAS tenants, which you will need to cross-charge your SaaS consumer!
-
+:::caution **Important** 
+You are charged a fee for additional SAP IAS tenants, which you will need to cross-charge your SaaS consumer!
+:::
 Once you requested an additional consumer-specific SAP IAS tenant, the required implementation steps are similar to - [Central SAP IAS tenant](README.md#2a-central-sap-ias-tenant) - and also respective coding changes are required in this scenario as the provided In-App User Management cannot be used anymore.
 
 
@@ -97,14 +101,16 @@ When a SAP IAS tenant is mapped to a different SAP CRM customer number, it will 
 
 ### 3b. Integration with SAP XSUAA
 
-> **Important** - The direct integration between SAP XSUAA and Consumer IdPs should not be your preferred solution. If possible, make use of a (central/consumer) SAP Identity Authentication Service tenant acting as a proxy. 
-
+:::caution **Important** 
+The direct integration between SAP XSUAA and Consumer IdPs should not be your preferred solution. If possible, make use of a (central/consumer) SAP Identity Authentication Service tenant acting as a proxy. 
+:::
 A variation of - [Integration with SAP IAS](README.md#3a-integration-with-sap-ias) - is to completely skip SAP IAS and directly federate SAP XSUAA authentication requests to the Consumer Identity Providers. Therefore, you need to set up a SAML trust between the Consumer Subaccounts and the Consumer Identity Providers (e.g., Azure Active Directory). While no SAP IAS tenant and Corporate Identity Provider configuration is required anymore, you still need to establish a Group Mapping and again, re-think the assignment of **Member** users to projects. 
 
 Check the following blog post ([click here](https://blogs.sap.com/2019/03/07/how-to-integrate-azure-ad-with-sap-cloud-platform-cloud-foundry/)) or SAP HANA Academy tutorial ([click here](https://www.youtube.com/watch?v=KvAzoGHKPA0)) to find detailed instructions on how to directly integrate an Identity Provider (in this case Azure Active Directory) with SAP XSUAA. 
 
-> **Hint** - Also the blog post is targeting Cloud Foundry environments, the same approach holds true for Kyma based scenarios. 
-
+:::tip **Hint** 
+Also the blog post is targeting Cloud Foundry environments, the same approach holds true for Kyma based scenarios. 
+:::
 Below you can find screenshots showing a respective trust setup and sample Group Mapping between SAP XSUAA and a Consumer IdP (in this case Azure Active Directory). For further screenshots also check [Central SAP IAS tenant](README.md#2a-central-sap-ias-tenant) as most process steps are similar. 
 
 |  |  |  |

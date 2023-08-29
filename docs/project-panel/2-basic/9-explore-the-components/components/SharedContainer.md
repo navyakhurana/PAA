@@ -10,15 +10,16 @@ To have the ability to share data among your Consumer tenants, a shared database
 
 This concept is building on the cross-container-access capabilities of SAP HANA Cloud HDI database containers. In this sample scenario, the shared database container is used to share a sample table and master data along the Tenant database containers.
 
-[<img src="./images/CD_Flow.png" width="500"/>](./images/CD_Flow.png?raw=true)
+![<img src="./images/CD_Flow.png" width="500"/>](./images/CD_Flow.png?raw=true)
 
 
 ## 1. Helm Chart definition
 
 The HDI container required for the shared data is defined in the *values.yaml* file ([click here](../../../../code/charts/sustainable-saas/values.yaml)) of our Umbrella Chart and created during the deployment of the SaaS application to the Provider Subaccount. 
 
-> **Hint** - For the Tenant database container instances, SAP Service Manager (container plan) takes care of the whole container lifecycle. Therefore, there is no need to specify additional HDI resources for these containers in the *values.yaml* file. 
-
+:::tip **Hint** 
+For the Tenant database container instances, SAP Service Manager (container plan) takes care of the whole container lifecycle. Therefore, there is no need to specify additional HDI resources for these containers in the *values.yaml* file. 
+:::
 ```yaml
 # SAP HANA Cloud HDI Container
 # Required for shared data model deployment
@@ -76,8 +77,9 @@ env:
 
 The concept of cross-container-access is based on a trusted relation between containers. Still, to make the shared database container accessible from your tenant-specific database containers, some prerequisites need to be fulfilled. 
 
->**Important** - The concept of cross-container-access is very powerful but not trivial. Please refer to the official documentation in SAP Help to learn more ([click here](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/4adba34bd86544a880db8f9f1e32efb7.html?&locale=en-US)).
-
+:::caution **Important** 
+The concept of cross-container-access is very powerful but not trivial. Please refer to the official documentation in SAP Help to learn more ([click here](https://help.sap.com/docs/HANA_CLOUD_DATABASE/b9902c314aef4afb8f7a29bf8c5b37b3/4adba34bd86544a880db8f9f1e32efb7.html?&locale=en-US)).
+:::
 **db-com/data-model.cds**
 ```json
 context susaas.common {
@@ -187,8 +189,9 @@ extend sap.common.Countries {}
 
 Please keep in mind that for database container backups, cross-container access requirements cause some additional complexity. If you export a Tenant database container and plan to import it again, you first need to ensure that the technical users of the new target database container (which you're planning to import the backup in) need to have the correct shared database container roles assigned (see hdbgrants details above) before applying the backup. 
 
-> **Hint** - The hdbgrants files will not be applied in this case and you need to assign roles manually using the HDI Container APIs of the shared database container ([click here](https://help.sap.com/docs/SAP_HANA_PLATFORM/3823b0f33420468ba5f1cf7f59bd6bd9/40ba784dcaf44989b23f7eda316b4a0b.html?locale=en-US)). 
-
+:::tip **Hint** 
+The hdbgrants files will not be applied in this case and you need to assign roles manually using the HDI Container APIs of the shared database container ([click here](https://help.sap.com/docs/SAP_HANA_PLATFORM/3823b0f33420468ba5f1cf7f59bd6bd9/40ba784dcaf44989b23f7eda316b4a0b.html?locale=en-US)). 
+:::
 
 ## 4. Further information
 

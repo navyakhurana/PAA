@@ -38,7 +38,7 @@ If you have multiple routes to the same application, for example `tenant1.<appli
 
 This URL-based method of identifying a Tenant by handling consumer-specific authentication requirements is also depicted in the following visualization. Together with the steps described below, you should get a good idea of how multitenancy in SAP BTP is implemented. 
 
-[<img src="./images/AR_Flow.png" width="800"/>](./images/AR_Flow.png?raw=true)
+![<img src="./images/AR_Flow.png" width="800"/>](./images/AR_Flow.png?raw=true)
 
 1) The application router derives the identity zone identifier from the URL using the `TENANT_HOST_PATTERN` approach described above. Each Consumer Subaccount maps to a unique identity zone and a unique subdomain associated with this identity zone. 
 
@@ -77,19 +77,20 @@ Below you can see two screenshots of the provider service credentials and a toke
 
 **Client Credentials** (Provider subaccount)
 
-[<img src="./images/AR_ProvCred.png" width="400"/>](./images/AR_ProvCred.png?raw=true)
+![<img src="./images/AR_ProvCred.png" width="400"/>](./images/AR_ProvCred.png?raw=true)
 
 **Authorization Token** (Tenant subaccount)
 
-[<img src="./images/AR_SubscrToken.png" width="400"/>](./images/AR_SubscrToken.png?raw=true)
+![<img src="./images/AR_SubscrToken.png" width="400"/>](./images/AR_SubscrToken.png?raw=true)
 
 
 ### 2.2. Authorization & Trust management service - **application** plan
 
 The service plan **application** requires that the xsappname (specified in the xs-security.json or mta.yaml file) is unique in each Tenant (SAP BTP subaccount) to which the application is deployed. This means that an application may be deployed in several SAP BTP subaccounts at the same time but not twice in the same Tenant (unless you modify the xsappname). You would get an error message during the second deployment. 
 
-> **Hint** - In the sample application, the xsappname is dynamically combined with the current Kyma namespace so you can deploy the application to multiple namespaces in the same cluster if you like. 
-
+:::tip **Hint** 
+In the sample application, the xsappname is dynamically combined with the current Kyma namespace so you can deploy the application to multiple namespaces in the same cluster if you like. 
+:::
 The xsappname that is written into the credentials section of the environment is enhanced with a suffix and has the format `<xsappname>!t<tenant index>`. A Tenant index is a running number that the UAA maintains internally. It differs from subaccount to subaccount. 
 
 In a multitenant scenario, the actual application instances only exist in the Provider Subaccount, whereas XSUAA-related objects like scopes, role templates, and role collections are duplicated during the subscription process. Scopes have an equal format `<xsappname>!t<tenant index>.<scope>` in all Consumer Subaccounts e.g. **dev-susaas!t134415.Admin**.

@@ -35,8 +35,9 @@ First of all, you will need Node.js installed on your device. You can find the l
   > **MacOS** -  brew install buildpacks/tap/pack 
   > **Windows** - choco install pack
 
-> **Important** - Please make sure to comply with the respective **license agreements**, especially when using Docker in an enterprise context!
-
+:::caution **Important** 
+Please make sure to comply with the respective **license agreements**, especially when using Docker in an enterprise context!
+:::
 Before you continue, make sure you can successfully execute the following commands in your command line. Make sure to create a new command line instance for testing the commands. This ensures **Docker** and the **Pack CLI** have been added to your Environment Variables. In case of errors, please make sure that you followed all steps of the instructions provided. 
 
 ```sh
@@ -53,9 +54,13 @@ CLI for building apps using Cloud Native Buildpacks
 
 Furthermore, please make sure you have access to a Container Registry (e.g. DockerHub) of your choice. You can use the following Docker CLI command to login to your Container Registry. Please consult the documentation of your preferred Container Registry provider to learn more about login requirements.
 
-> **Hint** - If you do not have access to a Container Registry yet, please create a new (free) account e.g., on DockerHub ([click here](https://hub.docker.com/)) or choose a hyperscaler Container Registry by AWS, Azure or GCP. Alternatively, you can also use GitHub to store and manage your Docker images ([learn more](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)).
+:::tip **Hint** 
+If you do not have access to a Container Registry yet, please create a new (free) account e.g., on DockerHub ([click here](https://hub.docker.com/)) or choose a hyperscaler Container Registry by AWS, Azure or GCP. Alternatively, you can also use GitHub to store and manage your Docker images ([learn more](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)).
+:::
 
-> **Important** - Please be aware of the fact, that free service providers like DockerHub, only allow you to store a limited number of **private** Docker Images. If your Docker Containers contain sensible information (which they shouldn't) or intellectual property, make sure to choose a service plan or provider that allows you to create **private** Docker Images for your purpose!
+:::caution **Important** 
+Please be aware of the fact, that free service providers like DockerHub, only allow you to store a limited number of **private** Docker Images. If your Docker Containers contain sensible information (which they shouldn't) or intellectual property, make sure to choose a service plan or provider that allows you to create **private** Docker Images for your purpose!
+:::
 
 ```sh
 > docker login
@@ -84,16 +89,18 @@ npm install --include=dev
 cds build --production
 ```
 
-> **Important** - If you want to build your project including sample content, you have to run the following command! This should only be done for testing purposes and is not recommended for productive deployments as existing table content will be overwritten! 
-
+:::caution **Important** 
+If you want to build your project including sample content, you have to run the following command! This should only be done for testing purposes and is not recommended for productive deployments as existing table content will be overwritten! 
+:::
 ```sh
 cds build --profile production,csv
 ```
 
 2.3. Build the available UI5 modules by running the following npm command. This will take a few minutes for the first build (as further npm dependencies are installed). Consecutive builds will be much faster.
 
-> **Hint** - This build process, will use the official [UI5 Tools](https://sap.github.io/ui5-tooling/stable/) to build your applications and copies them into the *html5-deployer* directory for deployment. 
-
+:::tip **Hint** 
+This build process, will use the official [UI5 Tools](https://sap.github.io/ui5-tooling/stable/) to build your applications and copies them into the *html5-deployer* directory for deployment. 
+:::
 ```sh
 npm run ui:apps
 ```
@@ -114,12 +121,14 @@ While in Cloud Foundry, there is no requirement to containerize your application
 
 These components will be containerized in Docker Images in the following steps. To simplify this process, we are relying on [SAP Standard Docker Images](https://hub.docker.com/u/sapse) or so-called [Cloud Native Buildpacks](https://buildpacks.io/). Using **Cloud Native Buildpacks**, saves you major effort compared to creating and maintaining your own **Dockerfiles**. Instead you will always use latest images provided by the Cloud Native Buildpacks project, which is also part of the [Cloud Native Computing Foundation](https://www.cncf.io/). If you are new to topics like Kubernetes, we strongly recommend to check out both pages to learn more!
 
-> **Important** - To learn more about how the Docker Images for the various components are being build, read the next part of this chapter. 
-
+:::caution **Important** 
+To learn more about how the Docker Images for the various components are being build, read the next part of this chapter. 
+:::
 3.1. First of all, open the *package.json* file in the project root (code directory) and update the desired prefix for your Docker Images.
 
->**Hint** - If you use e.g. DockerHub as a Container Registry, please put in your **username** (e.g., johndoe) here. If you use the GitHub Container Registry, the prefix will look similar to **ghcr.io/\<namespace\>** (e.g. ghcr.io/johndoe). All generated Docker Images will be automatically prefixed with this label!
-
+:::tip**Hint** 
+If you use e.g. DockerHub as a Container Registry, please put in your **username** (e.g., johndoe) here. If you use the GitHub Container Registry, the prefix will look similar to **ghcr.io/\<namespace\>** (e.g. ghcr.io/johndoe). All generated Docker Images will be automatically prefixed with this label!
+:::
 ```json
 "config":{
     "imagePrefix": "<yourPrefix>"
@@ -128,8 +137,9 @@ These components will be containerized in Docker Images in the following steps. 
 
 3.2. Run the following npm script (from within your code directory), which will *build* all Docker Images using **SAP Standard Docker Images** and **Cloud Native Buildpacks**. 
 
-> **Hint** - Using devices with ARM chips (e.g., Apple M1) the build process involving Cloud Native Buildpacks might take several minutes. Please do not immediately cancel the build if things appear to be stuck, but wait some time for the process to continue (especially while the SBOM is being generated)!
-
+:::tip **Hint** 
+Using devices with ARM chips (e.g., Apple M1) the build process involving Cloud Native Buildpacks might take several minutes. Please do not immediately cancel the build if things appear to be stuck, but wait some time for the process to continue (especially while the SBOM is being generated)!
+:::
 ```sh
 npm run build:all
 ```
@@ -174,8 +184,9 @@ This simplifies the containerization process and allows you to build a Docker Im
 "build:api": "cross-var pack build sample/susaas-api --path gen/api --builder paketobuildpacks/builder:base --buildpack gcr.io/paketo-buildpacks/nodejs --env BP_NODE_RUN_SCRIPTS="
 ```
 
->**Hint** - The *paketobuildpacks/builder:base* provides a minimal Docker Image based on Ubuntu, with the addition of a few packages (so-called "mixins") ([click here](https://hub.docker.com/r/paketobuildpacks/builder) for more details).
-
+:::tip**Hint** 
+The *paketobuildpacks/builder:base* provides a minimal Docker Image based on Ubuntu, with the addition of a few packages (so-called "mixins") ([click here](https://hub.docker.com/r/paketobuildpacks/builder) for more details).
+:::
 
 ### Backend Service (srv)
 
@@ -200,8 +211,9 @@ The Application Router Docker Image is based on SAP's standard *sapse/approuter*
 
 Therefore, we created a tiny Dockerfile which is using the official SAP Docker Image (*sapse/approuter*), and only adds our own static Application Router resources to the working directory of the Docker Image. In this case, the custom Dockerfile is required to copy the whole content of the *router* directory, except for the package.json (part of .dockerignore file) to the resulting Docker Image. 
 
-> **Hint** - The package.json file is part of the directory for local testing purposes only. As the SAP-managed Docker Image *sapse/approuter* already contains a package.json file, we will reuse the start script of this SAP-provided package.json scripts.
-
+:::tip **Hint** 
+The package.json file is part of the directory for local testing purposes only. As the SAP-managed Docker Image *sapse/approuter* already contains a package.json file, we will reuse the start script of this SAP-provided package.json scripts.
+:::
 **Dockerfile based on sapse/approuter Docker Image** ([/code/router/Dockerfile](../../../code/router/Dockerfile))
 
 ```Dockerfile
@@ -226,8 +238,9 @@ CMD [ "npm", "start" ]
 
 **Build Docker Image based on Dockerfile above** ([/code/package.json](../../../code/package.json))
 
-> **Hint** - This following npm script will build a Docker Image based on the Dockerfile located in the *./router* directory and will tag it with *sample/susaas-router*. "sample" will be replaced by the prefix provided in step 3.1. 
-
+:::tip **Hint** 
+This following npm script will build a Docker Image based on the Dockerfile located in the *./router* directory and will tag it with *sample/susaas-router*. "sample" will be replaced by the prefix provided in step 3.1. 
+:::
 ```json
 "build:router": "cross-var docker build -t sample/susaas-router ./router"
 ```
@@ -276,8 +289,9 @@ The *resources* folder (within the app/html5-deployer directory) contains the zi
 
 Similar to the Application Router, the Dockerfile residing in the *app/html5-deployer* folder, copies the *html5-deployer* directory content into the working directory of the resulting Docker Image, which is based on the SAP-managed *sapse/html5-app-deployer* image.
 
-> **Hint** - The package.json file is part of the *app/html5-deployer* directory for local testing purposes only. As the Docker Base Image *sapse/html5-app-deployer* already contains a corresponding package.json file, we will reuse the start script of this SAP-provided package.json.
-
+:::tip **Hint** 
+The package.json file is part of the *app/html5-deployer* directory for local testing purposes only. As the Docker Base Image *sapse/html5-app-deployer* already contains a corresponding package.json file, we will reuse the start script of this SAP-provided package.json.
+:::
 **Dockerfile based on sapse/html5-app-deployer Docker Image** ([/code/app/html5-deployer/Dockerfile](../../../code/app/html5-deployer/Dockerfile))
 
 ```Dockerfile
@@ -327,7 +341,9 @@ Now you should be covered and well in the know about the different approaches us
 
 To allow Helm to pull your Docker Images during the deployment process, you need to push them to a Container Registry of your choice. 
 
-> **Hint** - If you are using a **non-public** Docker Registry, we assume you know how to handle the required secrets or access codes. In these scenarios, you might need to adapt the respective npm scripts in the *package.json* file.
+:::tip **Hint** 
+If you are using a **non-public** Docker Registry, we assume you know how to handle the required secrets or access codes. In these scenarios, you might need to adapt the respective npm scripts in the *package.json* file.
+:::
 
 After all your Docker Images are build using **Cloud Native Buildpacks** or **SAP Standard Images**, you can push them to your Container Registry. To do so, please ensure you successfully logged in to your registry of choice (*docker login*) before running the following npm script. 
 
@@ -337,7 +353,9 @@ npm run push:all
 
 As an alternative to pushing all Docker Images at once, you can again push images separately by running the component specific npm script.
 
-> **Hint** - This can be useful if you e.g., updated only a single Docker Image and will save you some time. 
+:::tip **Hint** 
+This can be useful if you e.g., updated only a single Docker Image and will save you some time. 
+:::
 
 ```sh
 npm run push:srv

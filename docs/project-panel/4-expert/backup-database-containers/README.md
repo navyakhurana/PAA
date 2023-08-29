@@ -110,8 +110,9 @@ Especially for the last prerequisite, please check the [Dependencies and privile
 
 4.1. Go to SAP HANA Database Explorer and log in with an HDI Container (Group) Admin of the container you want to restore your backup in. 
 
-> **Important** - The database container in which you want to restore your backup, already has to exist before doing the following steps! Also, check the next chapter to learn about pre-import prerequisites in case of cross-container-access scenarios!
-
+:::caution **Important** 
+The database container in which you want to restore your backup, already has to exist before doing the following steps! Also, check the next chapter to learn about pre-import prerequisites in case of cross-container-access scenarios!
+:::
 ![<img src="./images/import_005.png" width="500" />](./images/import_005.png?raw=true)
 
 4.2. Right-click the root of this user's database connection and select **Import HDI Container**. 
@@ -136,8 +137,9 @@ Especially for the last prerequisite, please check the [Dependencies and privile
 
 4.7. Wait until the upload has finished.
 
-> **Hint** - As of today, you can only import to a new database container using the user interface, but it's not possible to import data into an existing database container. Therefore, an SQL command needs to be executed instead of clicking on **Import HDI Container**. 
-
+:::tip **Hint** 
+As of today, you can only import to a new database container using the user interface, but it's not possible to import data into an existing database container. Therefore, an SQL command needs to be executed instead of clicking on **Import HDI Container**. 
+:::
 ![<img src="./images/import_060.png" width="500" />](./images/import_060.png?raw=true)
 
 4.8. Refresh the schema content of your HDI Container Group Admin. 

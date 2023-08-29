@@ -22,8 +22,9 @@ Please make sure to conduct the steps of this chapter with a **tenant user** tha
 
 Go to your Tenant Subaccount and click on **Instances and Subscriptions**. Login using the Tenant administrator user you have created in step 3.5. of [Subscribe a Tenant Subaccount](../5-subscribe-consumer-subaccount/README.md).
 
-> **Hint** - If you are already logged in to the application, you can open the application in incognito mode to log in with a different user. 
-
+:::tip **Hint** 
+If you are already logged in to the application, you can open the application in incognito mode to log in with a different user. 
+:::
 After login you should see the home page as shown below.
 
  ![<img src="./images/home-page.png" width="600"/>](./images/home-page.png?raw=true)
@@ -52,8 +53,9 @@ After login you should see the home page as shown below.
 
 3.2. Choose a product from the value help and press **Continue**. The project is prefilled automatically. 
 
-> **Hint** - If you cannot see products in the value help, make sure you've completed the **Push data to the SaaS API** section of the tutorial ([click here](../6-push-data-to-saas-api/README.md))!
-
+:::tip **Hint** 
+If you cannot see products in the value help, make sure you've completed the **Push data to the SaaS API** section of the tutorial ([click here](../6-push-data-to-saas-api/README.md))!
+:::
  ![<img src="./images/fill-assessment-info.png" width="600"/>](./images/fill-assessment-info.png?raw=true)
 
 3.3. Enter a mandatory description and press **Create**.
@@ -115,8 +117,9 @@ Feel free to make use of the **Prefill** button available in each Assessment tab
 
 4.3. Fill in the mandatory values as shown below.
 
-> **Hint** - In the Basic Version the email given below should exist in SAP ID Service.
-
+:::tip **Hint** 
+In the Basic Version the email given below should exist in SAP ID Service.
+:::
  ![<img src="./images/fill-user-values.png" width="600"/>](./images/fill-user-values.png?raw=true)
 
 4.4. See the created user.

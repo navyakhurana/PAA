@@ -24,8 +24,9 @@ In this part of the tutorial, you will learn how your SaaS consumers can connect
   - [11. Further Information](#11-further-information)
 
 
-> **Important** - The CAP payload size limitation for this sample has been increased to 50 MB. Please check the *server.js* file ([click here](../../../code/api/server.js)) to remove or modify this setting if required. Keep in mind that when using SAP API Management, different file size limits apply and you will need to using streaming features to upload larger files. 
-
+:::caution **Important** 
+The CAP payload size limitation for this sample has been increased to 50 MB. Please check the *server.js* file ([click here](../../../code/api/server.js)) to remove or modify this setting if required. Keep in mind that when using SAP API Management, different file size limits apply and you will need to using streaming features to upload larger files. 
+:::
 
 ## 1. Architecture
 
@@ -40,7 +41,8 @@ See the relevant part of the solution architecture below:
 
 You will need a NetWeaver system that contains the Enterprise Procurement Model (EPM). The EPM model should be available in the NetWeaver stacks (EHP 2, > 7.3) and in ABAP Platforms (> 1809).
 
-> **Hint** - EPM is a sample data model containing sales and purchase orders for various products, which can be generated using a dedicated ABAP transaction. Please check if you can access the transaction **SEPM_DG** in your system, which is the respective Data Generator for the EPM model. Furthermore, please ensure the development package **RS_TCO_EPM** is available in the system as views from this package will be used by the sample code
+:::tip **Hint** EPM is a sample data model containing sales and purchase orders for various products, which can be generated using a dedicated ABAP transaction. Please check if you can access the transaction **SEPM_DG** in your system, which is the respective Data Generator for the EPM model. Furthermore, please ensure the development package **RS_TCO_EPM** is available in the system as views from this package will be used by the sample code
+:::
 
 - You will need advanced authorizations in your system to e.g.,
     - configure and HTTP destination in **SM59**.
@@ -121,8 +123,9 @@ Select **DEFAULT** as the type. This Client Profile is required when setting up 
 - Resource Access Authentication: Header Field
 - Selected Grant Type: Client Credentials
 
-> **Important** - Note that the proxy settings must be configured beforehand.
-
+:::caution **Important** 
+Note that the proxy settings must be configured beforehand.
+:::
 6.7. Your configuration should look similar to the following (click to enlarge).
 
  ![<img src="./images/S4_OAuth03.png" width="500" />](./images/S4_OAuth03.png?raw=true)
@@ -155,8 +158,8 @@ The ABAP logic pushing the EPM sample data to the SaaS API will make use of a de
 
 7.6. Select **OAuth Settings** and provide the profile and configuration as follows:
 
-  > **Important** - Setting the OAuth Settings within **SM59** requires an SAP S/4HANA system of release 2021 or higher. For earlier releases, please check for blogs and tutorials explaining how to setup the OAuth2 flow as part of your ABAP coding. Search the community for **Configuring OAuth 2.0 and Creating an ABAP Program That Uses OAuth 2.0 Client API** to get an idea how to setup things in your system if required.
-  
+:::caution **Important** Setting the OAuth Settings within **SM59** requires an SAP S/4HANA system of release 2021 or higher. For earlier releases, please check for blogs and tutorials explaining how to setup the OAuth2 flow as part of your ABAP coding. Search the community for **Configuring OAuth 2.0 and Creating an ABAP Program That Uses OAuth 2.0 Client API** to get an idea how to setup things in your system if required.
+:::
   - Profile : ZSUSAAS_PUSH_API or the profile name you specified
   - Configuration: SUSAAS_PUSH_API_S4 or the configuration you specified
 
@@ -180,8 +183,9 @@ Let's now put the puzzle pieces together and push some data using the SaaS API a
 
 Please go to your ABAP Development Tools in eclipse or use SE80 transaction in your SAP GUI to create two structures required for the upload process.
 
-> **Important** - Please double-check if the structure field names and types match with the corresponding target views **EPM_V_PROD** and **EPM_V_SALES_DATA**. We cannot guarantee consistency across all releases. 
-
+:::caution **Important** 
+Please double-check if the structure field names and types match with the corresponding target views **EPM_V_PROD** and **EPM_V_SALES_DATA**. We cannot guarantee consistency across all releases. 
+:::
  ![<img src="./images/S4_Dev01.png" width="500" />](./images/S4_Dev01.png?raw=true)
 
 **Structure ZSUSAAS_S_PRODUCTS_UPL** 
@@ -247,8 +251,9 @@ Please also map the required Currency/quantity fields mapping as shown below.
 
 Create a new ABAP Objects class in your ZSUAAS development package. You can find the required code snippet in the **code** sub-directory ([click here](./code/)). 
 
-> **Hint** - This helper class is used in your sample programs to support the relevant upload process. It is a generic implementation that can be used to send data to different API endpoints using the same coding for various entities like in our case - Products and Sales Orders. 
-
+:::tip **Hint** 
+This helper class is used in your sample programs to support the relevant upload process. It is a generic implementation that can be used to send data to different API endpoints using the same coding for various entities like in our case - Products and Sales Orders. 
+:::
 **Class ZSUSAAS_CL_UPLOAD**  
 ([click here](./code/ZSUSAAS_CL_UPLOAD.CLAS) for the code)
 

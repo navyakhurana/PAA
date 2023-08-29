@@ -29,9 +29,10 @@ the workloads in your SAP Kyma Runtime.
 Go and login your [](https://console.cloud.google.com/).
 After the login go to your *Network Services* and Click *DNS Zones* as shown below to see your domain. 
 
-> **Important**: If you have already a public DNS Zone for your domain which you will use. You should skip this step. 
-> For example, in the picture above, for DNS name *google.sap-demo.com* the zone is already created and it is public.
-
+:::caution **Important** 
+If you have already a public DNS Zone for your domain which you will use. You should skip this step. 
+For example, in the picture above, for DNS name *google.sap-demo.com* the zone is already created and it is public.
+:::
 Click the *Create Zone* button, if you do not have already a DNS Zone for your domain.
 
 ![<img src="./images/gcp-dns-zone-overview.png" width="500" />](./images/gcp-dns-zone-overview.png?raw=true)
@@ -63,8 +64,9 @@ In this step, you need to go to your domain registrar, and modify existing names
 
 Since it may vary across different domain registrars, you should check with your domain registrar about how to do the DNS propagation.
 
-> **Warning**: After you modified your DNS nameservers, it might take up to 48 hours to propagete. There is no exact way to tell when propagation is complete for you as it depends on different factors. You can use [GSuite-Toolbox Dig](https://toolbox.googleapps.com/apps/dig/) to check your propagation status.
-
+:::warning **Warning** 
+After you modified your DNS nameservers, it might take up to 48 hours to propagete. There is no exact way to tell when propagation is complete for you as it depends on different factors. You can use [GSuite-Toolbox Dig](https://toolbox.googleapps.com/apps/dig/) to check your propagation status.
+:::
 
 ## 4. Create a service account on your  
 
@@ -150,8 +152,9 @@ spec:
       - '*.kyma.<yourdomain>' ## replace this line in original domain
 ```
 
-> **Hint** : For other supported DNS providers, please refer [here](https://gardener.cloud/docs/extensions/others/gardener-extension-shoot-dns-service/docs/usage/dns_names/). 
-
+:::tip **Hint** 
+For other supported DNS providers, please refer [here](https://gardener.cloud/docs/extensions/others/gardener-extension-shoot-dns-service/docs/usage/dns_names/). 
+:::
 
 ### 6.1. Create DNS Provider 
 

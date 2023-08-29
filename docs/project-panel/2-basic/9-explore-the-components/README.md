@@ -17,15 +17,17 @@ After you have deployed the sample application the following components will be 
 
 This part of the tutorial will provide deeper insights for the different components and lets you build up some expert knowledge about topics like **Service Brokers** or **Multitenancy**. The screenshot below shows the architecture of the **Basic Version** using **Free (Tier) service plans** of your own **Pay-as-you-Go** (PAYG) or **CPEA** account.
 
-> **Hint** - While the Basic Version of the application can also be deployed to **Trial** accounts, we highly recommend to use one of the SAP BTP account types mentioned above. 
-
+:::tip **Hint** 
+While the Basic Version of the application can also be deployed to **Trial** accounts, we highly recommend to use one of the SAP BTP account types mentioned above. 
+:::
  ![<img src="./images/basic-arch1.png" width="700"/>](./images/basic-arch1.png?raw=true)
 
 
 ## 1. Application Router 
 
-> **Important** - Find more details in the [Multitenancy Readme](./components/Multitenancy.md) Reamde document!
-
+:::caution **Important**
+Find more details in the [Multitenancy Readme](./components/Multitenancy.md) Reamde document!
+:::
 The Application Router is the single point of entry for most applications running in SAP BTP. An Application Router can be used to serve static content, authenticate users, rewrite URLs, and forward or proxy requests to other microservices while propagating user and Tenant information.
 
 As of today, each multitenant application has to deploy its own Application Router, authorizing and routing requests of all Tenants to the SaaS application. The Application Router is able to determine the Tenant identifier out of the URL and then forwards the authentication request to the User Account and Authentication \(UAA\) service of the related identity (xsuaa) zone.
@@ -44,15 +46,17 @@ To learn more about SAP Fiori Elements please check out the excellent [**SAP Fio
 
 ## 3. Business Application Service
 
-> **Important** - Find more details in the [Helper Classes](./components/HelperClasses.md) document!
-
+:::caution **Important** 
+Find more details in the [Helper Classes](./components/HelperClasses.md) document!
+:::
 The service layer of the SaaS sample application has been developed using the **CAP** framework. It provides OData services for the UI modules and has built-in support for multitenancy using an SAP HANA Cloud database. Furthermore, it provides subscription callbacks required for Tenant onboarding. While the definition of OData services and custom handlers is straightforward, most of the interesting code snippets can be found in the **srv/utils** directory, providing functions and classes used for the automation of subscription requirements or user management. The Business Application Service also contains the annotations required by SAP Fiori Elements for automatically rendering a proper UI. 
 
 
 ## 4. API Service 
 
-> **Important** - Find more information on how to use the SaaS API in the following part of the tutorial ([click here](../6-push-data-to-saas-api/README.md))!
-
+:::caution **Important** 
+Find more information on how to use the SaaS API in the following part of the tutorial ([click here](../6-push-data-to-saas-api/README.md))!
+:::
 For consumers that want to push data to their database container instances, a CAP-based API endpoint has been developed. Tenants can use this API to push data to their own SAP HANA HDI database containers for calculation and analysis purposes. The API is accessible using Client Credentials provided to Consumer Tenants using a service instance of the SaaS API Service Broker. 
 
 Below you can see the available entities of the SaaS API like Product details and Sales Orders.
@@ -64,8 +68,9 @@ Besides the default CRUD methods for entity maintenance, also sample actions are
 
 ## 5. API Broker 
 
-> **Important** - Find more details in the [Service Broker](./components/ServiceBrokers.md) document!
-
+:::caution **Important** 
+Find more details in the [Service Broker](./components/ServiceBrokers.md) document!
+:::
 A service broker is responsible for managing service instances of a certain service implementation running in the SAP BTP environment. Such services instances can then be bound to applications that require the features provided by such a service implementation. For this purpose, a service broker can also be used to create an manage bindings between service instances and applications that want to make use of the service features. 
 
 In this application scenario, we created an API for SaaS subscribers as a backing service. Therefore, the service broker is responsible of creating [SaaS API](#saas-api) service instances in the Subscriber Subaccounts. Using these service instances, subscribers can then create so called service bindings, providing them with Client Credentials to interact with the SaaS API. Both, creating a service instance and corresponding service bindings, is handled by the API Service Broker. 
@@ -81,13 +86,15 @@ Below you can see an overview of the tables deployed into Tenant database contai
 
  ![<img src="./images/DM_Tables.png" width="700"/>](./images/DM_Tables.png?raw=true)
 
-> **Hint** - The **Roles** table is only used for local development scenarios. If running the app in SAP BTP, the roles are automatically fetched from SAP XSUAA and no separate storage is required. 
-
+:::tip **Hint** 
+The **Roles** table is only used for local development scenarios. If running the app in SAP BTP, the roles are automatically fetched from SAP XSUAA and no separate storage is required. 
+:::
 
 ## 7. Shared database container
 
-> **Important** - Find more details in the [Shared Container](./components/SharedContainer.md) document!
-
+:::caution **Important** 
+Find more details in the [Shared Container](./components/SharedContainer.md) document!
+:::
 To have the ability of sharing data among your Consumer tenants, a shared database container is set up for our sample scenario. This allows you as a Provider to maintain e.g., master data (Languages, Countries, Currencies) in a central place and update it simultaneously for all Consumer tenants. This concept is building on the cross-container access capabilities of HDI database containers. 
 
 

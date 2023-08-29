@@ -16,7 +16,9 @@ In this part of the tutorial, you will learn how to subscribe your first Tenant 
 
 1.1. Create a new subaccount for your first SaaS Tenant. Make sure the Tenant Subaccount is in the same region as the Provider Subaccount. 
 
-> **Important** - Especially in production scenarios, we recommend to **keep the unique ID** which is automatically generated for new subaccounts like **tenant-a16ef7** instead of changing it to **tenant**. Otherwise, you might face issues with blocked subaccount subdomains as these must be unique per SAP BTP region (like eu10). You will be able to set a proper customer subdomain when subscribing to the SaaS sample application.
+:::caution **Important** 
+Especially in production scenarios, we recommend to **keep the unique ID** which is automatically generated for new subaccounts like **tenant-a16ef7** instead of changing it to **tenant**. Otherwise, you might face issues with blocked subaccount subdomains as these must be unique per SAP BTP region (like eu10). You will be able to set a proper customer subdomain when subscribing to the SaaS sample application.
+:::
 
  ![<img src="./images/SUB_SubsTenant.png" width="600"/>](./images/SUB_SubsTenant.png?raw=true)
 
@@ -28,8 +30,9 @@ In this part of the tutorial, you will learn how to subscribe your first Tenant 
 
 1.4. Select the **Sustainable SaaS** service from the dropdown list.
 
-> **Hint** - In case of multiple deployments in the same or different Kyma Clusters of subaccounts in the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **\<Release\>-\<Namespace\>-\<ShootName\>**.
-
+:::tip **Hint** 
+In case of multiple deployments in the same or different Kyma Clusters of subaccounts in the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **\<Release\>-\<Namespace\>-\<ShootName\>**.
+:::
  ![<img src="./images/SUB_CreateSub02.png" width="400"/>](./images/SUB_CreateSub02.png?raw=true)
 
 1.5. Select the **default** plan and click on **Next**. 
@@ -59,8 +62,9 @@ Once you subscribed to the SaaS sample application from a Tenant Subaccount, you
 
 2.2. Therefore, go to the **Instances and Subscriptions** menu and click on **Create** again. Select the new **Sustainable SaaS API** service from the list. 
 
-> **Hint** - In case of multiple deployments in the same or different Kyma Clusters of the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **\<Release\>-api-\<Namespace\>-\<ShootName\>**.
-
+:::tip **Hint** 
+In case of multiple deployments in the same or different Kyma Clusters of the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **\<Release\>-api-\<Namespace\>-\<ShootName\>**.
+:::
  ![<img src="./images/SUB_CreateAPI01.png" width="400"/>](./images/SUB_CreateAPI01.png?raw=true)
 
 2.3. Decide on a service plan of your choice either **default** or **premium**. There is no difference in available features for testing purposes. As Runtime Environment select **Other** and give your instance a name like **susaas-api**. Then click on **Create**.
@@ -73,14 +77,16 @@ Once you subscribed to the SaaS sample application from a Tenant Subaccount, you
 
 2.5. You can now create a new **Service Binding** which can be used by your API clients like e.g., SAP S/4HANA or any other third-party tool interacting with the SaaS API. In this sample, the binding is named **default**. 
 
-> **Hint** - Clicking on the service binding will show you the Client Credentials required for API access. 
-
+:::tip **Hint** 
+Clicking on the service binding will show you the Client Credentials required for API access. 
+:::
  ![<img src="./images/SUB_CreateAPI04.png" width="400"/>](./images/SUB_CreateAPI04.png?raw=true)
 
 2.6. Here you see a sample of the Client Credentials containing the actual API endpoint as well as the authentication endpoints, Client ID, and Client Secret which are essential for external access to the SaaS API. 
 
-> **Important** - The Client ID and Secret are unique for each Subscriber Tenant and tokens created using these credentials are used by CAP to identify a Tenant interacting with this API.
-
+:::caution **Important** 
+The Client ID and Secret are unique for each Subscriber Tenant and tokens created using these credentials are used by CAP to identify a Tenant interacting with this API.
+:::
  ![<img src="./images/SUB_CreateAPI05.png" width="400"/>](./images/SUB_CreateAPI05.png?raw=true)
 
 2.7. Keep the last steps in mind, as you will need the Client Credentials again in one of the next tutorial steps.
@@ -90,8 +96,9 @@ Once you subscribed to the SaaS sample application from a Tenant Subaccount, you
 
 Once the SaaS subscription was successful and you created a new API Service Broker instance in the Tenant Subaccount, you (as a Provider) need to set up a first administrative user for your tenant's SaaS application instance.
 
-> **Important** - As the SaaS application offers an in-app user management component, all regular Tenant users can created and managed from within the application. If you create users manually from the SAP BTP Cockpit and assign a role collection, these users will not show up in the in-app user management.  
-
+:::caution **Important** 
+As the SaaS application offers an in-app user management component, all regular Tenant users can created and managed from within the application. If you create users manually from the SAP BTP Cockpit and assign a role collection, these users will not show up in the in-app user management.  
+:::
 
 3.1. To give the first Tenant administrator access to the SaaS instance, please **temporarily** assign the **Susaas Administrator** role collection to your own user to finish the onboarding process in the Tenant Subaccount. This is the only time a **temporary** assignment of a role collection in the SAP BTP Cockpit takes place to complete the onboarding process.
 
@@ -99,8 +106,9 @@ Make sure to select the correct role collection if you deployed the SaaS sample 
 
  ![<img src="./images/SUB_InitApp02.png" width="600"/>](./images/SUB_InitApp02.png?raw=true)
 
-> **Hint** - The **Susaas Administrator** role allows users to create new projects, assign members to projects, and create assessments in the sample application. Furthermore, an administrator can add new users to the tenant's SaaS instance. The **Susaas Member** role collection allows project members to create new assessments in a dedicated project. The **Susaas Extension** role collection allows developers of a Subscriber Tenant to extend the SaaS application using standard CAP extension features for SaaS Apps.
-
+:::tip **Hint** 
+The **Susaas Administrator** role allows users to create new projects, assign members to projects, and create assessments in the sample application. Furthermore, an administrator can add new users to the tenant's SaaS instance. The **Susaas Member** role collection allows project members to create new assessments in a dedicated project. The **Susaas Extension** role collection allows developers of a Subscriber Tenant to extend the SaaS application using standard CAP extension features for SaaS Apps.
+:::
  ![<img src="./images/SUB_InitApp01.png" width="600"/>](./images/SUB_InitApp01.png?raw=true)
 
 3.2. Once the **Susaas Administrator** role collection is temporarily assigned to you as a Provider (doing the initial onboarding), go back to the **Instances and Subscriptions** and open the subscription in an Incognito window so that the latest scopes are available. 
@@ -117,8 +125,9 @@ Make sure to select the correct role collection if you deployed the SaaS sample 
 
 3.5. Provide the first and last name of the first Tenant administrator and a valid e-mail address. This e-mail address has to match an existing SAP ID Service user (e.g., a valid S or P user)! 
 
-> **Hint** - To create a new SAP ID Service account that can be used for this purpose, please follow [this tutorial](https://developers.sap.com/tutorials/hcp-create-trial-account.html).
-
+:::tip **Hint** 
+To create a new SAP ID Service account that can be used for this purpose, please follow [this tutorial](https://developers.sap.com/tutorials/hcp-create-trial-account.html).
+:::
  ![<img src="./images/SUB_InitApp07.png" width="700"/>](./images/SUB_InitApp07.png?raw=true)
 
 3.6. Assign the required **Susaas Administrator** role using the selection field. Click on **Create** to set up the user in the Tenant database container as well as to trigger an automated user creation and role assignment in the Tenant Subaccount. 

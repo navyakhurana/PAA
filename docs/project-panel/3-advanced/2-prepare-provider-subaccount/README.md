@@ -19,8 +19,9 @@ As already mentioned, also the **Advanced Version** of this tutorial can be depl
 
 Please make sure you successfully set up the **Basic Version** of this tutorial before you get started with the **Advanced Version**. All entitlements listed in the Basic Version details ([click here](../../2-basic/2-prepare-provider-subaccount/README.md)) are also required for the Advanced Version.
 
-> **Important** - The Advanced Version **cannot** be deployed to **Trial** environments, as the **Cloud Identity Services** offering is not available and no custom **SAP Identity Authentication** Tenant can be added as trusted Identity Provider. 
-
+:::caution **Important** 
+The Advanced Version **cannot** be deployed to **Trial** environments, as the **Cloud Identity Services** offering is not available and no custom **SAP Identity Authentication** Tenant can be added as trusted Identity Provider. 
+:::
 
 ## 2. Entitlements for Advanced Version
 
@@ -51,10 +52,12 @@ If you want to test the automated data push feature from an existing SAP solutio
 
 In this sample application you will learn how to [push data from the EPM module to the SaaS API](../4-push-data-s4hana-system/README.md) to migrate your business data to the multitenant business application for the sustainability calculations. You can use all **SAP S/4HANA** releases and also any other SAP systems which has an **SAP NetWeaver** stack version higher than 7.3. since these versions, all contain the EPM module by default. 
 
-> **Important** - This steps described in this tutorial assume that you are using **at least the 2021** version of SAP S/4HANA. Some features (like the **OAuth Settings** in SM59) are only available since the SAP S/4HANA 2021 release. If your system is based on an older release, you need to invest some coding effort to implement the respective OAuth flows in ABAP yourself. Please check the community for blogs and tutorials on **Configuring OAuth 2.0 and Creating an ABAP Program That Uses OAuth 2.0 Client API**, which should give you a good idea how to set up a Client Credential flow in ABAP. 
-
-> **Hint** - If you want to check your systems SAP NetWeaver version you can refer [here](https://answers.sap.com/questions/12097568/how-to-check-version-of-netweaver.html).
-
+:::caution **Important** 
+This steps described in this tutorial assume that you are using **at least the 2021** version of SAP S/4HANA. Some features (like the **OAuth Settings** in SM59) are only available since the SAP S/4HANA 2021 release. If your system is based on an older release, you need to invest some coding effort to implement the respective OAuth flows in ABAP yourself. Please check the community for blogs and tutorials on **Configuring OAuth 2.0 and Creating an ABAP Program That Uses OAuth 2.0 Client API**, which should give you a good idea how to set up a Client Credential flow in ABAP. 
+:::
+:::tip **Hint** 
+If you want to check your systems SAP NetWeaver version you can refer [here](https://answers.sap.com/questions/12097568/how-to-check-version-of-netweaver.html).
+:::
 
 ## 4. Limitations of free services plans
 

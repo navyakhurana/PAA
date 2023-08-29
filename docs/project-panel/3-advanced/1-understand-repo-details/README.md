@@ -21,8 +21,9 @@ In the Umbrella Chart, a you need to toggle the creation of additional services 
 
 Enabling the following configuration will create a new **Cloud Identity** Service Instance of type **application** upon *helm install* or *helm upgrade*. Please make sure to read the respective [chapter](../3-central-user-management-ias/README.md) before enabling this scenario!
 
-> **Important** - The Integration with SAP Identity Authentication requires both additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
-
+:::caution **Important** 
+The Integration with SAP Identity Authentication requires both additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
+:::
 ```yaml 
 # SAP Cloud Identity Service Instance
 # Provides an SAP IAS integration for central user management
@@ -35,8 +36,9 @@ identity:
 
 Enabling the following configuration will create a Service Binding between your **Backend Service** and the above **Cloud Identity** Service Instance upon *helm install* or *helm upgrade*. In this case a special binding type (X.509) is required, while for all other Service Bindings we are using the standard Client Credential binding. Please make sure to read the respective [chapter](../3-central-user-management-ias/README.md) before you enable this scenario!
 
-> **Important** - The Integration with SAP Identity Authentication requires both additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
-
+:::caution **Important** 
+The Integration with SAP Identity Authentication requires both additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
+:::
 ```yaml 
 srv:
   port: 8080
@@ -60,8 +62,9 @@ srv:
 
 By enabling and updating the following configuration, your application is ready for the integration with SAP API Management. Please make sure to read the respective [chapter](../5-integrate-sap-api-management/README.md) before you enable this scenario!
 
-> **Important** - The Integration with SAP API Management requires additional entitlements in your SAP BTP Subaccount.
-
+:::caution **Important** 
+The Integration with SAP API Management requires additional entitlements in your SAP BTP Subaccount.
+:::
 ```yaml 
 # SaaS API Workload
 api:
@@ -95,7 +98,9 @@ api:
 
 The additional code snippets serving the **Advanced Version** features of this tutorial, can be found in the **User Management** utilities of our **Backend Service**. Visit the respective utils file ([srv/utils/user-management.js](../../../code/srv/utils/user-management.js)) to find the code snippets described. 
 
-> **Hint** - Compared to the Cloud Foundry version of this tutorial, we decided to merge the **Basic** and **Advanced Version** into the same codeline, by simply checking the availability of the SAP Cloud Identity Service Binding. 
+:::tip **Hint** 
+Compared to the Cloud Foundry version of this tutorial, we decided to merge the **Basic** and **Advanced Version** into the same codeline, by simply checking the availability of the SAP Cloud Identity Service Binding. 
+:::
 
 | **Code Sample** | **Description**  |
 |  :----   |          :---  |

@@ -42,18 +42,21 @@ So, whenever a user is forwarded to SAP IAS for authentication, this default dom
 
 2.5. You can choose a different Key Size if required and provide a Subject Alternative Name (if required - not mandatory). Click on **Download** to download the CSR. 
 
-> **Hint** - It is not possible to upload an existing private key/certificate. 
-
+:::tip **Hint** 
+It is not possible to upload an existing private key/certificate. 
+:::
 ![<img src="./images/CustomDomain03.png" width="400" />](./images/CustomDomain03.png?raw=true)
 
 2.6. Send the CSR to your Certification Authority to receive a signed certificate. 
 
-> **Hint** - You can also use Let's Encrypt for testing purposes. 
-
+:::tip **Hint** 
+You can also use Let's Encrypt for testing purposes. 
+:::
 2.7. Once you received your signed certificate, please open it in a Text Editor and copy the content. In SAP IAS, click on **Certificate** and paste your signed certificate into the respective text box. Double-check the Subject DN value and click on **Save**.
 
-> **Hint** - You can either paste the whole certificate chain (incl. Root and Intermediate certificates), or only the domain certificate itself.
-
+:::tip **Hint** 
+You can either paste the whole certificate chain (incl. Root and Intermediate certificates), or only the domain certificate itself.
+:::
 
 ![<img src="./images/CustomDomain04.png" width="400" />](./images/CustomDomain04.png?raw=true)
 

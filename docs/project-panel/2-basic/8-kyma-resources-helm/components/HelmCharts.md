@@ -68,7 +68,7 @@ For more detailed information, please refer to the official Helm documentation (
 
 As you might see from the repository, the chart directory looks as below.
 
-[<img src="./images/HELM_Chart_Dir.png" width="300"/>](./images/HELM_Chart_Dir.png?raw=true)
+![<img src="./images/HELM_Chart_Dir.png" width="100"/>](./images/HELM_Chart_Dir.png?raw=true)
 
 In following sections you will be inspecting the files and their purposes in the [chart](../../../../code/charts/sustainable-saas/) directory.
 
@@ -108,8 +108,9 @@ The Chart.yaml file contains information about the Helm Chart such as:
         version: 0.1.0
     ```
 
-     > **Hint** - This Helm Chart contains four so-called Subcharts as dependencies. These charts are separate Helm Charts and the relation will be covered in detail by this documentation.
-
+     :::tip **Hint** 
+     This Helm Chart contains four so-called Subcharts as dependencies. These charts are separate Helm Charts and the relation will be covered in detail by this documentation.
+     :::
 
 ### 3.2. [Values.yaml](../../../../code/charts/sustainable-saas/values.yaml) file
 
@@ -219,16 +220,19 @@ Proper schema files can be used to validate template parameters, which becomes e
 
 Templates in Helm Charts are files that define how resources should be deployed to a Kyma Cluster. They are used to generate manifest files for Kyma/Kubernetes resources, such as Pods, Services or Service Bindings, based on chart-defined values and configuration parameters. Templates are written in the **Helm template language(*)** and use its syntax and features to dynamically generate the manifests based on user-defined and default values of the chart.
 
- > **Hint** - (*) Helm Template Language definition according to [Helm official documentation](https://helm.sh/docs/chart_template_guide/functions_and_pipelines/): "While we talk about the "Helm template language" as if it is Helm-specific, it is actually a combination of the Go template language, some extra functions, and a variety of wrappers to expose certain objects to the templates. Many resources on Go templates may be helpful as you learn about templating."
+ :::tip **Hint** 
+ (*) Helm Template Language definition according to [Helm official documentation](https://helm.sh/docs/chart_template_guide/functions_and_pipelines/): "While we talk about the "Helm template language" as if it is Helm-specific, it is actually a combination of the Go template language, some extra functions, and a variety of wrappers to expose certain objects to the templates. Many resources on Go templates may be helpful as you learn about templating."
+ :::
 
 [./code/chart/templates](../../../../code/charts/sustainable-saas/templates/) directory contains the templates of the Helm Chart.
 
-[<img src="./images/HELM_Chart_Temp_Dir.png" width="500"/>](./images/HELM_Chart_Temp_Dir.png?raw=true)
+![<img src="./images/HELM_Chart_Temp_Dir.png" width="500"/>](./images/HELM_Chart_Temp_Dir.png?raw=true)
 
 The [templates](../../../../code/charts/sustainable-saas/templates/) directory contains the template files, which will be converted to Kubernetes resource definitions when running *helm template* or *helm install*. 
 
-> **Important** - Filenames starting with an underscore (_) are assumed not to contain a manifest template inside. These files are not converted to Kubernetes resource definitions, but are available within other chart templates for reuse purposes. Details will be covered in further sections.
-
+:::caution **Important** 
+Filenames starting with an underscore (_) are assumed not to contain a manifest template inside. These files are not converted to Kubernetes resource definitions, but are available within other chart templates for reuse purposes. Details will be covered in further sections.
+:::
 
 ### 3.5. Render Helm Chart to preview the Kyma Resources 
 
@@ -242,8 +246,9 @@ helm template ./code/charts/sustainable-saas
 
 Running this command will provide you a yaml-based console output. This output contains all necessary Kyma/Kubernetes resources to deploy the Sustainable SaaS application on a Kyma Cluster. 
 
-> **Hint** - The example below is (obviously) just a part of the generated resources. The complete console output is much longer.
-
+:::tip **Hint** 
+The example below is (obviously) just a part of the generated resources. The complete console output is much longer.
+:::
 ```yaml
 ...
 # Source: susaas/charts/srv/templates/api-rule.yaml
@@ -302,8 +307,9 @@ Now that you have learned about the Helm Chart basics of Sustainable SaaS Applic
 
 Making your own template file can be a worthwhile learning experience. You gain a deeper understanding of Helm's behavior and how to use it to manage your resources in a Kyma Cluster.
 
-> **Information**: If you want to gain deeper understanding of Helm templating it is strongly recommended to follow [Chart Template Guide](https://helm.sh/docs/chart_template_guide/getting_started/) section of Helm official documentation. 
-
+:::info **Information**
+If you want to gain deeper understanding of Helm templating it is strongly recommended to follow [Chart Template Guide](https://helm.sh/docs/chart_template_guide/getting_started/) section of Helm official documentation. 
+:::
 
 ### 4.1. Creating a Config Map and adding it as a template
 

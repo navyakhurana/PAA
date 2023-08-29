@@ -13,8 +13,9 @@ Before you deploy the sample application to your SAP BTP Kyma runtime, please ma
   - [4. Deploy to your Kyma Cluster](#4-deploy-to-your-kyma-cluster)
   - [5. Multiple Deployments](#5-multiple-deployments)
 
-> **Important** - The sample application can be deployed multiple times if either the **Release Name**, the **Kyma Namespace** or the **Kyma Cluster** are different. In the latter case, the cluster has to be in a different SAP BTP Subaccount (due to conflicting Role Collection names). 
-
+:::caution **Important** 
+The sample application can be deployed multiple times if either the **Release Name**, the **Kyma Namespace** or the **Kyma Cluster** are different. In the latter case, the cluster has to be in a different SAP BTP Subaccount (due to conflicting Role Collection names). 
+:::
 If you are facing any issues during the following steps of our tutorial, please feel free to consult the excellent **Developer Tutorial** on **Deploy Your CAP Application on SAP BTP Kyma Runtime**. It describes similar steps and will get you covered in great detail, in case you get stuck in our sample scenario.
 
 https://developers.sap.com/mission.btp-deploy-cap-kyma.html
@@ -81,8 +82,9 @@ The Helm deployment will create a list of SAP BTP Service Instances and correspo
  ![<img src="./images/ServiceInstancesKyma.png" width="400"/>](./images/ServiceInstancesKyma.png?raw=true)
  ![<img src="./images/ServiceInstancesCf.png" width="360"/>](./images/ServiceInstancesCf.png?raw=true)
 
-> **Hint** - SAP BTP Service Bindings will create corresponding Kyma Secrets, which are consumed by your Kubernetes workloads (Pods, Jobs) and allow your applications to communicate with the respective SAP BTP Service Instances like you know it from the Cloud Foundry context. Npm packages like @sap/xsenv ([see here](https://blogs.sap.com/2022/07/12/the-new-way-to-consume-service-bindings-on-kyma-runtime/)) natively support these kind of Service Bindings in Kyma and Cloud Foundry. Check out Max Streifeneder's blog post ([click here](https://blogs.sap.com/2023/03/07/surviving-and-thriving-with-the-sap-cloud-application-programming-model-deployment-to-sap-btp-kyma-runtime/)), who also provides a great summary of this concept (just search for "How does CAP know where to get the service binding information from?"). 
-
+:::tip **Hint** 
+SAP BTP Service Bindings will create corresponding Kyma Secrets, which are consumed by your Kubernetes workloads (Pods, Jobs) and allow your applications to communicate with the respective SAP BTP Service Instances like you know it from the Cloud Foundry context. Npm packages like @sap/xsenv ([see here](https://blogs.sap.com/2022/07/12/the-new-way-to-consume-service-bindings-on-kyma-runtime/)) natively support these kind of Service Bindings in Kyma and Cloud Foundry. Check out Max Streifeneder's blog post ([click here](https://blogs.sap.com/2023/03/07/surviving-and-thriving-with-the-sap-cloud-application-programming-model-deployment-to-sap-btp-kyma-runtime/)), who also provides a great summary of this concept (just search for "How does CAP know where to get the service binding information from?"). 
+:::
 
 ## 2. Create a new Kyma namespace
 
@@ -121,15 +123,17 @@ kubelogin version v1.26.0
 
 2.4. Download the so-called **kubeconfig** file associated to your Kyma Cluster from your SAP BTP Cockpit. You can find it in your SAP BTP subaccount **Overview** section. This file contains all the required access details and credentials so that **kubectl** can connect to your Kyma Cluster. 
 
-> **Important** - Do not share this file with anyone else and do not commit it to your GitHub repository.
-
+:::caution **Important** 
+Do not share this file with anyone else and do not commit it to your GitHub repository.
+:::
  ![<img src="./images/Kubeconfig.png" width="400"/>](./images/Kubeconfig.png?raw=true)
 
 
 2.5. Once you downloaded the *kubeconfig.yaml* file, please store it as a file named **config** (! without any file name extension !) in your hidden *$HOME/.kube* directory. Kubectl will check this **hidden** directory for an available configuration file named **config**. This is probably the most convenient way to provide your Cluster access details to kubectl. 
 
-> **Hint** - In Windows, the directory is e.g., C:\Users\\<Username\>\\.kube
-
+:::tip **Hint** 
+In Windows, the directory is e.g., C:\Users\\<Username\>\\.kube
+:::
 Alternatively, you can also configure the location of your configuration file in the environment variable **KUBECONFIG** or by adding the kubectl parameter *--kubeconfig* to any kubectl command (which is obviously a bit cumbersome). 
 
 ```sh
@@ -142,12 +146,14 @@ If you are facing issues in this step of the tutorial, feel free to consult the 
 
 https://developers.sap.com/tutorials/btp-app-kyma-prepare-dev-environment.html
 
-> **Hint** - If you have to manage multiple Kyma or Kubernetes Clusters, make sure to research the **kubectx** command line tool (https://github.com/ahmetb/kubectx)! It provides you a very convenient way to switch the context between various clusters. 
-
+:::tip **Hint** 
+If you have to manage multiple Kyma or Kubernetes Clusters, make sure to research the **kubectx** command line tool (https://github.com/ahmetb/kubectx)! It provides you a very convenient way to switch the context between various clusters. 
+:::
 2.6. Run the following command to check whether kubectl can successfully connect to your cluster using the respective config file.  
 
-> **Hint** - Depending on your landscape, you will need to setup Two-Factor-Authentication using e.g., the SAP Authenticator App. 
-
+:::tip **Hint** 
+Depending on your landscape, you will need to setup Two-Factor-Authentication using e.g., the SAP Authenticator App. 
+:::
 ```sh
 > kubectl cluster-info
 
@@ -156,8 +162,9 @@ Kubernetes control plane is running at https://api.a1b2c3d4.kyma.ondemand.com
 
 2.7. The following command, finally allows you to create a new namespace in your Kyma cluster. To learn more about **kubectl** commands check the [official documentation](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands) and the [kubectl cheat sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/). 
 
-> **Hint** - This is just a sample for your reference. If you want, you can deploy the sample application also to the Kyma *default* namespace or any other namespace of your choice!
-
+:::tip **Hint** 
+This is just a sample for your reference. If you want, you can deploy the sample application also to the Kyma *default* namespace or any other namespace of your choice!
+:::
 ```sh
 > kubectl create namespace susaas
 
@@ -166,16 +173,18 @@ namespace/susaas created
 
 2.8. Use the following command, to enable the **Istio** Sidecar Injection for your new namespace. **Istio** is one of the most popular **Service Mesh** offerings for Kubernetes and manages Cluster-internal communication as well as external access to your workloads! We highly recommend to learn more about [**Istio Service Mesh**](../8-kyma-resources-helm/README.md), by visiting the respective part of the tutorial. The features and possibilities are mind-blowing compared to what you can do in a Cloud Foundry scenario! 
 
-> **Important** - If you plan to use an existing namespace, make sure this label is configured and if necessary, please update the namespace using **kubectl** or the Kyma Dashboard! 
-
+:::caution **Important** 
+If you plan to use an existing namespace, make sure this label is configured and if necessary, please update the namespace using **kubectl** or the Kyma Dashboard! 
+:::
 ```sh
 kubectl label namespace susaas istio-injection=enabled
 ```
 
 You can either use **kubectl** or check in you Kyma Dashboard, whether the label has been successfully set!
 
-> **Hint** - Here you can see another kubectl command called **describe**, giving you more information (than a pure **get**) about a certain object like in this case our namespace. 
-
+:::tip **Hint** 
+Here you can see another kubectl command called **describe**, giving you more information (than a pure **get**) about a certain object like in this case our namespace. 
+:::
 ```sh
 > kubectl describe namespace susaas 
 
@@ -189,8 +198,9 @@ Labels:       istio-injection=enabled
 
 2.9. To delete a namespace, just execute the following **kubectl** command. Already getting an idea about how the kubectl commands are structured? Great! 
 
-> **Important** - Be **extremely cautious** when deleting a namespace containing a **SaaS application** with **active subscribers**. This can result in very cumbersome situations, where SAP BTP Service Instances like XSUAA can only be deleted with complex additional effort. Before you **delete a namespace** or **uninstall a Helm Release**, always make sure there are no more active subscribers! 
-
+:::caution **Important** 
+Be **extremely cautious** when deleting a namespace containing a **SaaS application** with **active subscribers**. This can result in very cumbersome situations, where SAP BTP Service Instances like XSUAA can only be deleted with complex additional effort. Before you **delete a namespace** or **uninstall a Helm Release**, always make sure there are no more active subscribers! 
+:::
 ```sh
 > kubectl delete namespace susaas
 
@@ -211,36 +221,43 @@ Let's get started with the preparation of our **Helm deployment** or **Helm inst
 **global**
 
 * imagePullSecret - Name of a Image Pull Secret if required.
-  > **Hint** - This value needs to contain the reference to a potential Image Pull Secret of your Container Registry. If you're using a free Docker Hub account and public Docker Images, this property can be left unchanged. This is probably the easiest approach if you are new to Docker and Kubernetes. Otherwise, please make sure to create a Kyma **Secret** containing your imagePullSecret and provide the reference to your Secret here. 
-  
-  > Find more details in the following blog post ([click here](https://blogs.sap.com/2022/12/04/sap-btp-kyma-kubernetes-how-to-pull-from-private-repository/)) or check out the **Deploy Your CAP Application on SAP BTP Kyma Runtime** tutorial in the SAP Tutorial Navigator([click here](https://developers.sap.com/tutorials/btp-app-kyma-prepare-dev-environment.html)). Our colleagues will get you covered! 
+ :::tip **Hint** 
+ This value needs to contain the reference to a potential Image Pull Secret of your Container Registry. If you're using a free Docker Hub account and public Docker Images, this property can be left unchanged. This is probably the easiest approach if you are new to Docker and Kubernetes. Otherwise, please make sure to create a Kyma **Secret** containing your imagePullSecret and provide the reference to your Secret here. 
+ > Find more details in the following blog post ([click here](https://blogs.sap.com/2022/12/04/sap-btp-kyma-kubernetes-how-to-pull-from-private-repository/)) or check out the **Deploy Your CAP Application on SAP BTP Kyma Runtime** tutorial in the SAP Tutorial Navigator([click here](https://developers.sap.com/tutorials/btp-app-kyma-prepare-dev-environment.html)). Our colleagues will get you covered! 
+ ::: 
 
 * domain - Your Kyma Cluster default or custom domain.
-  > **Hint** - This parameter requires your default Kyma cluster domain (e.g. a1b2c3d4.kyma.ondemand.com). To get the default domain of your Kyma Cluster you can run the following kubectl command: 
-  >
-  > ```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.domain}'```
+  :::tip **Hint** 
+  This parameter requires your default Kyma cluster domain (e.g. a1b2c3d4.kyma.ondemand.com). To get the default domain of your Kyma Cluster you can run the following kubectl command: 
+  
+  ```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.domain}'```
   > 
   > This will return the required result like *a1b2c3d4.kyma.ondemand.com*. *a1b2c3d4* is a placeholder for a string of characters that’s unique for your cluster (the so-called **shootName** which we need in the next step). 
-
+  :::
 * shootName - The unique shoot name of your Kyma Cluster.
-  > **Hint** - As Kyma is based on [Gardener](https://gardener.cloud/), the managed Clusters are also called **Shoot**-Clusters (flower analogy). In our sample the **shootName** parameter, ensures the uniqueness of application registered in the SAP BTP SaaS Registry. As the SaaS application names registered in the SaaS registry need to be unique across a SAP BTP region (e.g. eu10), the shootName of your Kyma cluster will be part of that SaaS application names. This ensures you are not colliding with any other developer deploying the sample application. To get the **shootName** of your Kyma Cluster, run the following kubectl command:  
-  > 
-  >```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.shootName}'```. 
+  :::tip **Hint** 
+  As Kyma is based on [Gardener](https://gardener.cloud/), the managed Clusters are also called **Shoot**-Clusters (flower analogy). In our sample the **shootName** parameter, ensures the uniqueness of application registered in the SAP BTP SaaS Registry. As the SaaS application names registered in the SaaS registry need to be unique across a SAP BTP region (e.g. eu10), the shootName of your Kyma cluster will be part of that SaaS application names. This ensures you are not colliding with any other developer deploying the sample application. To get the **shootName** of your Kyma Cluster, run the following kubectl command:  
+   
+  ```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.shootName}'```. 
   > 
   > In a productive SAP BTP landscape, your **shootName** will always starts with a letter like *a1b2c3d4* or with the prefix **c-** like c-1b2c3d4*. 
-
+  :::
 * gateway - The Istio Ingress Gateway to be used.
-  > **Hint** - This value only has to be changed if your Istio setup deviates from the default setup. For example, if you are using a custom domain and you have set up a new Istio Ingress Gateway for this domain. In that case, please update the respective property accordingly. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
-
+  :::tip **Hint** 
+  This value only has to be changed if your Istio setup deviates from the default setup. For example, if you are using a custom domain and you have set up a new Istio Ingress Gateway for this domain. In that case, please update the respective property accordingly. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
+  :::
 * api - Details of the API Service workload. 
-  > **Hint** - These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your API Service or expose a **custom hostname**. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
-
+  :::tip **Hint** 
+  These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your API Service or expose a **custom hostname**. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
+  :::
 * broker - Details of the Service Broker workload. 
-  > **Hint** - These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Service Broker or expose a **custom hostname**. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
-
+  :::tip **Hint** 
+  These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Service Broker or expose a **custom hostname**. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
+  :::
 * router - Details of the Application Router workload.
-  > **Hint** - These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Application Router or expose a **custom hostname**. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
-
+:::tip **Hint** 
+These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Application Router or expose a **custom hostname**. For the **Basic Version**, you should be fine leaving the parameters unchanged. 
+:::
 **router**
 
 * image.repository - Provide the details of your [Application Router](../3-build-your-docker-images/) Docker Image like \<username\>/susaas-router if your Image is stored in Docker Hub or ghcr.io/\<namespace\>/susaas-router in case of GitHub. For other Container Registries, please check the respective provider documentation.
@@ -269,8 +286,9 @@ Let's get started with the preparation of our **Helm deployment** or **Helm inst
 
 * config.serviceId + planId(s) - You can provide unique GUIDs (e.g., 332e966f-a1ab-a2ab-a3ab-b9facec65bad) for your service plans and the broker instance itself. If you do not provide any GUIDs, they will be auto-generated by Helm upon deployment! 
 
-    > **Warning** - While auto-generating the GUIDs is fine for testing purposes, in a productive scenario those GUIDs must remain constant after first deployment. Therefore, we recommend to generate GUIDs upfront using your command line or available generators and providing them right here.
-
+:::warning **Warning** 
+While auto-generating the GUIDs is fine for testing purposes, in a productive scenario those GUIDs must remain constant after first deployment. Therefore, we recommend to generate GUIDs upfront using your command line or available generators and providing them right here.
+:::
 **hana_deployer**
 
 * image.repository - Provide the details of your [HDI Container Deployer](../3-build-your-docker-images/) Docker Image repository like \<username\>/susaas-db-com if your Image is stored in Docker Hub or ghcr.io/\<namespace\>/susaas-db-com in case of GitHub. For other Container Registries, please check the respective provider documentation.
@@ -287,15 +305,16 @@ Let's get started with the preparation of our **Helm deployment** or **Helm inst
 **destination**
 
 * parameters.init_data.instance.destinations
-  > **Hint** - Feel free to update the SAPUI5 version used by the **ui5** destination.
-
+  :::tip **Hint** 
+  Feel free to update the SAPUI5 version used by the **ui5** destination.
+  :::
 
 3.3. Before running the respective **Helm** commands to generate the Kubernetes resource definitions, please configure the **redirect-uris** of you *xs-security.json* ([click here](../../../code/charts/sustainable-saas/xs-security.json)). In the **oauth2-configuration** section, please provide your default Cluster Domain or your Custom Domain (if configured). Keep the **localhost** redirects for local testing purposes. 
 
-> **Hint** - Use the following **kubectl** command to get your default Cluster domain
-> 
-> ```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.domain}'```
-
+:::tip **Hint** 
+Use the following **kubectl** command to get your default Cluster domain
+```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.domain}'```
+:::
 ```json
 "oauth2-configuration": {
   "token-validity": 900,
@@ -313,8 +332,9 @@ Let's get started with the preparation of our **Helm deployment** or **Helm inst
 
 3.4. Wow, that was quite some work but luckily this is a one-time action. Let's relax and check if your Kubernetes resource definitions are successfully generated by Helm, running the following command within the *code* directory.
 
-> **Hint** - In case of errors, check if you maybe missed one of the above parameters or a mistake (like a space or special character) has slipped in.
-
+:::tip **Hint** 
+In case of errors, check if you maybe missed one of the above parameters or a mistake (like a space or special character) has slipped in.
+:::
 ```sh
 helm template ./charts/sustainable-saas
 ```
@@ -374,22 +394,26 @@ alert_notification:
   ...
 ```
 
-> **Important** - In case of SAP BTP **Trial Account** usage, please make sure to change the **servicePlanName** to **lite**!
-
+:::caution **Important** 
+In case of SAP BTP **Trial Account** usage, please make sure to change the **servicePlanName** to **lite**!
+:::
 4.2. Save your changes and deploy the Alert Notification Service Instance to your desired Kyma Namespace, by running the following **Helm** command from within the *code* directory. 
 
-> **Hint** - There can only be one Alert Notification Service instance per Kyma Namespace (or Cloud Foundry Space). Given this restriction, SAP Alert Notification Service is deployed as a standalone Helm installation in our example. Binding that Service Instance to the lifecycle of our SaaS application might conflict with other applications also requiring Alert Notification Service in the same namespace.
-
-> **Hint** - You might be asked to re-login to your Cluster using Multi-Factor-Authentication, when running **helm** commands from time to time.   
-
+:::tip **Hint** 
+There can only be one Alert Notification Service instance per Kyma Namespace (or Cloud Foundry Space). Given this restriction, SAP Alert Notification Service is deployed as a standalone Helm installation in our example. Binding that Service Instance to the lifecycle of our SaaS application might conflict with other applications also requiring Alert Notification Service in the same namespace.
+:::
+:::tip **Hint** 
+You might be asked to re-login to your Cluster using Multi-Factor-Authentication, when running **helm** commands from time to time.   
+:::
 ```sh
 helm install alert-notification ./charts/alert-notification --namespace <namespace>
 ```
 
 4.3. After the Alert Notification Service has been deployed (wait for a confirmation in the console or check the Helm Release status in the Kyma Dashboard), please run the following command from within the *code* directory to deploy the Sustainable SaaS sample application to a namespace of your choice.
 
-> **Hint** - Feel free to add the *--debug* parameter to get some more verbose output if you're interested what's happening under the hood!
-
+:::tip **Hint** 
+Feel free to add the *--debug* parameter to get some more verbose output if you're interested what's happening under the hood!
+:::
 ```sh
 helm install susaas ./charts/sustainable-saas --namespace <namespace> (--debug)
 ```
@@ -420,8 +444,9 @@ helm upgrade susaas ./charts/sustainable-saas --namespace <namespace> (--debug)
 
 4.8. To undeploy/uninstall a Helm Release, you can use the following command. 
 
-> **Important** - Please make sure to check the respective **Undeploy** chapter of the documentation first! Uninstalling a SaaS application with existing subscribers, can result in corrupt Service Instance setups which are very cumbersome to resolve. 
-
+:::caution **Important** 
+Please make sure to check the respective **Undeploy** chapter of the documentation first! Uninstalling a SaaS application with existing subscribers, can result in corrupt Service Instance setups which are very cumbersome to resolve. 
+:::
 ```sh
 helm uninstall susaas --namespace <namespace>
 ```
@@ -439,6 +464,7 @@ helm install susaas-dev ./charts/sustainable-saas --namespace <namespace> (--deb
 - 1 ** n installations with different Release Names (using the same Kyma Namespace)
 - 1 ** n installations in different Kyma Namespaces (using same Release Name)
 
-> **Hint** - Please note, you can not deploy the application to equally named namespaces in different Kyma Clusters of the same SAP BTP subaccount. In this case, the Role Collection names will collide. Still, feel free to cover this requirement yourself by adapting the Role Collection name logic. 
-
+:::tip **Hint** 
+Please note, you can not deploy the application to equally named namespaces in different Kyma Clusters of the same SAP BTP subaccount. In this case, the Role Collection names will collide. Still, feel free to cover this requirement yourself by adapting the Role Collection name logic. 
+:::
 The respective Kyma Namespace and Release Name will be part of your **xsappname** and also part of your SAP BTP Role Collections. To ensure the uniqueness of applications registered in the SAP BTP SaaS Registry Service, please make sure to provide the correct **shootName** property in your *values.yaml* file! The same application name can only be registered once in the same SAP BTP region (e.g., eu10).  

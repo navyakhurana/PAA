@@ -31,14 +31,16 @@ The **code** directory of our GitHub repository consists of several sub-director
 |:--: | :--- |
 |  ![<img src="./images/Repo_Structure_All.png" width="350"/>](./images/Repo_Structure_All.png?raw=true) |   **api -** CAP-based API service  **app -** SAP Fiori Elements UI modules  **broker -** API Service Broker  **charts -** Helm charts  **db -** Tenant data model  **db-com -** Shared/Common data model  **ext -** CAP-based SaaS extension  **http -** HTTP files for testing purposes  **obd -** Onboarding Service (Expert Feature)  **router -** Application Router  **srv -** CAP-based Business Application service  **test -** Unit tests and sample data   **.cdscr-private.sample.json -** K8S binding samples for local testing  **default-env.sample.json -** Environment variables for local testing   **package.json -** CDS configs and dependencies for local testing |
 
-> **Hint** - Each of our CAP-based application components like the SaaS Backend Service or the API Service contain a dedicated *package.json* file. Instead of using the root-level *package.json* file we decided to provide component specific dependencies and CDS production profile configurations.
-
+:::tip **Hint** 
+Each of our CAP-based application components like the SaaS Backend Service or the API Service contain a dedicated *package.json* file. Instead of using the root-level *package.json* file we decided to provide component specific dependencies and CDS production profile configurations.
+:::
 ## 2. API Service
 
 The **api** directory contains the implementation of the **CAP-based** API Service which can be used by SaaS consumers to upload or maintain data in their Tenant database containers. Further details can be found in a separate part of this tutorial ([click here](../6-push-data-to-saas-api/README.md)).
 
-> **Hint** - The API Service Docker Image is build using *Cloud Native Buildpacks*, therefore the directory does not contain a separate Dockerfile. Further details on the build process are provided in a separate part of the tutorial ([click here](../3-build-your-docker-images/README.md))!
-
+:::tip **Hint**
+The API Service Docker Image is build using *Cloud Native Buildpacks*, therefore the directory does not contain a separate Dockerfile. Further details on the build process are provided in a separate part of the tutorial ([click here](../3-build-your-docker-images/README.md))!
+:::
 | | |
 |:--: | :--- |
 |  ![<img src="./images/Repo_Structure_API.png" width="350"/>](./images/Repo_Structure_API.png?raw=true) |  **api-service.cds -** CAP-based API Service definition  **api-service.js -** CAP-based API Service handler   **package.json -** Node.js dependencies and start script  **server.js -** Custom server.js for health-check endpoints |
@@ -48,8 +50,9 @@ The **api** directory contains the implementation of the **CAP-based** API Servi
 
 Besides the **html5-deployer** directory (containing the **HTML5 Application Deployer** - find details [here](https://cap.cloud.sap/docs/guides/deployment/deploy-to-kyma#ui-deployment)), the **app** directory contains all SAP Fiori Elements modules, which result in dynamically generated UIs, based on the OData Backend Service annotations. During the UI build process, all four UI modules are zipped and copied into a *resources* folder within the *html5-deployer* directory. This folder is created during the very first build.
 
-> **Hint** - The **HTML5 Apps Deployer** Docker Image is build using an existing *Docker Image* maintained by SAP, which is referenced in the respective Dockerfile. Further details on the build process are provided in a separate part of the tutorial ([click here](../3-build-your-docker-images/README.md))!
-
+:::tip **Hint** 
+The **HTML5 Apps Deployer** Docker Image is build using an existing *Docker Image* maintained by SAP, which is referenced in the respective Dockerfile. Further details on the build process are provided in a separate part of the tutorial ([click here](../3-build-your-docker-images/README.md))!
+:::
 <!-- | | |
 |:--: | :--- |
 |  ![<img src="./images/Repo_Structure_App.png" width="350"/>](./images/Repo_Structure_App.png?raw=true) |  **html5-deployer -** HTML5 Application Deployer configuration **.dockerignore -** Ignores package.json for docker build  **Dockerfile -** Docker image based on sapse/html5-app-deployer  **package.json -** Required for local testing only </p> **ui-admin-projects -** Admin UI for project management <p style='padding-left:1em'> **webapp -** UI5 applicaton resources <p style='padding-left:2em'>**ext -** Fiori Elements extensions  **i18n -** Translation files  **utils -** Reusable coding  **Component.js -** Component coding  **index.html -** For standalone usage   **manifest.json -** SAPUI5 manifest file  </p><p style='padding-left:1em'> **package.json -** Required for build process  **ui5-deploy.yaml -** Required for build process  **xs-app.json -** HTML5 App Repository routes (copied to webapp folder during UI build) </p> **ui-admin-users -** Admin UI for user management  **ui-public-assessments -** UI for assessment management  **ui-public-flp -** UI for sandbox launchpad   **ui-public-projects -** UI for viewing project details   **index.html** - Sandbox launchpad for cds watch |
@@ -216,8 +219,9 @@ The SaaS Backend Service Docker Image is build using *Cloud Native Buildpacks*, 
 
 The **test** directory contains sample data for local development and testing purposes as well as sample unit tests. 
 
-> **Hint** - These files should not be part of a productive deployment and are not part of the **production** build profile. 
-
+:::tip **Hint** 
+These files should not be part of a productive deployment and are not part of the **production** build profile. 
+:::
 | | |
 |:--: | :--- |
 |  ![<img src="./images/Repo_Structure_Test.png" width="350"/>](./images/Repo_Structure_API.png?raw=true) | **data -** Sample data for Tenant data model  **index.cds -** CDS file for builder  **test.js -** Sample unit tests  |

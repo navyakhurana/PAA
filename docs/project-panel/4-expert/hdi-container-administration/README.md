@@ -3,8 +3,9 @@ sidebar_position: 8
 ---
 # HDI Container Administration
 
-> **Hint** - This topic will be refactored! Some screenshots or features might appear different based on latest version updates. 
-
+:::tip **Hint** 
+This topic will be refactored! Some screenshots or features might appear different based on latest version updates. 
+:::
 In this part of the **Expert Features** you will learn how to set up a new HDI Container Group Administrator for your SaaS HDI containers. This user will be able to administrate Tenant database containers (e.g., create or import backups, use the HDI Container API, ...). 
 
 - [HDI Container Administration](#hdi-container-administration)
@@ -27,8 +28,10 @@ Creating an HDI Container (Group) Administrator is a very critical process from 
 
 As a SaaS provider, you need to ensure this process is well aligned with your SaaS customers and that only a very limited group of people has permissions to access, export, and import customer database containers. Make sure to create and assign dedicated roles in your database by always following the least permission model! 
 
-> **Important** - The user created in this step-by-step guide is assigned very **extensive permissions** to administrate all containers created by the default HDI Container Service Broker for **simplification and demo purposes**. This means he can grant **Full Access permissions** for each HDI Container to any database user. As stated above, especially in a productive environment you will need a much more elaborated security setup. In the following sample, the DBADMIN user has e.g., assigned the sample user SUSAAS_OPS permissions to export **a specific container** only. SUSAAS_OPS has no other container-related permissions except for the export feature.   
->![<img src="./images/hdi_group_000.png" width="500" />](./images/hdi_group_000.png?raw=true)
+:::caution **Important** 
+The user created in this step-by-step guide is assigned very **extensive permissions** to administrate all containers created by the default HDI Container Service Broker for **simplification and demo purposes**. This means he can grant **Full Access permissions** for each HDI Container to any database user. As stated above, especially in a productive environment you will need a much more elaborated security setup. In the following sample, the DBADMIN user has e.g., assigned the sample user SUSAAS_OPS permissions to export **a specific container** only. SUSAAS_OPS has no other container-related permissions except for the export feature.   
+![<img src="./images/hdi_group_000.png" width="500" />](./images/hdi_group_000.png?raw=true)
+:::
 
 
 ## 2. Prerequisites
@@ -51,8 +54,9 @@ As a SaaS provider, you need to ensure this process is well aligned with your Sa
 
 3.4. Login with the **DBADMIN** user. 
 
-> **Important** - By default, only the **DBADMIN** user has the initial permissions to administrate the default HDI Container Group used by the Service Broker. New HDI Container Group admins can only be added by the DBADMIN user. 
-
+:::caution **Important** 
+By default, only the **DBADMIN** user has the initial permissions to administrate the default HDI Container Group used by the Service Broker. New HDI Container Group admins can only be added by the DBADMIN user. 
+:::
 ![<img src="./images/hdi_group_030.png" width="500" />](./images/hdi_group_030.png?raw=true)
 
 
@@ -68,8 +72,9 @@ As a SaaS provider, you need to ensure this process is well aligned with your Sa
 
 4.3. Decide on a username and provide a valid e-mail address. Keep the default settings for **PUBLIC role** and **schema object creation**, as the support/operations user e.g., needs to create temporary tables for HDI Container exports in his own schema. 
 
-> **Hint** - In a productive environment, we recommend creating named users like JOHNDOE or usage of employee IDs to allow proper logging of critical database activities. 
-
+:::tip **Hint** 
+In a productive environment, we recommend creating named users like JOHNDOE or usage of employee IDs to allow proper logging of critical database activities. 
+:::
 ![<img src="./images/hdi_group_060.png" width="500" />](./images/hdi_group_060.png?raw=true)
 
 4.4. Set an initial password for your new user. You can enforce a password change and enable/disable a password lifetime if required. Finally, click on **Save** to create your new database user. 
@@ -85,8 +90,9 @@ As a SaaS provider, you need to ensure this process is well aligned with your Sa
 
 5.2. Click on **HDI Administration** to open the HDI Administration user interface. 
 
-> **Hint** - The UI might require a few moments to load all content. 
-
+:::tip **Hint** 
+The UI might require a few moments to load all content. 
+:::
 ![<img src="./images/hdi_group_090.png" width="500" />](./images/hdi_group_090.png?raw=true)
 
 5.3. Select the **User & Roles** tab. 
@@ -99,8 +105,9 @@ As a SaaS provider, you need to ensure this process is well aligned with your Sa
 
 5.5. In the popup window, search for the username of your new user (e.g., JOHNDOE). Select the user from the list and click on **OK**.
 
-> **Hint** - If the user does not show up, first try to reload the page. If it still doesn't show up, make sure the user was configured correctly (PUBLIC role and permission to create objects in his own schema).
-
+:::tip **Hint** 
+If the user does not show up, first try to reload the page. If it still doesn't show up, make sure the user was configured correctly (PUBLIC role and permission to create objects in his own schema).
+:::
 ![<img src="./images/hdi_group_120.png" width="500" />](./images/hdi_group_120.png?raw=true)
 
 5.6. First, the user will be assigned some common privileges for HDI container administration. 
@@ -113,8 +120,9 @@ As a SaaS provider, you need to ensure this process is well aligned with your Sa
 
 5.8. After the user was added to the list of users, select it and click on the **+** icon in the **Groups & Containers on which User has Privileges** section. This will allow you to assign HDI Container Group permissions. In the list of Container Groups, you will see the default Service Broker Container Group called **BROKER_CG**. 
 
-> **Hint** - All HDI containers created by the respective SAP BTP Service Broker will be assigned to this Container Group. 
-
+:::tip **Hint** 
+All HDI containers created by the respective SAP BTP Service Broker will be assigned to this Container Group. 
+:::
 ![<img src="./images/hdi_group_150.png" width="500" />](./images/hdi_group_150.png?raw=true)
 
 5.9. Select the **BROKER_CG** Container Group and click on **OK**. 
@@ -123,10 +131,12 @@ As a SaaS provider, you need to ensure this process is well aligned with your Sa
 
 5.10. You can now assign the required permissions for this Container Group to your support/operations user. Therefore, make sure you selected your user in the user list and select the BROKER_CG Container Group from the list of Groups & Containers. From the dropdown field in the **Privileges on Selected Groups** section, select **Container Group Admin Privileges**. Make sure all permissions are selected and click on the **Save** icon. 
 
-> **Important** - This will assign your user the full scope of permissions to administrate all containers in this default Container Group. As mentioned in the beginning of this step-by-step guide, your security setup will probably require a much more granular permission handling! 
-
-> **Hint** - If you cannot see any values in the **dropdown field**, please assign the permissions manually. 
-
+:::caution **Important** 
+This will assign your user the full scope of permissions to administrate all containers in this default Container Group. As mentioned in the beginning of this step-by-step guide, your security setup will probably require a much more granular permission handling! 
+:::
+:::tip **Hint** 
+If you cannot see any values in the **dropdown field**, please assign the permissions manually. 
+:::
 ![<img src="./images/hdi_group_170.png" width="500" />](./images/hdi_group_170.png?raw=true)
 
 5.11. Confirm you want to assign the permissions to this user. 

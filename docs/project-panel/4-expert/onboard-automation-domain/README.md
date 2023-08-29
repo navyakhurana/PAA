@@ -52,9 +52,13 @@ To set up this Expert Feature, it is essential to have the corresponding Sustain
 Furthermore, your SAP BTP target environment must meet the following requirements:
 
 - SAP Identity Authentication Service (SAP IAS) configured as Platform Identity Provider (Global Account Level)
-  > **Hint** - Find more details in the official SAP Help Documentation ([click here](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-of-custom-identity-providers-for-platform-users?locale=en-US))
+:::tip **Hint** 
+Find more details in the official SAP Help Documentation ([click here](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-of-custom-identity-providers-for-platform-users?locale=en-US))
+:::
 - SAP Identity Authentication Service (SAP IAS) configured as Application Identity Provider (Provider Subaccount)
-  > **Hint** - Find more details in the official SAP Help Documentation ([click here](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication)
+:::tip **Hint** 
+Find more details in the official SAP Help Documentation ([click here](https://help.sap.com/docs/btp/sap-business-technology-platform/establish-trust-and-federation-between-uaa-and-identity-authentication)
+:::
 - Credentials of a **Global Account Administrator** are required for the Subscriber Subaccount Automation
 
 In case you need guidance on how to setup a new SAP Identity Authentication Service tenant, feel free to follow along these tutorials:
@@ -85,8 +89,9 @@ cd ./code/obd
 
 2.3. In the *package.json* file, replace the image prefix **\<\< namespace >\>\>** placeholder with your own container image repository details. 
 
-> **Hint** - The image prefix format depends on your container registry provider. If you use e.g., DockerHub as a Container Registry, please put in your username (e.g., johndoe) here. If you use the GitHub Container Registry, the prefix will look similar to ghcr.io/< namespace > (e.g. ghcr.io/johndoe). All generated Container Images will be automatically prefixed with this label!
-
+:::tip **Hint** 
+The image prefix format depends on your container registry provider. If you use e.g., DockerHub as a Container Registry, please put in your username (e.g., johndoe) here. If you use the GitHub Container Registry, the prefix will look similar to ghcr.io/< namespace > (e.g. ghcr.io/johndoe). All generated Container Images will be automatically prefixed with this label!
+:::
 ```js
 {
   "name": "obd",
@@ -113,8 +118,9 @@ Login Succeeded
 
 2.5. Install the npm dependencies to build the new components. 
 
-> **Hint** - In our sample we are using the latest **Node.js 16** release. 
-
+:::tip **Hint** 
+In our sample we are using the latest **Node.js 16** release. 
+:::
 ```js
 npm install --include=dev
 ```
@@ -166,12 +172,14 @@ That is it! Your Docker Images should be available in your container image repos
 
 In this scenario, a Kyma/Kubernetes Secret will be used to store your SAP BTP Global Account credentials and configurations necessary for automating the onboarding process of new tenants. To proceed, please follow the steps below to create the corresponding Secret artifact in your Kyma Cluster namespace.
 
->**Important** - It is crucial to deploy all the new components, including Secrets and Helm Release, to the same Kyma namespace where the original SaaS application is deployed. Please make sure to deploy them to the appropriate namespace to ensure proper functionality and integration.
-
+:::caution **Important** 
+It is crucial to deploy all the new components, including Secrets and Helm Release, to the same Kyma namespace where the original SaaS application is deployed. Please make sure to deploy them to the appropriate namespace to ensure proper functionality and integration.
+:::
 3.1. Copy the below template into a new yaml file and name it *onboarding-btp-cred.yaml*. 
 
-> **Important** - Make sure to store this file in a place, which will not be committed to your GitHub Repository!
-
+:::caution **Important** 
+Make sure to store this file in a place, which will not be committed to your GitHub Repository!
+:::
 - The **admins** will later have **Subaccount Admin** permissions in each subscriber subaccount created by the self-subscription flow!
 - The **email** and **password** properties are required by SAP BTP Setup Automator to interact with the SAP BTP CLIs, when setting up and configuring a new subaccount.  
 
@@ -232,27 +240,31 @@ Alright, so you have almost finished all preparation steps to install the requir
 **global**
 
 * imagePullSecret - Name of a Image Pull Secret if required.
-  > **Hint** - This value needs to contain the reference to a potential Image Pull Secret of your Container Registry. If you're using a free Docker Hub account and public Docker Images, this property can be left unchanged. This is probably the easiest approach if you are new to Docker and Kubernetes. Otherwise, please make sure to create a Kyma **Secret** containing your imagePullSecret and provide the reference to your Secret here. 
+:::tip **Hint**
+This value needs to contain the reference to a potential Image Pull Secret of your Container Registry. If you're using a free Docker Hub account and public Docker Images, this property can be left unchanged. This is probably the easiest approach if you are new to Docker and Kubernetes. Otherwise, please make sure to create a Kyma **Secret** containing your imagePullSecret and provide the reference to your Secret here. 
   
-  > Find more details in the following blog post ([click here](https://blogs.sap.com/2022/12/04/sap-btp-kyma-kubernetes-how-to-pull-from-private-repository/)) or check out the **Deploy Your CAP Application on SAP BTP Kyma Runtime** tutorial in the SAP Tutorial Navigator([click here](https://developers.sap.com/tutorials/btp-app-kyma-prepare-dev-environment.html)). Our colleagues will get you covered! 
-
+Find more details in the following blog post ([click here](https://blogs.sap.com/2022/12/04/sap-btp-kyma-kubernetes-how-to-pull-from-private-repository/)) or check out the **Deploy Your CAP Application on SAP BTP Kyma Runtime** tutorial in the SAP Tutorial Navigator([click here](https://developers.sap.com/tutorials/btp-app-kyma-prepare-dev-environment.html)). Our colleagues will get you covered! 
+:::
 * domain - Your Kyma Cluster default or custom domain.
-  > **Hint** - This parameter requires your default Kyma cluster domain (e.g. a1b2c3d4.kyma.ondemand.com). To get the default domain of your Kyma Cluster you can run the following kubectl command: 
-  >
-  > ```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.domain}'```
-  > 
-  > This will return the required result like *a1b2c3d4.kyma.ondemand.com*. *a1b2c3d4* is a placeholder for a string of characters that’s unique for your cluster (the so-called **shootName** which we need in the next step). 
+:::tip **Hint** 
+This parameter requires your default Kyma cluster domain (e.g. a1b2c3d4.kyma.ondemand.com). To get the default domain of your Kyma Cluster you can run the following kubectl command: 
 
+ ```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.domain}'```
+ 
+ This will return the required result like *a1b2c3d4.kyma.ondemand.com*. *a1b2c3d4* is a placeholder for a string of characters that’s unique for your cluster (the so-called **shootName** which we need in the next step). 
+:::
 * shootName - The unique shoot name of your Kyma Cluster.
-  > **Hint** - As Kyma is based on [Gardener](https://gardener.cloud/), the managed Clusters are also called **Shoot**-Clusters (flower analogy). In our sample the **shootName** parameter, ensures the uniqueness of application registered in the SAP BTP SaaS Registry. As the SaaS application names registered in the SaaS registry need to be unique across a SAP BTP region (e.g. eu10), the shootName of your Kyma cluster will be part of that SaaS application names. This ensures you are not colliding with any other developer deploying the sample application. To get the **shootName** of your Kyma Cluster, run the following kubectl command:  
-  > 
-  >```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.shootName}'```.  
-  > 
-  > In a productive SAP BTP landscape, your **shootName** will always starts with a letter like *a1b2c3d4* or with the prefix **c-** like c-1b2c3d4*. 
+:::tip **Hint** 
+As Kyma is based on [Gardener](https://gardener.cloud/), the managed Clusters are also called **Shoot**-Clusters (flower analogy). In our sample the **shootName** parameter, ensures the uniqueness of application registered in the SAP BTP SaaS Registry. As the SaaS application names registered in the SaaS registry need to be unique across a SAP BTP region (e.g. eu10), the shootName of your Kyma cluster will be part of that SaaS application names. This ensures you are not colliding with any other developer deploying the sample application. To get the **shootName** of your Kyma Cluster, run the following kubectl command:  
 
+```kubectl get configMaps/shoot-info -n kube-system -o jsonpath='{.data.shootName}'```.  
+ 
+ In a productive SAP BTP landscape, your **shootName** will always starts with a letter like *a1b2c3d4* or with the prefix **c-** like c-1b2c3d4*. 
+:::
 * gateway - The Istio Ingress Gateway to be used.
-  > **Hint** - This value only has to be changed if your Istio setup deviates from the default setup. For example, if you are using a custom domain and you have set up a new Istio Ingress Gateway for this domain. In that case, please update the respective property accordingly. 
-
+:::tip **Hint** 
+This value only has to be changed if your Istio setup deviates from the default setup. For example, if you are using a custom domain and you have set up a new Istio Ingress Gateway for this domain. In that case, please update the respective property accordingly. 
+:::
 * platformIdp
   * origin - Provide the origin key of your SAP BTP Platform IdP (e.g., sapdemo-platform) being used in your Global SAP BTP Account. You can find it in the "Trust Configuration" section of your Global Account. 
 
@@ -260,22 +272,27 @@ Alright, so you have almost finished all preparation steps to install the requir
 
   * url - Provide the host of your SAP BTP Platform IdP (e.g., sapdemo.accounts.ondemand.com) being used in your Global SAP BTP Account. 
 
-    > **Hint** - If you did not configure your SAP Identity Authentication Service as Platform IdP, please do so in the **Trust Configuration** of your Global Account. 
-
+:::tip **Hint** 
+If you did not configure your SAP Identity Authentication Service as Platform IdP, please do so in the **Trust Configuration** of your Global Account. 
+:::
     ![<img src="./images/OBD_PlatformIdP.png" width="500" />](./images/OBD_PlatformIdP.png?raw=true)
 
 * srv - Details of the CAP Backend Service workload. 
-  > **Hint** - These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your API Service or expose a **custom hostname**. 
-
+:::tip **Hint** 
+These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your API Service or expose a **custom hostname**. 
+:::
 * router - Details of the Application Router workload.
-  > **Hint** - These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Application Router or expose a **custom hostname**. 
-
+:::tip **Hint** 
+These values only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Application Router or expose a **custom hostname**. 
+:::
 * saasRelease - Release Name of the SaaS application to be onboarded in the same Kyma Namespace (default: susaas).
-  > **Hint** - This value only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally deployed the original SaaS application with a different Release Name like e.g., **susaas-dev**.
-
+:::tip **Hint** 
+This value only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally deployed the original SaaS application with a different Release Name like e.g., **susaas-dev**.
+:::
 * saasRouter - Name of the Application Router component in the SaaS application to be onboarded in the same Kyma Namespace (default: router).
-   > **Hint** - This value only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Application Router of the original SaaS application.
-
+:::tip **Hint** 
+This value only need to be changed if your setup deviates from the default sample configuration. This is the case if you intentionally set a different **fullName** property for your Application Router of the original SaaS application.
+:::
 **router**
 
 * image.repository - Provide the details of your **Onboarding Application Router** Docker Image like \<username\>/obd-router if your Image is stored in Docker Hub or ghcr.io/\<namespace\>/obd-router in case of GitHub. For other Container Registries, please check the respective provider documentation.
@@ -296,8 +313,9 @@ Alright, so you have almost finished all preparation steps to install the requir
   
 4.3. A sample configuration for scenario without a custom domain could look as follows.
 
-> **Hint** - In this sample the original SaaS application was deployed as **susaas-dev** in the same namespace. Therefore, the saasRelease property has to be updated.
-
+:::tip **Hint** 
+In this sample the original SaaS application was deployed as **susaas-dev** in the same namespace. Therefore, the saasRelease property has to be updated.
+:::
 ```yaml
 global:
   imagePullSecret: {}
@@ -319,8 +337,9 @@ global:
 
 4.4. All set? Then let us check if your Kubernetes resource definitions are successfully generated by Helm, running the following command **within** the *code/obd* directory.
 
-> **Hint** - In case of errors, check if you maybe missed one of the above parameters or a mistake (like a space or special character) has sneaked in.
-
+:::tip **Hint** 
+In case of errors, check if you maybe missed one of the above parameters or a mistake (like a space or special character) has sneaked in.
+:::
 ```sh
 helm template ./charts
 ```
@@ -335,10 +354,12 @@ helm template ./charts/sustainable-saas > helm-template.yaml
 
 5.1. Please run the following command from within the *code/obd* directory to deploy the Onboarding application to the **same namespace** in which your target SaaS application resides!
 
-> **Important** - The \<SaaS-Release\> placeholder has to be replaced with the Release name of the original Saas Application to be onboarded.  
-
-> **Hint** - Feel free to add the *--debug* parameter to get some more verbose output if you're interested what's happening under the hood!
- 
+:::caution **Important** 
+The \<SaaS-Release\> placeholder has to be replaced with the Release name of the original Saas Application to be onboarded.  
+:::
+:::tip **Hint** 
+Feel free to add the *--debug* parameter to get some more verbose output if you're interested what's happening under the hood!
+::: 
 ```sh
 helm install < Saas-Release >-onboarding ./charts --namespace < namespace > (--debug)
 ```
@@ -376,8 +397,9 @@ helm upgrade susaas-onboarding ./chart --namespace  < namespace > (--debug)
 helm uninstall susaas-onboarding --namespace  < namespace >
 ```
 
-> **Important** - Please ensure that all components are removed from the Cluster. As you manually created the Kyma Secret containing the configuration (incl. SAP BTP Global Account Administrator) details, this component will not be automatically deleted upon **helm uninstall**. 
-
+:::caution **Important** 
+Please ensure that all components are removed from the Cluster. As you manually created the Kyma Secret containing the configuration (incl. SAP BTP Global Account Administrator) details, this component will not be automatically deleted upon **helm uninstall**. 
+:::
 
 ## 6. Self-Registration in SAP Identity Authentication
 
@@ -385,10 +407,11 @@ Once the Onboarding components have been successfully deployed, the next step is
 
 6.1. Open the Administration UI of your SAP Identity Authentication Service tenant.
 
-> **Hint** - Usually you can reach the Administration UI of your tenant following the **https://\<subdomain\>.accounts.ondemand.com/admin** pattern.
-> 
-> Example - https://sapdemo.accounts.ondemand.com/admin
-
+:::tip **Hint** 
+Usually you can reach the Administration UI of your tenant following the **https://\<subdomain\>.accounts.ondemand.com/admin** pattern.
+ 
+Example - https://sapdemo.accounts.ondemand.com/admin
+:::
 6.2. Open the **Applications** menu. 
 
 ![<img src="./images/OBD_EnableReg00.png" width="400"/>](./images/OBD_EnableReg00.png?raw=true)
@@ -401,17 +424,19 @@ Once the Onboarding components have been successfully deployed, the next step is
 
 ![<img src="./images/OBD_EnableReg02.png" width="400"/>](./images/OBD_EnableReg02.png?raw=true)
 
-> **Important** - From now on, users can self-register for your application! Therefore, please ensure to enable the **E-Mail Verification**, apply a secure **Password Policy** and consider a **Risk-Based Authentication**. All of these settings can be configured in SAP Identity Authentication Service.
->
-> In case you do not want a **self-registration**-based user management, you can also import users for your application, and invite them via email to setup an account in SAP Identity Authentication Service ([click here](https://help.sap.com/docs/identity-authentication/identity-authentication/import-or-update-users-for-specific-application)). 
+:::caution **Important** 
+From now on, users can self-register for your application! Therefore, please ensure to enable the **E-Mail Verification**, apply a secure **Password Policy** and consider a **Risk-Based Authentication**. All of these settings can be configured in SAP Identity Authentication Service.
 
+In case you do not want a **self-registration**-based user management, you can also import users for your application, and invite them via email to setup an account in SAP Identity Authentication Service ([click here](https://help.sap.com/docs/identity-authentication/identity-authentication/import-or-update-users-for-specific-application)). 
+:::
 
 ## 7. Saas Application Router Update (Optional)
 
 As mentioned in the tutorial introduction, the initial SaaS application needs a minor modification to allow the Application Router to read the x-custom-host cookie value from incoming requests. Therefore, please ensure to modify and re-deploy your SaaS Application Router as indicated below! 
 
-> **Important** - This is only required if you deployed the SaaS application before the release of this expert feature. In case you just recently cloned the GitHub repository, you can skip this step. 
-
+:::caution **Important** 
+This is only required if you deployed the SaaS application before the release of this expert feature. In case you just recently cloned the GitHub repository, you can skip this step. 
+:::
 7.1. Ensure you pulled the latest GitHub release, which includes the required changes! 
 
 ```sh
@@ -457,10 +482,12 @@ kubectl rollout restart deployment/susaas-router
 
 To provide users with the option to switch back to the Tenant Onboarding User Interface after self-onboarding their tenant, a minor adjustment to the original SaaS application is necessary. This adjustment involves adding a respective tile to the Fiori Sandbox Launchpad. 
 
-> **Hint** - Alternatively, you can also access the Onboarding UI by adding "onboarding-" to your SaaS Url. 
-
-> **Important** - This is only required if you deployed the SaaS application before the release of this expert feature. In case you just recently cloned the GitHub repository, you can skip this step. 
-
+:::tip **Hint** 
+Alternatively, you can also access the Onboarding UI by adding "onboarding-" to your SaaS Url. 
+:::
+:::caution **Important** 
+This is only required if you deployed the SaaS application before the release of this expert feature. In case you just recently cloned the GitHub repository, you can skip this step. 
+:::
 If interested, you can check the respective tile definition in the Fiori Sandbox Config ([click here](https://github.com/SAP-samples/btp-kyma-cap-multitenant-susaas/blob/main/code/app/ui-public-flp/webapp/appconfig/fioriSandboxConfig.js#L220)).  
 
 ```json
@@ -535,8 +562,9 @@ You are now ready to test your setup, by self-registering a new user in SAP Iden
 
 9.1. Open the SaaS application Home Screen in a new browser session or Incognito Mode.  
 
-> **Hint** - You will be able to access it following the **https://\<SaaS-Release\>-\<Namespace\>.\<ClusterDomain\>** format like *https://susaas-default.a1b2c3.kyma.ondemand.com* or *https://susaas-default.sap-demo.com* (when using a custom domain). You can find the respective URI also as part of your new Virtual Service artifact in your Kyma Dashboard (\<SaaS-Release\>-\<RandomId\>). 
-
+:::tip **Hint** 
+You will be able to access it following the **https://\<SaaS-Release\>-\<Namespace\>.\<ClusterDomain\>** format like *https://susaas-default.a1b2c3.kyma.ondemand.com* or *https://susaas-default.sap-demo.com* (when using a custom domain). You can find the respective URI also as part of your new Virtual Service artifact in your Kyma Dashboard (\<SaaS-Release\>-\<RandomId\>). 
+:::
 ![<img src="./images/OBD_VirtualService.png" width="400"/>](./images/OBD_VirtualService.png?raw=true)
 
 9.2. Follow the steps explained in our recent blog post, to register a new user in SAP Identity Authentication Service and to onboard a new subscriber tenant. 
@@ -592,8 +620,9 @@ GitHub Actions - If you don't have access to a Kyma Cluster to set up a new SAP 
 
 Security Considerations - In a real-world scenario, it is crucial to properly validate users who register for your SaaS application. Consider implementing email and/or SMS verification for registrants and potentially introducing an **IP/email domain** filter. Without such measures, you run the risk of bot or attacker registrations that could flood your environment with self-registered tenants. Another safety layer to identify genuine users could involve requiring a **credit card** during the sign-up process. While it is challenging to completely prevent your SaaS application from being misused by bots, these measures can reduce the risk to a certain extent.
 
-> **Hint** -  If **public** self-registration is not essential, it is advisable to either avoid it or implement stringent security measures while strictly limiting the workload capacity of **trial** accounts.! 
-
+:::tip **Hint** 
+If **public** self-registration is not essential, it is advisable to either avoid it or implement stringent security measures while strictly limiting the workload capacity of **trial** accounts.! 
+:::
 **Legal requirements** – When using cookies, it is important to inform your application users about their usage and obtain their consent regarding **cookie preferences**. Check the SAPUI5 documentation for a sample fragment that can be used for this purpose ([click here](https://ui5.sap.com//#/entity/sap.m.CookieSettingsDialogPattern)). Additionally, ensure compliance with legal requirements, such as having a **legal notice** or any other necessary information based on your country's regulations when offering a public homepage. The same applies to self-registration options, which may require [**Terms of Use**](https://help.sap.com/docs/identity-authentication/identity-authentication/configuring-terms-of-use) and/or a [**Privacy Policy**](https://help.sap.com/docs/identity-authentication/identity-authentication/configuring-privacy-policies). Both can be configured as part of the SAP Identity Authentication settings for your Onboarding Application Registration.
 
 **SAP partner limitations** – f you are an SAP partner, make sure you comply with the chosen partnership model when offering self-registration. While this approach may be suitable for internal customer developments, as a partner, you may be limited by models like PE Build, which require registering new customers with SAP first. In such cases, the OEM partnership model may be a more suitable choice. 
@@ -604,8 +633,9 @@ Security Considerations - In a real-world scenario, it is crucial to properly va
 
 **Cross-Region Scenarios** - Assuming you would like to provide your SaaS consumers with a high-availability setup and do not necessarily rely on a persistence layer for your SaaS application, checking a multi-region setup might be a suitable option! Instead of setting up just one subaccount in a dedicated SAP BTP Region, you could offer your subscribers an option to choose whether the application is supposed to be available across multiple regions (for sure based on some extra-fees). Feel free to reach out to us if you have a customer interested in such a scenario! While such a setup comes with an additional price tag and also further service requirements on a global hyperscaler routing offering of your choice (e.g., AWS Route53 or Azure Traffic Manager), this offers your customers a better experience when it comes to availability and performance of your application (e.g., routing requests to the closest region available).
 
-> **Hint** - Setting up a cross-regional service offering bears a lot of complexity and should not be underestimated!
-
+:::tip **Hint** 
+Setting up a cross-regional service offering bears a lot of complexity and should not be underestimated!
+:::
 **Customization** – SAP IAS offers you a plethora of customization options allowing you to modify the registration or login page, as well as the email templates used to validate the self-registration user! Check out the documentation and provide your customers an experience aligned with your company's style guide! To learn more, check out the official SAP Help Documentation ([click here](https://help.sap.com/docs/identity-authentication/identity-authentication/configuring-applications) or [click here](https://help.sap.com/docs/identity-authentication/identity-authentication/configuring-email-templates)).
 
 **Trial Features/Limitations** – Currently, this sample application does not contain a concept to reduce the functionality of the self-registered trial tenants. In a productive scenario, you should think about limitations for these free/trial tenants. Otherwise, you might risk that harmful individuals spam or misuse your trial service offering!

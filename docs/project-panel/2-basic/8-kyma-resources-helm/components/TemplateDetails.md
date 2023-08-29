@@ -13,11 +13,11 @@ Once again, you might find the following visualizations useful, as you will be a
 
 **Architecture Diagram**
 
-[<img src="./images/ResourceDetailsArch.png" width="600"/>](./images/ResourceDetailsArch.png?raw=true)
+![<img src="./images/ResourceDetailsArch.png" width="600"/>](./images/ResourceDetailsArch.png?raw=true)
 
 **Component Details**
 
-[<img src="./images/KymaObjectsGeneral.png" width="600"/>](./images/KymaObjectsGeneral.png?raw=true)
+![<img src="./images/KymaObjectsGeneral.png" width="600"/>](./images/KymaObjectsGeneral.png?raw=true)
 
 
 The recommended way to deploy our Sustainable SaaS sample application is the usage of the provided Helm Umbrella Chart. Doing so, you can maintain all environment specific settings in one place (values.yaml) and deploy all Helm Subcharts using one single Helm installation. 
@@ -107,8 +107,9 @@ _sapcp_helpers.tpl
 
 - The Service Manager Instance (**Subaccount Admin** plan - [click here](../../../../code/charts/sustainable-saas/templates/sm_admin.yaml)) allows our sample application to create a so-called Cloud Management Service Instance (**Central** plan) at runtime ([click here](https://discovery-center.cloud.sap/serviceCatalog/cloud-management-service/?region=all) for details). This Service Instance created at runtime, is required to create Service Manager Instances in the Subscriber Subaccounts. These Service Manager Instances can then be used to register API Service Brokers in the Subscriber Subaccounts. 
     
-    > **Important** - The default Service Manager Service Instance (**Operator Access** plan) - used by Kyma to create Service Instances in the Provider Subaccount - can unfortunately not be used to create the required CIS Central instance. 
-
+:::caution **Important** 
+The default Service Manager Service Instance (**Operator Access** plan) - used by Kyma to create Service Instances in the Provider Subaccount - can unfortunately not be used to create the required CIS Central instance. 
+:::
 - As already explained, each Service Instance defined in the *values.yaml* file requires a corresponding template in the *templates* folder. Most of these template files, simply include a template reference (*cap.service-instance*) defined in the *_helpers.tpl* helper file. This generic approach saves us from defining dedicated SAP BTP Service Instance templates for each SAP BTP Service Instance.
 
     > **sm_admin.yaml**
@@ -269,8 +270,9 @@ service.yaml # Cluster IP Service template for the SaaS API Service
 
 - The API Service Subchart contains a special Helm template allowing you to create Service Keys. If any **serviceKeys** value is defined in the *values.yaml*, a corresponding SAP BTP Service Binding will be created. This will create new Client Credentials but compared to regular Service Bindings (**bindings** property), the generated Secrets will not be mounted to the workload. 
 
-  > **Hint** - A Service Key is required for the Integration of SAP API Management, as dedicated Client Credentials of the API XSUAA Service Instance have to be stored in SAP API Management. This way, requests originating from SAP API Management can be securely authenticated. 
-
+:::tip **Hint** 
+A Service Key is required for the Integration of SAP API Management, as dedicated Client Credentials of the API XSUAA Service Instance have to be stored in SAP API Management. This way, requests originating from SAP API Management can be securely authenticated. 
+:::
 **API Management Proxy** 
 
 The API Management Proxy directory (**apim-proxy** - [click here](../../../../code/charts/sustainable-saas/charts/susaas-api/templates/apim-proxy/)) contains various Istio templates to ensure a secure SAP API Management integration. As SAP API Management is a service running outside the Kyma Cluster, all requests targeting the SaaS API Service will initially leave the Kyma environment, and will return back to Kyma after the API Policies have been successfully checked (find more details below). 
@@ -285,14 +287,15 @@ istio-virtual-service.yaml # Virtual Service for routing to SAP API Management o
 
 To guarantee that no request can reach the API Service workloads without passing through SAP API Management, respective Istio resources ensure, that a valid JWT token is part of an incoming request. This JWT token is generated and injected by SAP API Management, based on Client Credentials of an XSUAA service instance. Below you can see a visualization, depicting how a request arriving through Istio Ingress Gateway is being processed.
 
-[<img src="./images/APIManagementArch.png" width="800"/>](./images/APIManagementArch.png?raw=true)
+![<img src="./images/APIManagementArch.png" width="800"/>](./images/APIManagementArch.png?raw=true)
 
 - First of all, a so-called  **Service Entry** makes SAP API Management known as an external service to the Service Mesh. This allows us to it e.g., as destination target of Virtual Services. 
 
 - To integrate SAP API Management, a dedicated **Istio Virtual Service** is used, routing traffic based on a custom header (x-jwt-assertion). In case the header is missing (initial request), the request is routed to SAP API Management. If the custom header is available, traffic is forwarded to the API Service workload. 
 
-    > **Important** - The custom header is injected by SAP API Management, after the request was processed and all Traffic Policies have been successfully checked.
-
+:::caution **Important** 
+The custom header is injected by SAP API Management, after the request was processed and all Traffic Policies have been successfully checked.
+:::
     ```yaml
     apiVersion: networking.istio.io/v1beta1
     kind: VirtualService
@@ -331,8 +334,9 @@ To guarantee that no request can reach the API Service workloads without passing
 
 - An Istio **Request Authentication** ensures, that all requests targeting the API Service workload are checked for a **valid** JWT token, provided by a trusted issuers. If this is the case, the incoming request is considered authenticated and respective identity details can be used in subsequent Authorization Policies. 
 
-  > **Hint** - A Request Authentication without an Authorization Policy does not restrict access to your workloads. It only allows you to **authenticate** requests and ensures that JWT tokens are issued by a trusted issuer. The authentication details (like the identity available in the requestPrincipals property) can afterwards be validated in Authorization Policies. In case the JWT provider does not match a trusted issuer, the request will still be forwarded, but is considered "un-authenticated" not containing any identity details. 
-
+  :::tip **Hint** 
+  A Request Authentication without an Authorization Policy does not restrict access to your workloads. It only allows you to **authenticate** requests and ensures that JWT tokens are issued by a trusted issuer. The authentication details (like the identity available in the requestPrincipals property) can afterwards be validated in Authorization Policies. In case the JWT provider does not match a trusted issuer, the request will still be forwarded, but is considered "un-authenticated" not containing any identity details. 
+  :::
   ```yaml
   apiVersion: security.istio.io/v1beta1
   kind: RequestAuthentication
@@ -411,8 +415,9 @@ service.yaml # ClusterIP Service template for the API Service Broker
 
 - The API Service Broker requires a Config Map Helm template, containing some extension definitions used by the Service Broker when generating new Client Credentials. 
 
-    > **Hint** - These configurations extend the default API Service Broker settings and ensure that the **service plan** (selected by the subscriber) is added as a scope to tokens issued for the respective service instance. Another extension adds the API URI to all issued client credentials of respective service instances (so we do not have to provide them the URI manually). 
-    
+:::tip **Hint** 
+These configurations extend the default API Service Broker settings and ensure that the **service plan** (selected by the subscriber) is added as a scope to tokens issued for the respective service instance. Another extension adds the API URI to all issued client credentials of respective service instances (so we do not have to provide them the URI manually). 
+:::
     ```yaml
     apiVersion: v1
     kind: ConfigMap

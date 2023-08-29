@@ -3,8 +3,9 @@ sidebar_position: 11
 ---
 # Optional - Unsubscribe from a Consumer Subaccount
 
-> **Important** - If you are planning to setup the **Advanced Version** next, please consider this part of the tutorial optional!
-
+:::caution **Important** 
+If you are planning to setup the **Advanced Version** next, please consider this part of the tutorial optional!
+:::
 If a subaccount is subscribed to our multitenant SaaS sample application and created a service instance for the related SaaS API, the subaccount will resemble the below screenshot. 
 
  ![<img src="./images/customer-subaccount.png" width="500"/>](./images/customer-subaccount.png?raw=true)
@@ -38,8 +39,9 @@ Please check, whether the Sustainable SaaS API Service Broker has unregistered s
 
  ![<img src="./images/check-broker-unregister.png" width="700"/>](./images/check-broker-unregister.png?raw=true)
 
-> **Hint** - If your Service Broker is not unregistered automatically, you must unregister it with the help of SAP BTP CLI using this [command](https://help.sap.com/docs/BTP/btp-cli/btp-unregister-services-broker.html). Make sure your Service Broker is unregistered because otherwise you can **not** delete the respective subaccount.
-
+:::tip **Hint** 
+If your Service Broker is not unregistered automatically, you must unregister it with the help of SAP BTP CLI using this [command](https://help.sap.com/docs/BTP/btp-cli/btp-unregister-services-broker.html). Make sure your Service Broker is unregistered because otherwise you can **not** delete the respective subaccount.
+:::
 
 ## 3. Further Information
 

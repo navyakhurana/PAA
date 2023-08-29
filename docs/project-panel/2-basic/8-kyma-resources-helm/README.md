@@ -16,8 +16,9 @@ So let us get started with the fundamentals of the Deployment technology used fo
 
 ## Helm Charts
 
-> **Important** - Find more details in the [Helm Charts](./components/HelmCharts.md) documentation!
-
+:::caution **Important** 
+Find more details in the [Helm Charts](./components/HelmCharts.md) documentation!
+:::
 While most SAP BTP developers are familiar with Cloud Foundry deployments using a Multitarget Application Deployment Descriptor (mta.yaml), in Kyma/Kubernetes things are a bit different. As within other Kubernetes environments, Kyma makes use of various yaml files to deploy the various application resources (like Deployments, Network Policies, Horizontal Pod Autoscalers, ...) to the Cluster. 
 
 To support and ease this deployment process and creation of yaml files, we are using [Helm](https://helm.sh/) in our project, which allows a simplified and template-based generation these manifests. Helm is the de-facto industry standard and the so-called Helm Charts (which can partly be generated using CAP standard features), simplify the definition of repeatable patterns and allow the usage of centrally defined variables and smart templating approaches. This reduces the overhead of creating dozens of yaml files manually for each and every Kubernetes resource. 
@@ -28,8 +29,9 @@ Find more details in the [Helm Charts](./components/HelmCharts.md) documentation
 
 ## Resource Overview
 
-> **Important** - Find more details in the [Resource Overview](./components/ResourceOverview.md) documentation!
-
+:::caution **Important** 
+Find more details in the [Resource Overview](./components/ResourceOverview.md) documentation!
+:::
 The SAP BTP Kyma Runtime allows developers to use a variety of native Kubernetes resources but also adds several custom Kyma objects (like API Rules) to the available toolset. Additionally, our SaaS sample application is relying on a number of so-called Istio resources, used for setting up a so-called service mesh in our Kyma Cluster. Check out the linked documentation, to get an idea what kind of resources are being used in our scenario. The provided introduction will help you understand the relation between all those resources and the sample application workloads running in your Kyma Cluster. 
 
 The following visualization shows a range of resources used by our SaaS application, and briefly summarizes the provided capabilities in context our sample use case. 
@@ -40,8 +42,9 @@ Find more details in the [Resource Overview](./components/ResourceOverview.md) d
 
 ## Template Details
 
-> **Important** - Find more details in the [Template Details](./components/TemplateDetails.md) documentation!
-
+:::caution **Important** 
+Find more details in the [Template Details](./components/TemplateDetails.md) documentation!
+:::
 Once you have gained some experience with Helm and you learned about the various Kyma and Kubernetes objects used in our sample project, feel free to join us on a little deep dive. We spared no effort and provided you an extensive overview, describing the purpose of the most relevant Helm templates used in this sample project. While most of the templates are very similar in the respective Helm Subcharts (like Authorization Policies or Service Bindings), some of the templates (or actually the resulting Kubernetes resources) have a very special job to fulfill. 
 
 Therefore, feel free to follow along and to learn more about selected Helm templates, providing you with an even better understanding of what is going on under the hood, once you deployed the sample application to your Kyma Cluster. 

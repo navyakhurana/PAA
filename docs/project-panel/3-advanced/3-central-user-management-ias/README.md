@@ -61,22 +61,26 @@ In case you already have an existing trust between SAP XSUAA of Provider Subacco
 * Set up your central SAP IAS tenant as a trusted IdP in your Consumer Subaccounts.  
 * Disable the creation of shadow users in the SAP IAS trust configurations.  
 
-> **Important** - Make sure that the shadow user creation is **also disabled in your Provider Subaccount**! 
-
+:::caution **Important** 
+Make sure that the shadow user creation is **also disabled in your Provider Subaccount**! 
+:::
 In case you don't have an SAP IAS tenant or you haven't configured it as a trusted Identity Provider in your **Provider and consumer** subaccounts yet, please follow the steps below:
 
 2.1. There are multiple ways to get an SAP IAS instance. Usually an SAP customer is supposed to have one productive SAP IAS instance in his SAP landscape. An SAP IAS instance can either be created right from within the SAP BTP Cockpit or a customer/partner gets it in a bundle with solutions like SAP SuccessFactors. 
 
 2.2. To check whether there's already an SAP IAS tenant available which can be used for this scenario, please go to your Provider Subaccount and switch to the **Trust Configuration** in the **Security** section. Click on **Establish Trust**. If there is an SAP IAS tenant available in your landscape and a mapping between your SAP BTP Global Account and your SAP CRM customer number exists, you should be able to select it from the list. In that case please repeat the same process in each Consumer Subaccount and you're done with the trust set up and you can skip steps 3.3 to 3.6. 
 
-> **Important** - Don't forget to continue with steps *4 - Disable Automatic Shadow User Creation* to finish the technical setup in your **Provider and Consumer Subaccounts**.
-
+:::caution **Important** 
+Don't forget to continue with steps *4 - Disable Automatic Shadow User Creation* to finish the technical setup in your **Provider and Consumer Subaccounts**.
+:::
 2.3. If there is no SAP IAS tenant available in the dropdown, you can create a new tenant from your Provider Subaccount or any other subaccount. Please switch to **Instances and Subscriptions** in the **Services** section and create a new service instance of type **Cloud Identity Service** with service plan **default**. 
 
-> **Important** - If you're missing this service or service plan, please make sure to add it to your subaccount entitlements. 
-
-> **Hint** - While the **default** service plan will create a new SAP IAS tenant, the **application** service plan will create a new application registration in an SAP IAS tenant configured as a trusted IdP to the respective subaccount. 
-
+:::caution **Important** 
+If you're missing this service or service plan, please make sure to add it to your subaccount entitlements. 
+:::
+:::tip **Hint** 
+While the **default** service plan will create a new SAP IAS tenant, the **application** service plan will create a new application registration in an SAP IAS tenant configured as a trusted IdP to the respective subaccount. 
+:::
 2.4. Decide if you want to set up a productive or test tenant of SAP Identity Authentication and click on **Create** to trigger the setup. 
 
 2.5. You or your SAP BTP Global Account administrator will receive a mail with instructions on how to initialize your new SAP IAS tenant once it is provisioned. The initial admin user can create further users or admins in SAP IAS. 
@@ -116,8 +120,9 @@ As already described in the [Advanced Version Repository details](../1-understan
 
 4.1. A **Cloud Identity** service instance creates a new Application Registration in the SAP IAS tenant which is configured as Trusted Identity Provider of the given subaccount. Using the X.509 certificate of a respective Service Binding of this Cloud Identity Service instance, allows you to call the API endpoints of SAP IAS, to register or delete new users on behalf of the Application Registration. 
 
-> **Important** - The Integration with SAP Identity Authentication requires additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
-
+:::caution **Important** 
+The Integration with SAP Identity Authentication requires additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
+:::
 ```yaml 
 # SAP Cloud Identity Service Instance
 # Provides an SAP IAS integration for central user management
@@ -130,8 +135,9 @@ identity:
 
 4.2. Continue by updating your Backend Service settings, which results in a Service Binding between your **Backend Service** and the above **Cloud Identity** service instance upon *helm install* or *helm upgrade*. In this case a special binding type (X.509) is required, while for all other bindings we are using standard Client Credential bindings. 
 
-> **Important** - The Integration with SAP Identity Authentication requires both additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
-
+:::caution **Important** 
+The Integration with SAP Identity Authentication requires both additional entitlements in your SAP BTP Subaccount as well as a SAP Identity Authentication tenant.
+:::
 ```yaml 
 srv:
   port: 8080
@@ -184,8 +190,9 @@ Using a binding to a service instance of type **Cloud Identity Service** (applic
 
  ![<img src="./images/IAS_ServiceInstance.png" width="300" />](./images/IAS_ServiceInstance.png?raw=true)
 
-> **Important** - When setting up the SAP IAS trust in the SAP BTP **Trust Configuration**, an application registration in SAP IAS is created, which is used for authentication to all XSUAA-based applications in the subaccount. 
-
+:::caution **Important** 
+When setting up the SAP IAS trust in the SAP BTP **Trust Configuration**, an application registration in SAP IAS is created, which is used for authentication to all XSUAA-based applications in the subaccount. 
+:::
  ![<img src="./images/IAS_ProviderTrust.png" width="300" />](./images/IAS_ProviderTrust.png?raw=true)
 
 Additionally, the Cloud Identity Service instance (application plan) defined in the mta.yaml of our sample application creates another application registration in SAP IAS during deployment. This service instance is bound to the SaaS backend and is used to programmatically interact with SAP IAS (e.g., to register or unregister users)
@@ -265,8 +272,9 @@ All set? Great - then let's check whether the SAP IAS Integration works as expec
 
 6.4. Once the new user is successfully created, check your e-mail inbox, which should contain a message from the central SAP Identity Authentication Service instance. In this e-mail, the you will be asked to sign-up for the Sustainable SaaS application. 
 
-> **Hint** - The style and content of this e-mail can be modified for each application registration in SAP Identity Authentication Service ([click here](https://help.sap.com/docs/IDENTITY_AUTHENTICATION/6d6d63354d1242d185ab4830fc04feb1/b2afbcdccdf7410f8953e1e833e77de0.html?locale=en-US)). 
-
+:::tip **Hint** 
+The style and content of this e-mail can be modified for each application registration in SAP Identity Authentication Service ([click here](https://help.sap.com/docs/IDENTITY_AUTHENTICATION/6d6d63354d1242d185ab4830fc04feb1/b2afbcdccdf7410f8953e1e833e77de0.html?locale=en-US)). 
+:::
  ![<img src="./images/IAS_Email01.png" width="390" />](./images/IAS_Email01.png?raw=true)
 
 6.5. Click on the provided link, to reach the registration form in which you can change your first and last name if required and set a password for the SAP Identity Authentication Service account. 
@@ -281,8 +289,9 @@ All set? Great - then let's check whether the SAP IAS Integration works as expec
 
  ![<img src="./images/IAS_LoginSubscr.png" width="390" />](./images/IAS_LoginSubscr.png?raw=true)
 
-> **Hint** - You will not see the name of the SaaS application registration in the authentication screen but the name of the application registration created by the XSUAA - SAP IAS trust setup. This relates to the [Architecture Setup](../3-central-user-management-ias/README.md#6-architecture-and-flow) described in chapter *Central user management using SAP Identity Authentication Service*. This screen can also be customized in SAP Identity Authentication Service ([click here](https://help.sap.com/docs/IDENTITY_AUTHENTICATION/6d6d63354d1242d185ab4830fc04feb1/32f8d337f0894d269f5f89956803efac.html?locale=en-US)).
-
+:::tip **Hint** 
+You will not see the name of the SaaS application registration in the authentication screen but the name of the application registration created by the XSUAA - SAP IAS trust setup. This relates to the [Architecture Setup](../3-central-user-management-ias/README.md#6-architecture-and-flow) described in chapter *Central user management using SAP Identity Authentication Service*. This screen can also be customized in SAP Identity Authentication Service ([click here](https://help.sap.com/docs/IDENTITY_AUTHENTICATION/6d6d63354d1242d185ab4830fc04feb1/32f8d337f0894d269f5f89956803efac.html?locale=en-US)).
+:::
 
 6.8. As a **Provider administrator** you will see the new user in your XSUAA user management using the SAP BTP Cockpit. In the following screenshot, you can see that the Provider administrator (using the Default Platform Identity Provider -> SAP ID Service) has set up the new user (now assigned to the Custom Identity Provider -> SAP Identity Authentication). 
 
@@ -295,8 +304,9 @@ All set? Great - then let's check whether the SAP IAS Integration works as expec
 
 6.10. To skip the Identity Provider selection screen using SAP IAS as default Identity Provider, please disable the login using SAP ID Service in the **Trust Configuration** settings of the respective Tenant Subaccount. 
 
-> **Important** - Please keep in mind, changing this setting that your initial user (mapped to SAP Identity Service) cannot log in to the Tenant subscription instance anymore.
-
+:::caution **Important** 
+Please keep in mind, changing this setting that your initial user (mapped to SAP Identity Service) cannot log in to the Tenant subscription instance anymore.
+:::
  ![<img src="./images/IAS_DisableLogon01.png" width="500" />](./images/IAS_DisableLogon01.png?raw=true)
  ![<img src="./images/IAS_DisableLogon02.png" width="280" />](./images/IAS_DisableLogon02.png?raw=true)
 

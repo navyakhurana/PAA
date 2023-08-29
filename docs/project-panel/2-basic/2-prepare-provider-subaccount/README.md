@@ -70,12 +70,14 @@ If not available yet, please create a SAP HANA Cloud instance in your Provider s
 
 Any SAP HANA Cloud instance in the same region as your Kyma Cluster, can be enabled for usage within the Kyma Cluster of your Provider subaccount. Once you created the SAP HANA Cloud instance, please map it with your Kyma Cluster using the **Instance Mapping** feature. You can either map the SAP HANA Cloud instance with all namespaces in the Kyma Cluster or provide a dedicated namespace name. More information on how to share your SAP HANA Cloud instance with your Kyma Cluster can be found in the following blog post [(click here)](https://blogs.sap.com/2022/12/15/consuming-sap-hana-cloud-from-the-kyma-environment/). 
 
-> **Important** - Please make sure to use the new **SAP HANA Cloud Tools** service (service plan **tools**) for this purpose! The instance mapping feature for Kyma is not available in the SAP HANA Cloud Central UI. The **SAP HANA Cloud Tools** are not yet available in the Trial environment! 
-
+:::caution **Important** 
+Please make sure to use the new **SAP HANA Cloud Tools** service (service plan **tools**) for this purpose! The instance mapping feature for Kyma is not available in the SAP HANA Cloud Central UI. The **SAP HANA Cloud Tools** are not yet available in the Trial environment! 
+:::
  ![<img src="./images/HanaCloudKyma.png" width="600"/>](./images/HanaCloudKyma.png?raw=true)
 
-> **Important** - In **SAP BTP Trial** landscapes, you cannot share a SAP HANA Cloud Instance with your Kyma Cluster. The required SAP HANA Cloud Tools are not available yet. In this case (which won't be covered in detail), please follow the official CAP documentation (https://cap.cloud.sap/docs/guides/deployment/deploy-to-kyma#hana-cloud-instance). It will explain in detail, how to create the required Service Key in the Cloud Foundry context and how to map to to a corresponding Secret in your Kyma Cluster. 
-
+:::caution **Important** 
+In **SAP BTP Trial** landscapes, you cannot share a SAP HANA Cloud Instance with your Kyma Cluster. The required SAP HANA Cloud Tools are not available yet. In this case (which won't be covered in detail), please follow the official CAP documentation (https://cap.cloud.sap/docs/guides/deployment/deploy-to-kyma#hana-cloud-instance). It will explain in detail, how to create the required Service Key in the Cloud Foundry context and how to map to to a corresponding Secret in your Kyma Cluster. 
+:::
 
 ## 4. Limitations of free services plans
 
