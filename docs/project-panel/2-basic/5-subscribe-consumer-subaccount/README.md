@@ -31,7 +31,7 @@ Especially in production scenarios, we recommend to **keep the unique ID** which
 1.4. Select the **Sustainable SaaS** service from the dropdown list.
 
 :::tip **Hint** 
-In case of multiple deployments in the same or different Kyma Clusters of subaccounts in the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **\<Release\>-\<Namespace\>-\<ShootName\>**.
+In case of multiple deployments in the same or different Kyma Clusters of subaccounts in the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **<Release>-<Namespace>-<ShootName>**.
 :::
  ![<img src="./images/SUB_CreateSub02.png" width="400"/>](./images/SUB_CreateSub02.png?raw=true)
 
@@ -39,11 +39,11 @@ In case of multiple deployments in the same or different Kyma Clusters of subacc
 
 1.6. You can now define a **custom subdomain** for your Subscriber Tenant. Please make sure to understand this feature before making use of it. If you leave this field blank, the URL of your Subscriber Tenant will be created in the following format.
 
-**\<SubaccountSubdomain\>-\<ReleaseName\>-router-\<Namespace\>.\<ShootName\>.kyma.ondemand.com**
+**<SubaccountSubdomain>-<ReleaseName>-router-<Namespace>.<ShootName>.kyma.ondemand.com**
 
 While this may result in long and inconvenient URLs for your subscribers, the uniqueness of the generated subdomain is ensured when following this format. If you decide to provide a custom subdomain, the resulting URL will have the following format (as long as you are not using a custom domain).
 
-**\<CustomDomain\>.\<ShootName\>.kyma.ondemand.com**
+**<CustomDomain>.<ShootName>.kyma.ondemand.com**
 
 In this sample, we did not implement a check for the uniqueness of the value provided. It is in your responsibility to ensure, not to double-assign the same custom subdomain to your subscribers! 
 
@@ -63,7 +63,7 @@ Once you subscribed to the SaaS sample application from a Tenant Subaccount, you
 2.2. Therefore, go to the **Instances and Subscriptions** menu and click on **Create** again. Select the new **Sustainable SaaS API** service from the list. 
 
 :::tip **Hint** 
-In case of multiple deployments in the same or different Kyma Clusters of the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **\<Release\>-api-\<Namespace\>-\<ShootName\>**.
+In case of multiple deployments in the same or different Kyma Clusters of the same SAP BTP region, make sure to use the correct service offering by checking the service ID format **<Release>-api-<Namespace>-<ShootName>**.
 :::
  ![<img src="./images/SUB_CreateAPI01.png" width="400"/>](./images/SUB_CreateAPI01.png?raw=true)
 
@@ -102,7 +102,7 @@ As the SaaS application offers an in-app user management component, all regular 
 
 3.1. To give the first Tenant administrator access to the SaaS instance, please **temporarily** assign the **Susaas Administrator** role collection to your own user to finish the onboarding process in the Tenant Subaccount. This is the only time a **temporary** assignment of a role collection in the SAP BTP Cockpit takes place to complete the onboarding process.
 
-Make sure to select the correct role collection if you deployed the SaaS sample application multiple times. The format in parenthesis is as follows - **\<ReleaseName\>-\<Namespace\>**.
+Make sure to select the correct role collection if you deployed the SaaS sample application multiple times. The format in parenthesis is as follows - **<ReleaseName>-<Namespace>**.
 
  ![<img src="./images/SUB_InitApp02.png" width="600"/>](./images/SUB_InitApp02.png?raw=true)
 
