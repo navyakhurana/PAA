@@ -59,7 +59,7 @@ Understanding the fundamental ideas of Helm is necessary if you want to use Helm
 
 A Helm Chart is a package that contains all the necessary information and configuration to deploy and manage an application on a Kubernetes/Kyma Cluster. It is used by Helm, which is a package manager for Kubernetes, to automate the deployment and management of applications on the Cluster.
 
-A Helm Chart is defined using a YAML file called [Chart.yaml](../../../../code/charts/sustainable-saas/Chart.yaml), which contains metadata about the chart such as its name, version, and description. The chart also includes a collection of templates written in Go Templating Language, that define the configuration for Kubernetes resources such as Pods, Services, Deployments.
+A Helm Chart is defined using a YAML file called [Chart.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/Chart.yaml), which contains metadata about the chart such as its name, version, and description. The chart also includes a collection of templates written in Go Templating Language, that define the configuration for Kubernetes resources such as Pods, Services, Deployments.
 
 For more detailed information, please refer to the official Helm documentation ([click here]([here](https://helm.sh/)).
 
@@ -70,10 +70,10 @@ As you might see from the repository, the chart directory looks as below.
 
 ![<img src="./images/HELM_Chart_Dir.png" width="100"/>](./images/HELM_Chart_Dir.png?raw=true)
 
-In following sections you will be inspecting the files and their purposes in the [chart](../../../../code/charts/sustainable-saas/) directory.
+In following sections you will be inspecting the files and their purposes in the [chart](https://github.com/SAP-samples/btp-cap-multitenant-saas/tree/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/charts) directory.
 
 
-### 3.1. [Chart.yaml](../../../../code/charts/sustainable-saas/Chart.yaml) file
+### 3.1. [Chart.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/Chart.yaml) file
 
 Chart.yaml is a file in a Helm Chart that contains metadata about the chart, including its name, version, description, and other information. This file is used by Helm to manage the chart and its dependencies, and it is required for every Helm Chart.
 
@@ -108,17 +108,17 @@ The Chart.yaml file contains information about the Helm Chart such as:
         version: 0.1.0
     ```
 
-     :::tip **Hint** 
-     This Helm Chart contains four so-called Subcharts as dependencies. These charts are separate Helm Charts and the relation will be covered in detail by this documentation.
-     :::
+  :::tip **Hint** 
+  This Helm Chart contains four so-called Subcharts as dependencies. These charts are separate Helm Charts and the relation will be covered in detail by this documentation.
+  :::
 
-### 3.2. [Values.yaml](../../../../code/charts/sustainable-saas/values.yaml) file
+### 3.2. [Values.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/values.yaml) file
 
-The [values.yaml](../../../../code/charts/sustainable-saas/values.yaml) file is used to specify a range of options and settings that control the behavior and configuration of a chart. 
+The [values.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/values.yaml) file is used to specify a range of options and settings that control the behavior and configuration of a chart. 
 
 For example, it might include values for resource limits, image names, feature flags, and other settings that control the behavior and appearance of the components defined in a chart.
 
-Please take a look at the given section of [values.yaml](../../../../code/charts/sustainable-saas/values.yaml) file below, to get a better understanding.
+Please take a look at the given section of [values.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/values.yaml) file below, to get a better understanding.
 
 ```yaml
 ...
@@ -161,7 +161,7 @@ The Deployment also has three SAP BTP Service Instances bound to it:
 - html5-apps-repo (HTML5 Application Repository Service)
 
 
-### 3.3. [values.schema.json](../../../../code/charts/sustainable-saas/values.schema.json) and [values.root.schema.json](../../../../code/charts/sustainable-saas/values.root.schema.json) files
+### 3.3. [values.schema.json](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/values.schema.json) and [values.root.schema.json](../../../../code/charts/sustainable-saas/values.root.schema.json) files
 
 These two JSON files are so-called schema files. A JSON schema is a standard for describing the structure and constraints of JSON data, and it is also used to validate *values.yaml* values. This ensures that values provided by the user follow the schema laid out by the chart maintainer, providing better error reporting when the user provides an incorrect set of values for a chart.
 
@@ -216,7 +216,7 @@ router:
 Proper schema files can be used to validate template parameters, which becomes especially useful when shipping your Helm Charts to a broader audience! For now, please remove the **test** property again, to make the chart installable and valid for upcoming sections again.
 
 
-### 3.4. [Templates](../../../../code/charts/sustainable-saas/templates/) in Helm Chart
+### 3.4. [Templates](https://github.com/SAP-samples/btp-cap-multitenant-saas/tree/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/templates) in Helm Chart
 
 Templates in Helm Charts are files that define how resources should be deployed to a Kyma Cluster. They are used to generate manifest files for Kyma/Kubernetes resources, such as Pods, Services or Service Bindings, based on chart-defined values and configuration parameters. Templates are written in the **Helm template language(*)** and use its syntax and features to dynamically generate the manifests based on user-defined and default values of the chart.
 
@@ -224,11 +224,11 @@ Templates in Helm Charts are files that define how resources should be deployed 
  (*) Helm Template Language definition according to [Helm official documentation](https://helm.sh/docs/chart_template_guide/functions_and_pipelines/): "While we talk about the "Helm template language" as if it is Helm-specific, it is actually a combination of the Go template language, some extra functions, and a variety of wrappers to expose certain objects to the templates. Many resources on Go templates may be helpful as you learn about templating."
  :::
 
-[./code/chart/templates](../../../../code/charts/sustainable-saas/templates/) directory contains the templates of the Helm Chart.
+[./code/chart/templates](https://github.com/SAP-samples/btp-cap-multitenant-saas/tree/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/templates) directory contains the templates of the Helm Chart.
 
 ![<img src="./images/HELM_Chart_Temp_Dir.png" width="500"/>](./images/HELM_Chart_Temp_Dir.png?raw=true)
 
-The [templates](../../../../code/charts/sustainable-saas/templates/) directory contains the template files, which will be converted to Kubernetes resource definitions when running *helm template* or *helm install*. 
+The [templates](https://github.com/SAP-samples/btp-cap-multitenant-saas/tree/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/templates) directory contains the template files, which will be converted to Kubernetes resource definitions when running *helm template* or *helm install*. 
 
 :::caution **Important** 
 Filenames starting with an underscore (_) are assumed not to contain a manifest template inside. These files are not converted to Kubernetes resource definitions, but are available within other chart templates for reuse purposes. Details will be covered in further sections.
@@ -313,7 +313,7 @@ If you want to gain deeper understanding of Helm templating it is strongly recom
 
 ### 4.1. Creating a Config Map and adding it as a template
 
-In the [templates directory](../../../../code/charts/sustainable-saas/templates/), create a file called **my-config-map.yaml**, and paste the below content inside the file.
+In the [templates directory](https://github.com/SAP-samples/btp-cap-multitenant-saas/tree/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/templates), create a file called **my-config-map.yaml**, and paste the below content inside the file.
 
 ```yaml
 apiVersion: v1
@@ -376,12 +376,12 @@ data:
 As you can see, *.Release.Name* is a built-in object (similar to a variable) in Helm. It is set to the release name you provide to the **helm template** command. There are also other built-in objects set by Helm automatically. A list of those objects can be seen found in the [official documentation](https://helm.sh/docs/chart_template_guide/builtin_objects/).
 
 
-### 4.3. Using values from the [values.yaml](../../../../code/charts/sustainable-saas/values.yaml) file
+### 4.3. Using values from the [values.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/values.yaml) file
 
-One of the Helm key concepts, is generating the Kubernetes/Kyma manifest files in a more dynamic way, using configuration details defined in the [values.yaml](../../../../code/charts/sustainable-saas/values.yaml) file.
+One of the Helm key concepts, is generating the Kubernetes/Kyma manifest files in a more dynamic way, using configuration details defined in the [values.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/values.yaml) file.
 In this section you will be adding a new configuration to the *values.yaml* file and then reference it from within your template.
 
-Open your [values.yaml](../../../../code/charts/sustainable-saas/values.yaml) and append the following configuration.
+Open your [values.yaml](https://github.com/SAP-samples/btp-cap-multitenant-saas/blob/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/values.yaml) and append the following configuration.
 
 ```yaml 
 ...

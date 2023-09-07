@@ -90,8 +90,9 @@ spec:
 
 The generated [Virtual Service](#virtual-service), which will look like below and is updated whenever you apply changes to the corresponding API Rule. 
 
-> **Important** - As [Virtual Service](#virtual-service) will be updated automatically, please do not apply manual changes to instances associated to API Rules. If the API Rule feature scope is not sufficient, please create a dedicated [Virtual Service](#virtual-service) instead!
-
+:::caution  **Important** - 
+As [Virtual Service](#virtual-service) will be updated automatically, please do not apply manual changes to instances associated to API Rules. If the API Rule feature scope is not sufficient, please create a dedicated [Virtual Service](#virtual-service) instead!
+:::
 ```yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
