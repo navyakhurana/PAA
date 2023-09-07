@@ -220,9 +220,9 @@ Proper schema files can be used to validate template parameters, which becomes e
 
 Templates in Helm Charts are files that define how resources should be deployed to a Kyma Cluster. They are used to generate manifest files for Kyma/Kubernetes resources, such as Pods, Services or Service Bindings, based on chart-defined values and configuration parameters. Templates are written in the **Helm template language(*)** and use its syntax and features to dynamically generate the manifests based on user-defined and default values of the chart.
 
- :::tip **Hint** 
- (*) Helm Template Language definition according to [Helm official documentation](https://helm.sh/docs/chart_template_guide/functions_and_pipelines/): "While we talk about the "Helm template language" as if it is Helm-specific, it is actually a combination of the Go template language, some extra functions, and a variety of wrappers to expose certain objects to the templates. Many resources on Go templates may be helpful as you learn about templating."
- :::
+:::tip **Hint** 
+(*) Helm Template Language definition according to [Helm official documentation](https://helm.sh/docs/chart_template_guide/functions_and_pipelines/): "While we talk about the "Helm template language" as if it is Helm-specific, it is actually a combination of the Go template language, some extra functions, and a variety of wrappers to expose certain objects to the templates. Many resources on Go templates may be helpful as you learn about templating."
+:::
 
 [./code/chart/templates](https://github.com/SAP-samples/btp-cap-multitenant-saas/tree/a54ac406193ab9f5fe066f1f0e205bb3df667632/deploy/kyma/charts/sustainable-saas/templates) directory contains the templates of the Helm Chart.
 
