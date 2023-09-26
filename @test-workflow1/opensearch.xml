@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Build resilient apps with SAP BTP (PR: #4)</ShortName>
+  <Description>Search Build resilient apps with SAP BTP (PR: #4)</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">https://navyakhurana.github.io/PAA/@test-workflow1/img/favicon.ico</Image>
+  <Url type="text/html" method="get" template="https://navyakhurana.github.io/PAA/@test-workflow1/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://navyakhurana.github.io/PAA/@test-workflow1/opensearch.xml" />
+  <moz:SearchForm>https://navyakhurana.github.io/PAA/@test-workflow1/</moz:SearchForm>
+</OpenSearchDescription>
