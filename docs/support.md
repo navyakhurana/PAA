@@ -13,10 +13,9 @@ Join our SAP Communities to get help, learn, innovate, and connect with others.
 
 ### Collaborate with Experts
 
-| Experts | &nbsp; | &nbsp; | 
+|![<img src="docs/img/contributors/Martin.png?raw=true" width="100">](./img/contributors/Martin.png?raw=true) | [Martin Frick](https://github.com/martinfrick) | Use case Expert|
 |:------:|:------------------------------|:------------|
-|![<img src="docs/img/contributors/Martin.png?raw=true" width="100">](./img/contributors/Martin.png?raw=true) | [Martin Frick](https://github.com/martinfrick) | Use case |
-|![<img src="docs/img/contributors/Alper.png?raw=true" width="100">](./img/contributors/Alper.png?raw=true) | [Alper Dedeoglu](https://github.com/alperdedeoglu) | Use case |
+|![<img src="docs/img/contributors/Alper.png?raw=true" width="100">](./img/contributors/Alper.png?raw=true) | [**Alper Dedeoglu**](https://github.com/alperdedeoglu) | **Use case Expert**|
 
 ### Report an Issue
 
