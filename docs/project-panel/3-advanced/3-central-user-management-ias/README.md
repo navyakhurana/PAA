@@ -263,8 +263,6 @@ All set? Great - then let's check whether the SAP IAS Integration works as expec
 
 6.2. As you have setup a trust between the XSUAA environment of your Subscriber Subaccount and the central SAP IAS tenant, you should now be facing a new selection screen, asking you which Identity Provider to use for authentication. As you did not create a SAP IAS user so far, please continue with the **Default Identity Provider** and login with your default SAP Identity Service credentials. 
 
- ![<img src="./images/IAS_IdPSelection.png" width="400" />](./images/IAS_IdPSelection.png?raw=true)
-
 6.3. Switch to the **Manage Users** interface and create a new user. For testing purposes, feel free to set up a second user for yourself, but make sure to use **a different e-mail address** this time! 
 
  ![<img src="./images/IAS_CreateUser01.png" width="200" />](./images/IAS_CreateUser01.png?raw=true)
