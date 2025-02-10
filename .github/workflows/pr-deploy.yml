@@ -38,7 +38,10 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_SOURCE_BRANCH: ${{ github.event.pull_request.head.ref }}
           PR_SOURCE_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-        if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+
+      - name: Verify Patch Application
+        run: |
+          cat docusaurus.config.js | grep "title: 'Build resilient apps with SAP BTP (PR: #${{ github.event.pull_request.number }})'"
 
       - name: Build Website
         run: npm run build
@@ -77,5 +80,5 @@ jobs:
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "Preview website is available [here](https://pages.github.com/${{ github.repository }}/@${{ github.head_ref }})."
+          message: "🚀 Preview website is available [here](${{ steps.deployment.outputs.page_url }}/@${{ github.event.pull_request.head.ref }})."
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
