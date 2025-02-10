@@ -71,7 +71,6 @@ jobs:
   pr_comment:
     name: Post Preview Link (PRs)
     needs: deploy
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
