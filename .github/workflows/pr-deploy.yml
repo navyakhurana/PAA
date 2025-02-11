@@ -1,7 +1,7 @@
 name: PR Deploy
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
     types:
@@ -75,6 +75,7 @@ jobs:
       - name: Cleanup (Main Branch)
         if: github.ref == 'refs/heads/main'
         run: |
+          shopt -s extglob
           rm -rf !(@*)
           rm @@data/*.json
 
