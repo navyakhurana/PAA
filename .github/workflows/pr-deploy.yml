@@ -112,5 +112,5 @@ jobs:
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "🚀 Preview website is available [here](https://navyakhurana.github.io/PAA/@$(System.PullRequest.SourceBranch))."
+          message: "Preview website is available [here](https://navyakhurana.github.io/PAA/@${{ github.event.pull_request.head.ref }})."
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
