@@ -1,0 +1,84 @@
+name: PR Deploy
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    name: Build Site for PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Patch docusaurus.config.js for PR builds
+        run: |
+          sed -E -i "s^baseUrl:(..*)PAA^baseUrl:\1PAA/@${{ github.event.pull_request.head.ref }}^g" docusaurus.config.js
+          sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
+          sed -E -i "s^logo: \{^logo: \{href: '${{ github.event.pull_request.html_url }}',^g" docusaurus.config.js
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Verify Patch Application
+        run: |
+          cat docusaurus.config.js
+
+      - name: Verify Patch Application
+        run: |
+          cat docusaurus.config.js | grep "title: 'Build resilient apps with SAP BTP (PR: #${{ github.event.pull_request.number }})'"
+      - name: Build Website
+        run: npm run build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: https://navyakhurana.github.io/PAA/@${{ github.event.pull_request.head.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  pr_comment:
+    name: Post Preview Link (PRs)
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Add PR Comment with Preview Link
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: "Preview website is available [here](https://navyakhurana.github.io/PAA/@${{ github.event.pull_request.head.ref }})."
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
