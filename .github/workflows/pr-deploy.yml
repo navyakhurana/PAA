@@ -60,7 +60,7 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-artifact
+          name: build
           path: build/
 
       - name: Set up Git
