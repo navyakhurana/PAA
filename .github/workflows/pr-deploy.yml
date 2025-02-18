@@ -97,6 +97,9 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             mv build/* @${{ github.event.pull_request.head.ref }}/
+            cd @${{ github.event.pull_request.head.ref }}/
+            tar -xvf github-pages/artifact.tar
+            rm github-pages/artifact.tar
           else
             mv build/* ./
           fi
