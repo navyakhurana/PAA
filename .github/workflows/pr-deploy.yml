@@ -67,8 +67,8 @@ jobs:
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
           GIT_USER: ${{ secrets.GIT_USER }}
         run: |
-          git config --global user.email "$GIT_USER_EMAIL"
-          git config --global user.name "$GIT_USER"
+          git config --global user.email "$$GIT_USER_EMAIL"
+          git config --global user.name "$$GIT_USER"
 
       - name: Switch to paa-doc Branch
         run: |
@@ -80,7 +80,6 @@ jobs:
         run: |
           shopt -s extglob
           rm -rf !(@*)
-          rm @@data/*.json
 
       - name: Cleanup (PR Branch)
         if: github.event_name == 'pull_request'
@@ -88,7 +87,7 @@ jobs:
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
           for branchFolder in @* ; do 
-            if [[ -d "$branchFolder" && -z $(git ls-remote origin ${branchFolder:1}) && "$branchFolder" != "@@data" ]]; then
+            if [[ -d "$branchFolder" && -z $(git ls-remote origin ${branchFolder:1}) ]]; then
               rm -rf $branchFolder
             fi;
           done
@@ -98,11 +97,11 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             mv build/* @${{ github.event.pull_request.head.ref }}/
             cd @${{ github.event.pull_request.head.ref }}/
-            tar -xvf github-pages/artifact.tar
-            rm github-pages/artifact.tar
           else
             mv build/* ./
           fi
+          tar -xvf github-pages/artifact.tar
+          rm github-pages/artifact.tar
 
       - name: Commit and Push Changes
         run: |
