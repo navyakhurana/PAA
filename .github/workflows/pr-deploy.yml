@@ -30,7 +30,7 @@ jobs:
         run: |
           sed -E -i "s^baseUrl:(..*)PAA^baseUrl:\1PAA/@${{ github.event.pull_request.head.ref }}^g" docusaurus.config.js
           sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
-          sed -E -i "s|(navbar: \{[^}]*title: ')Develop a multitenant Software as a Service application in SAP BTP using CAP(',)|\1Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})\2|g" docusaurus.config.js
+          sed -E -i "s^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP'^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})'^g" docusaurus.config.js
 
           sed -E -i "s^logo: \{^logo: \{href: '${{ github.event.pull_request.html_url }}',^g" docusaurus.config.js
         env:
