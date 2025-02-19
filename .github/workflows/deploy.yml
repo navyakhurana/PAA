@@ -47,12 +47,9 @@ jobs:
           path: build/
 
       - name: Set up Git
-        env:
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-          GIT_USER: ${{ secrets.GIT_USER }}
         run: |
-          git config --global user.email "$GIT_USER_EMAIL"
-          git config --global user.name "$GIT_USER"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
 
       - name: Switch to paa-doc Branch
         run: |
