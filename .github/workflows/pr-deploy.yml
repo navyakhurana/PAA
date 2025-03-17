@@ -1,7 +1,7 @@
 name: PR Deploy
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
     types:
@@ -18,11 +18,14 @@ jobs:
     steps:
       - name: Checkout PR Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{github.event.pull_request.head.sha}}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: latest
           cache: npm
 
       - name: Install Dependencies
@@ -85,7 +88,7 @@ jobs:
           rm -rf !(@*)
 
       - name: Cleanup (PR Branch)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
@@ -98,7 +101,7 @@ jobs:
       - name: Move Build Files
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
-            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
               mv build/* @${{ github.event.pull_request.head.ref }}/
               cd @${{ github.event.pull_request.head.ref }}/
             else
@@ -121,6 +124,9 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged != true || github.event.pull_request.state != 'closed'
+
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Add PR Comment with Preview Link
