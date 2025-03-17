@@ -122,3 +122,26 @@ jobs:
         with:
           message: "Preview website is available [here](https://navyakhurana.github.io/PAA/@${{ github.event.pull_request.head.ref }})."
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup:
+    name: Cleanup Merged PR
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Switch to paa-doc Branch
+        run: |
+          git fetch origin paa-doc
+          git checkout paa-doc
+
+      - name: Delete Folder of Merged PR
+        run: |
+          rm -rf @${{ github.event.pull_request.head.ref }}
+
+      - name: Commit and Push Changes
+        run: |
+          git add -A
+          git commit -m "Cleanup: Removed folder @${{ github.event.pull_request.head.ref }} after merge" || echo "No changes to commit"
+          git push origin paa-doc
