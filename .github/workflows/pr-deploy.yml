@@ -9,6 +9,14 @@ on:
       - synchronize
       - reopened
 
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
 jobs:
   build:
     name: Build Site for PR
@@ -16,6 +24,8 @@ jobs:
     steps:
       - name: Checkout PR Code
         uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,8 +47,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Verify Patch Application
-        run: |
-          cat docusaurus.config.js
+        run: cat docusaurus.config.js
 
       - name: Build Website
         run: npm run build
@@ -69,8 +78,8 @@ jobs:
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
           GIT_USER: ${{ secrets.GIT_USER }}
         run: |
-          git config --global user.email "$$GIT_USER_EMAIL"
-          git config --global user.name "$$GIT_USER"
+          git config --global user.email "$GIT_USER_EMAIL"
+          git config --global user.name "$GIT_USER"
 
       - name: Switch to paa-doc Branch
         run: |
@@ -84,7 +93,6 @@ jobs:
           rm -rf !(@*)
 
       - name: Cleanup (PR Branch)
-        if: github.event_name == 'pull_request'
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
@@ -96,7 +104,7 @@ jobs:
 
       - name: Move Build Files
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" || "${{ github.event_name }}" == "pull_request_target" ]]; then
             mv build/* @${{ github.event.pull_request.head.ref }}/
             cd @${{ github.event.pull_request.head.ref }}/
           else
@@ -115,6 +123,9 @@ jobs:
     name: Post Preview Link (PRs)
     needs: deploy
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target'
+    permissions:
+      pull-requests: write # Required for forked PRs to allow commenting
 
     steps:
       - name: Add PR Comment with Preview Link
