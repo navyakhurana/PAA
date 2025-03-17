@@ -11,7 +11,7 @@ sidebar_position: 1
 
 
 ## Description
-------------This is a test commit to check the workflow------------------------
+------------test commit------------------------
 
 The **Sustainable SaaS (SusaaS)** sample application has been built in a partner collaboration to help interested developers, partners, and customers in developing multitenant Software as a Service applications using CAP and deploying them to the SAP Business Technology Platform (SAP BTP). For this use-case, the **Kyma Runtime** was chosen. Still, you can also develop similar SaaS applications in other runtimes like **Cloud Foundry** or the SAP BTP **ABAP environment**.
 
