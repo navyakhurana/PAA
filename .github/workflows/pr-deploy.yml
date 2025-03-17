@@ -8,11 +8,13 @@ on:
       - opened
       - synchronize
       - reopened
+      - closed
 
 jobs:
   build:
     name: Build Site for PR
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged != true || github.event.pull_request.state != 'closed'
     steps:
       - name: Checkout PR Code
         uses: actions/checkout@v4
@@ -51,7 +53,7 @@ jobs:
     name: Deploy Website
     runs-on: ubuntu-latest
     needs: build
-    if: success()
+    if: success() && github.event.pull_request.merged != true || github.event.pull_request.state != 'closed'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -95,14 +97,18 @@ jobs:
 
       - name: Move Build Files
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            mv build/* @${{ github.event.pull_request.head.ref }}/
-            cd @${{ github.event.pull_request.head.ref }}/
+          if [[ -d "build" && "$(ls -A build)" ]]; then
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              mv build/* @${{ github.event.pull_request.head.ref }}/
+              cd @${{ github.event.pull_request.head.ref }}/
+            else
+              mv build/* ./
+            fi
+            tar -xvf github-pages/artifact.tar
+            rm github-pages/artifact.tar
           else
-            mv build/* ./
+            echo "No build files found. Skipping move step."
           fi
-          tar -xvf github-pages/artifact.tar
-          rm github-pages/artifact.tar
 
       - name: Commit and Push Changes
         run: |
@@ -114,6 +120,7 @@ jobs:
     name: Post Preview Link (PRs)
     needs: deploy
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged != true || github.event.pull_request.state != 'closed'
 
     steps:
       - name: Add PR Comment with Preview Link
@@ -125,7 +132,7 @@ jobs:
   cleanup:
     name: Cleanup Merged PR
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event.pull_request.state == 'closed'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
