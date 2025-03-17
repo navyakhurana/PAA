@@ -1,7 +1,7 @@
 name: PR Deploy
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
     types:
@@ -16,9 +16,6 @@ jobs:
     steps:
       - name: Checkout PR Code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -31,17 +28,17 @@ jobs:
 
       - name: Patch docusaurus.config.js for PR builds
         run: |
-          sed -E -i "s^(baseUrl: .?)'/'^\1'/@${PR_SOURCE_BRANCH}/'^g" docusaurus.config.js
+          sed -E -i "s^baseUrl:(..*)PAA^baseUrl:\1PAA/@${{ github.event.pull_request.head.ref }}^g" docusaurus.config.js
           sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
-          sed -E -i "s^logo: \{^logo: \{href: 'https://github.com/${PR_SOURCE_REPO}/pull/${PR_NUMBER}',^g" docusaurus.config.js
+          sed -E -i "s^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP'^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})'^g" docusaurus.config.js
+
+          sed -E -i "s^logo: \{^logo: \{href: '${{ github.event.pull_request.html_url }}',^g" docusaurus.config.js
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_SOURCE_BRANCH: ${{ github.event.pull_request.head.ref }}
-          PR_SOURCE_REPO: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Verify Patch Application
         run: |
-          cat docusaurus.config.js | grep "title: 'Build resilient apps with SAP BTP (PR: #${{ github.event.pull_request.number }})'"
+          cat docusaurus.config.js
 
       - name: Build Website
         run: npm run build
@@ -52,24 +49,67 @@ jobs:
           path: build
 
   deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write # to deploy to Pages
-      id-token: write # to verify the deployment originates from an appropriate source
-
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+    name: Deploy Website
     runs-on: ubuntu-latest
+    needs: build
+    if: success()
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: build/
+
+      - name: Set up Git
+        env:
+          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+          GIT_USER: ${{ secrets.GIT_USER }}
+        run: |
+          git config --global user.email "$$GIT_USER_EMAIL"
+          git config --global user.name "$$GIT_USER"
+
+      - name: Switch to paa-doc Branch
+        run: |
+          git fetch origin paa-doc
+          git checkout paa-doc
+
+      - name: Cleanup (Main Branch)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          shopt -s extglob
+          rm -rf !(@*)
+
+      - name: Cleanup (PR Branch)
+        if: github.event_name == 'pull_request'
+        run: |
+          rm -rf @${{ github.event.pull_request.head.ref }}
+          mkdir @${{ github.event.pull_request.head.ref }}
+          for branchFolder in @* ; do 
+            if [[ -d "$branchFolder" && -z $(git ls-remote origin ${branchFolder:1}) ]]; then
+              rm -rf $branchFolder
+            fi;
+          done
+
+      - name: Move Build Files
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            mv build/* @${{ github.event.pull_request.head.ref }}/
+            cd @${{ github.event.pull_request.head.ref }}/
+          else
+            mv build/* ./
+          fi
+          tar -xvf github-pages/artifact.tar
+          rm github-pages/artifact.tar
+
+      - name: Commit and Push Changes
+        run: |
+          git add -A
+          git commit --amend --no-edit || echo "No changes to commit"
+          git push -f origin paa-doc
 
   pr_comment:
     name: Post Preview Link (PRs)
@@ -80,5 +120,28 @@ jobs:
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "🚀 Preview website is available [here](${{ steps.deployment.outputs.page_url }}/@${{ github.event.pull_request.head.ref }})."
+          message: "Preview website is available [here](https://navyakhurana.github.io/PAA/@${{ github.event.pull_request.head.ref }})."
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup:
+    name: Cleanup Merged PR
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Switch to paa-doc Branch
+        run: |
+          git fetch origin paa-doc
+          git checkout paa-doc
+
+      - name: Delete Folder of Merged PR
+        run: |
+          rm -rf @${{ github.event.pull_request.head.ref }}
+
+      - name: Commit and Push Changes
+        run: |
+          git add -A
+          git commit -m "Cleanup: Removed folder @${{ github.event.pull_request.head.ref }} after merge" || echo "No changes to commit"
+          git push origin paa-doc
