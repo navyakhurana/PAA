@@ -84,12 +84,6 @@ jobs:
           git fetch origin paa-doc
           git checkout paa-doc
 
-      - name: Cleanup (Main Branch)
-        if: github.ref == 'refs/heads/main'
-        run: |
-          shopt -s extglob
-          rm -rf !(@*)
-
       - name: Cleanup (PR Branch)
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
