@@ -1,7 +1,6 @@
 name: PR Deploy
-
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
     types:
@@ -18,10 +17,6 @@ jobs:
     steps:
       - name: Checkout PR Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{github.event.pull_request.head.sha}}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -88,7 +83,7 @@ jobs:
           rm -rf !(@*)
 
       - name: Cleanup (PR Branch)
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
@@ -97,11 +92,10 @@ jobs:
               rm -rf $branchFolder
             fi;
           done
-
       - name: Move Build Files
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
-            if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               mv build/* @${{ github.event.pull_request.head.ref }}/
               cd @${{ github.event.pull_request.head.ref }}/
             else
@@ -124,10 +118,6 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged != true || github.event.pull_request.state != 'closed'
-
-    permissions:
-      pull-requests: write
-
     steps:
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
