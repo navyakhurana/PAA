@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: Checkout PR Code
         uses: actions/checkout@v4
-        with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -123,7 +121,7 @@ jobs:
     name: Post Preview Link (PRs)
     needs: deploy
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request_target' || github.event_name == 'pull_request'
     permissions:
       pull-requests: write # Required for forked PRs to allow commenting
 
