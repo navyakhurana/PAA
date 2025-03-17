@@ -6,60 +6,72 @@ on:
       - main
 
 jobs:
-   build:
-        name: Build Docusaurus
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: 18
-                  cache: npm
+  build:
+    name: Build Docusaurus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: Install dependencies
-              run: npm ci
-            - name: Build website
-              run: npm run build
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
 
-            - name: Upload Build Artifact
-              uses: actions/upload-artifact@v4
-              with:
-                  name: build
-                  path: build
+      - name: Install dependencies
+        run: npm ci
 
-   deploy:
-        name: Deploy to GitHub Pages
-        runs-on: ubuntu-latest
-        needs: build
+      - name: Build website
+        run: npm run build
 
-        permissions:
-            contents: write
-            pages: write
-            id-token: write
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build
 
-        environment:
-            name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build
 
-        steps:
-          - uses: actions/checkout@v4
-            with:
-                fetch-depth: 0
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
 
-          - name: Download Build Artifact
-            uses: actions/download-artifact@v4
-            with:
-                name: build
-                path: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
-          - name: Deploy to GitHub Pages
-            run: |
-              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-              git config user.name "github-actions[bot]"
-              git checkout paa-doc
-              cp -r build/* .
-              git add --all
-              git commit -m "Deploy to GitHub Pages"
-              git push origin paa-doc --force
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build
+
+      - name: Ensure paa-doc branch exists
+        run: |
+          git fetch origin paa-doc || git checkout -b paa-doc
+          git checkout paa-doc
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+          cp -r build/* .
+          git add --all
+
+          if ! git diff --cached --quiet; then
+            git commit -m "Deploy to GitHub Pages"
+            git push origin paa-doc --force
+          else
+            echo "No changes to deploy"
+          fi
