@@ -123,7 +123,7 @@ jobs:
     name: Post Preview Link (PRs)
     needs: deploy
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request_target' || github.event_name == 'pull_request'
     permissions:
       pull-requests: write # Required for forked PRs to allow commenting
 
