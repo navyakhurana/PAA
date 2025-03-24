@@ -1,9 +1,6 @@
 name: PR Deploy
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -89,10 +86,14 @@ jobs:
           git config --global user.email "$$GIT_USER_EMAIL"
           git config --global user.name "$$GIT_USER"
 
-      - name: Switch to paa-doc Branch
+      - name: Switch to GitHub Pages Branch
         run: |
-          git fetch origin paa-doc
-          git checkout paa-doc
+          gh_pages_branch=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.source.branch')
+          git fetch origin $gh_pages_branch
+          git checkout $gh_pages_branch
+          echo "gh_pages_branch=$gh_pages_branch" >> "$GITHUB_ENV"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cleanup (Main Branch)
         if: github.ref == 'refs/heads/main'
@@ -113,7 +114,7 @@ jobs:
       - name: Move Build Files
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
-            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "${{ github.event.pull_request.head.ref }}" != "refs/heads/main" ]]; then
               mv build/* @${{ github.event.pull_request.head.ref }}/
               cd @${{ github.event.pull_request.head.ref }}/
             else
@@ -129,7 +130,7 @@ jobs:
         run: |
           git add -A
           git commit --amend --no-edit || echo "No changes to commit"
-          git push -f origin paa-doc
+          git push -f origin ${{ env.gh_pages_branch }}
 
   pr_comment:
     name: Post Preview Link (PRs)
@@ -168,10 +169,14 @@ jobs:
           git config --global user.email "$$GIT_USER_EMAIL"
           git config --global user.name "$$GIT_USER"
 
-      - name: Switch to paa-doc Branch
+      - name: Switch to GitHub Pages Branch
         run: |
-          git fetch origin paa-doc
-          git checkout paa-doc
+          gh_pages_branch=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.source.branch')
+          git fetch origin $gh_pages_branch
+          git checkout $gh_pages_branch
+          echo "gh_pages_branch=$gh_pages_branch" >> "$GITHUB_ENV"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Delete Folder of Merged PR
         run: |
@@ -181,4 +186,4 @@ jobs:
         run: |
           git add -A
           git commit -m "Cleanup: Removed folder @${{ github.event.pull_request.head.ref }} after merge" || echo "No changes to commit"
-          git push origin paa-doc
+          git push origin ${{ env.gh_pages_branch }}
