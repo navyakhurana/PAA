@@ -133,13 +133,17 @@ jobs:
     if: github.event.pull_request.merged != true || github.event.pull_request.state != 'closed'
     permissions:
       pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: Get pages deployment URL
+        run: |
+          echo "pages_url=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.html_url')" >> "$GITHUB_ENV"
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "Preview website is available [here](https://navyakhurana.github.io/PAA/@${{ github.event.pull_request.head.ref }})."
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+          message: "Preview website is available [here](${{ env.pages_url }}/@${{ github.event.pull_request.head.ref }})."
+        
   cleanup:
     name: Cleanup Merged PR
     runs-on: ubuntu-latest
