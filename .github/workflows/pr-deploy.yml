@@ -1,7 +1,7 @@
 name: PR Deploy
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
     types:
@@ -102,7 +102,6 @@ jobs:
           rm -rf !(@*)
 
       - name: Cleanup (PR Branch)
-        if: github.event_name == 'pull_request'
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
