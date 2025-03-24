@@ -106,11 +106,6 @@ jobs:
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
-          for branchFolder in @* ; do 
-            if [[ -d "$branchFolder" && -z $(git ls-remote origin ${branchFolder:1}) ]]; then
-              rm -rf $branchFolder
-            fi;
-          done
       - name: Move Build Files
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
