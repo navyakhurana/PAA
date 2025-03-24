@@ -38,9 +38,15 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Get pages deployment URL
+        run: |
+          echo "pages_url=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.html_url')" >> "$GITHUB_ENV"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Patch docusaurus.config.js for PR builds
         run: |
-          sed -E -i "s^baseUrl:(..*)PAA^baseUrl:\1PAA/@${{ github.event.pull_request.head.ref }}^g" docusaurus.config.js
+          sed -E -i "s^baseUrl:(..*)^baseUrl:${{ env.pages_url }}/@${{ github.event.pull_request.head.ref }}^g" docusaurus.config.js
           sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
           sed -E -i "s^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP'^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})'^g" docusaurus.config.js
 
