@@ -1,14 +1,9 @@
 name: PR Deploy
+
 on:
-  pull_request_target:
+  push:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
-
   pull_request:
     branches:
       - main
@@ -106,7 +101,7 @@ jobs:
           rm -rf !(@*)
 
       - name: Cleanup (PR Branch)
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
@@ -118,7 +113,7 @@ jobs:
       - name: Move Build Files
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
-            if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               mv build/* @${{ github.event.pull_request.head.ref }}/
               cd @${{ github.event.pull_request.head.ref }}/
             else
