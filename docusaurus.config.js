@@ -16,11 +16,6 @@ const config = {
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/PAA/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'navyakhurana', // Usually your GitHub org/user name.
-  projectName: 'PAA', // Usually your repo name
-  deploymentBranch: 'paa-doc',
   trailingSlash: false,
 
   onBrokenLinks: 'ignore',
