@@ -40,13 +40,18 @@ jobs:
 
       - name: Get pages deployment URL
         run: |
-          echo "pages_url=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.html_url')" >> "$GITHUB_ENV"
+          pages_url=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.html_url')
+          url=$(echo $pages_url|cut -d'/' -f 1)//$(echo $pages_url|cut -d'/' -f 3)
+          base_url=$(echo $pages_url|cut -d'/' -f 4)
+          echo "url=$url" >> "$GITHUB_ENV"
+          echo "base_url=$base_url" >> "$GITHUB_ENV"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Patch docusaurus.config.js for PR builds
         run: |
-          sed -E -i "s^baseUrl:(..*)^baseUrl:${{ env.pages_url }}/@${{ github.event.pull_request.head.ref }}^g" docusaurus.config.js
+          sed -E -i "s^url:(..*)^url: '${{ env.url }}',^g" docusaurus.config.js
+          sed -E -i "s^baseUrl:(..*)^baseUrl: '${{ env.base_url }}@${{ github.event.pull_request.head.ref }}',^g" docusaurus.config.js
           sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
           sed -E -i "s^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP'^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})'^g" docusaurus.config.js
 
@@ -148,7 +153,7 @@ jobs:
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "Preview website is available [here](${{ env.pages_url }}/@${{ github.event.pull_request.head.ref }})."
+          message: "Preview website is available [here](${{ env.pages_url }}@${{ github.event.pull_request.head.ref }})."
         
   cleanup:
     name: Cleanup Merged PR
