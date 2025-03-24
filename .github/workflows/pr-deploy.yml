@@ -51,10 +51,9 @@ jobs:
       - name: Patch docusaurus.config.js for PR builds
         run: |
           sed -E -i "s^url:(..*)^url: '${{ env.url }}',^g" docusaurus.config.js
-          sed -E -i "s^baseUrl:(..*)^baseUrl: '${{ env.base_url }}/@${{ github.event.pull_request.head.ref }}',^g" docusaurus.config.js
+          sed -E -i "s^baseUrl:(..*)^baseUrl: '/${{ env.base_url }}/@${{ github.event.pull_request.head.ref }}',^g" docusaurus.config.js
           sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
           sed -E -i "s^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP'^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})'^g" docusaurus.config.js
-
           sed -E -i "s^logo: \{^logo: \{href: '${{ github.event.pull_request.html_url }}',^g" docusaurus.config.js
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
