@@ -23,7 +23,6 @@ Below you can find a solution architecture diagram of the sample application. As
 
 ![<img src=" docs/project-panel/4-expert/0-introduction-expert-features/images/App_Architecture_Expert.png" width="600" />]( ./project-panel/4-expert/0-introduction-expert-features/images/App_Architecture_Expert.png?raw=true)
 
-
 ## Content
 
 To get started, we recommend to **Discover** some basic skills and learnings first. The following parts of the documentation will introduce you to the basics of this scenario, the concepts of multitenancy, and Software as a Service applications. 
