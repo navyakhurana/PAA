@@ -108,17 +108,12 @@ jobs:
           echo "gh_pages_branch=$gh_pages_branch" >> "$GITHUB_ENV"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Cleanup (Main Branch)
-        if: github.ref == 'refs/heads/main'
-        run: |
-          shopt -s extglob
-          rm -rf !(@*)
-
+          
       - name: Cleanup (PR Branch)
         run: |
           rm -rf @${{ github.event.pull_request.head.ref }}
           mkdir @${{ github.event.pull_request.head.ref }}
+      
       - name: Move Build Files
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
@@ -154,6 +149,7 @@ jobs:
       - name: Get pages deployment URL
         run: |
           echo "pages_url=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.html_url')" >> "$GITHUB_ENV"
+          
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
