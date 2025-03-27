@@ -1,16 +1,7 @@
-name: PR Deploy
+name: pr-site-build
 
 on:
-  # for local PR builds esp. builds in forked repositories
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
-  # for PR builds when the PR comes from a forked repository
+  # for forked repositories
   pull_request_target:
     branches:
       - main
@@ -19,13 +10,26 @@ on:
       - synchronize
       - reopened
       - closed
+  # for forks
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - closed
+
+env:
+  # https://docs.github.com/en/webhooks/webhook-events-and-payloads#pull_request
+  PR_FOLDER: ${{github.event.pull_request.user.login}}-${{github.event.pull_request.head.ref}}
 
 jobs:
   build:
     name: Build Site for PR
     runs-on: ubuntu-latest
     # Note: only run when trigger is 'pull_request' in case pull request is from the same repo (see https://github.com/orgs/community/discussions/26829#discussioncomment-3253575)
-    if: (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.full_name == github.event.pull_request.head.repo.full_name) && (github.event.pull_request.merged != true || github.event.pull_request.state != 'closed')
+    if: (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.fork) && github.event.pull_request.merged != true && github.event.pull_request.state != 'closed'
     steps:
       - name: Checkout PR Code
         uses: actions/checkout@v4
@@ -55,7 +59,7 @@ jobs:
       - name: Patch docusaurus.config.js for PR builds
         run: |
           sed -E -i "s^url:(..*)^url: '${{ env.url }}',^g" docusaurus.config.js
-          sed -E -i "s^baseUrl:(..*)^baseUrl: '/${{ env.base_url }}/@${{ github.event.pull_request.head.ref }}',^g" docusaurus.config.js
+          sed -E -i "s^baseUrl:(..*)^baseUrl: '/${{ env.base_url }}/@${{ env.PR_FOLDER }}',^g" docusaurus.config.js
           sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
           sed -E -i "s^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP'^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})'^g" docusaurus.config.js
           sed -E -i "s^logo: \{^logo: \{href: '${{ github.event.pull_request.html_url }}',^g" docusaurus.config.js
@@ -74,11 +78,11 @@ jobs:
           path: build
 
   deploy:
-    name: Deploy Website
+    name: Deploy Site for PR
     runs-on: ubuntu-latest
     needs: build
     # Note: only run when trigger is 'pull_request' in case pull request is from the same repo (see https://github.com/orgs/community/discussions/26829#discussioncomment-3253575)
-    if: success() && (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.full_name == github.event.pull_request.head.repo.full_name) && (github.event.pull_request.merged != true || github.event.pull_request.state != 'closed')
+    if: success() && (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.fork) && github.event.pull_request.merged != true && github.event.pull_request.state != 'closed'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -92,15 +96,12 @@ jobs:
           path: build/
 
       - name: Set up Git
-        env:
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-          GIT_USER: ${{ secrets.GIT_USER }}
         run: |
           git config --global user.email "$$GIT_USER_EMAIL"
           git config --global user.name "$$GIT_USER"
 
       # avoid hard-coding pages url in workflow => use github API to retrieve deployment website url (see https://stackoverflow.com/a/76354104/29917717 + https://docs.github.com/en/rest/pages/pages?apiVersion=2022-11-28#get-a-github-pages-site)
-      - name: Switch to GitHub Pages Branch
+      - name: Switch to Pages Branch
         run: |
           gh_pages_branch=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.source.branch')
           git fetch origin $gh_pages_branch
@@ -109,25 +110,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cleanup (Main Branch)
-        if: github.ref == 'refs/heads/main'
+      - name: Drop Previous Content
         run: |
-          shopt -s extglob
-          rm -rf !(@*)
+          rm -rf @${{ env.PR_FOLDER }}
+          mkdir @${{ env.PR_FOLDER }}
 
-      - name: Cleanup (PR Branch)
-        run: |
-          rm -rf @${{ github.event.pull_request.head.ref }}
-          mkdir @${{ github.event.pull_request.head.ref }}
-      - name: Move Build Files
+      - name: Extract Build Content
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
-            if [[ "${{ github.event.pull_request.head.ref }}" != "refs/heads/main" ]]; then
-              mv build/* @${{ github.event.pull_request.head.ref }}/
-              cd @${{ github.event.pull_request.head.ref }}/
-            else
-              mv build/* ./
-            fi
+            mv build/* @${{ env.PR_FOLDER }}/
+            cd @${{ env.PR_FOLDER }}/
             tar -xvf github-pages/artifact.tar
             rm github-pages/artifact.tar
           else
@@ -137,15 +129,17 @@ jobs:
       - name: Commit and Push Changes
         run: |
           git add -A
-          git commit --amend --no-edit || echo "No changes to commit"
-          git push -f origin ${{ env.gh_pages_branch }}
+          if [[ "$(git status -s)" ]]; then
+            git commit -m "pr build ➝ gh pages"
+            git push -f origin ${{ env.gh_pages_branch }}
+          fi
 
   pr_comment:
     name: Post Preview Link (PRs)
     needs: deploy
     runs-on: ubuntu-latest
     # Note: only run when trigger is 'pull_request' in case pull request is from the same repo (see https://github.com/orgs/community/discussions/26829#discussioncomment-3253575)
-    if: (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.full_name == github.event.pull_request.head.repo.full_name) && (github.event.pull_request.merged != true || github.event.pull_request.state != 'closed')
+    if: (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.fork) && github.event.pull_request.merged != true && github.event.pull_request.state != 'closed'
     permissions:
       pull-requests: write
     env:
@@ -157,12 +151,12 @@ jobs:
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "Preview website is available [here](${{ env.pages_url }}@${{ github.event.pull_request.head.ref }})."
+          message: "Preview website is available [here](${{ env.pages_url }}@${{ env.PR_FOLDER }})."
         
   cleanup:
     name: Cleanup Merged PR
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true || github.event.pull_request.state == 'closed'
+    if: (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.fork) && (github.event.pull_request.merged == true || github.event.pull_request.state == 'closed')
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -171,12 +165,9 @@ jobs:
           ref: ${{github.event.pull_request.head.sha}}
 
       - name: Set up Git
-        env:
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
-          GIT_USER: ${{ secrets.GIT_USER }}
         run: |
-          git config --global user.email "$$GIT_USER_EMAIL"
-          git config --global user.name "$$GIT_USER"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
       - name: Switch to GitHub Pages Branch
         run: |
@@ -189,10 +180,10 @@ jobs:
 
       - name: Delete Folder of Merged PR
         run: |
-          rm -rf @${{ github.event.pull_request.head.ref }}
+          rm -rf @${{ env.PR_FOLDER }}
 
       - name: Commit and Push Changes
         run: |
           git add -A
-          git commit -m "Cleanup: Removed folder @${{ github.event.pull_request.head.ref }} after merge" || echo "No changes to commit"
+          git commit -m "cleanup: removed folder @${{ env.PR_FOLDER }} after merge" || echo "No changes to commit"
           git push origin ${{ env.gh_pages_branch }}
