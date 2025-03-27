@@ -12,7 +12,7 @@ sidebar_position: 1
 
 ## Description
 
-The **Sustainable SaaS (SusaaS)** sample application has been built in a partner collaboration to help interested developers, partners, and customers in developing multitenant Software as a Service applications using CAP and deploying them to the SAP Business Technology Platform (SAP BTP). For this use-case, the **Kyma Runtime** was chosen. Still, you can also develop similar SaaS applications in other runtimes like **Cloud Foundry** or the SAP BTP **ABAP environment**.
+The **Sustainable SaaS (SuSaaS)** sample application has been built in a partner collaboration to help interested developers, partners, and customers in developing multitenant Software as a Service applications using CAP and deploying them to the SAP Business Technology Platform (SAP BTP). For this use-case, the **Kyma Runtime** was chosen. Still, you can also develop similar SaaS applications in other runtimes like **Cloud Foundry** or the SAP BTP **ABAP environment**.
 
 The example focuses on using standard frameworks and SAP BTP services for developing, deploying, and monitoring the solution like the Cloud Application Programming Model (CAP), SAP API Management, Alert Notification, and many more. 
 
