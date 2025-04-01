@@ -138,21 +138,20 @@ jobs:
     name: Post Preview Link (PRs)
     needs: deploy
     runs-on: ubuntu-latest
-    # Note: only run when trigger is 'pull_request' in case pull request is from the same repo (see https://github.com/orgs/community/discussions/26829#discussioncomment-3253575)
     if: (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.fork) && github.event.pull_request.merged != true && github.event.pull_request.state != 'closed'
     permissions:
       pull-requests: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Get pages deployment URL
-        run: |
-          echo "pages_url=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.html_url')" >> "$GITHUB_ENV"
+      - name: Wait for 90 seconds
+        run: sleep 90s
+
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "Preview website is available [here](${{ env.pages_url }}@${{ env.PR_FOLDER }})."
-        
+          message: 'Preview website is available <a href="https://navyakhurana.github.io/PAA/@${{ env.PR_FOLDER }}" target="_blank" rel="noopener noreferrer">here</a>.'
+
   cleanup:
     name: Cleanup Merged PR
     runs-on: ubuntu-latest
