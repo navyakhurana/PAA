@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        function redirect() {
+            const params = new URLSearchParams(window.location.search);
+            const targetUrl = params.get("url");
+            if (targetUrl) {
+                window.open(targetUrl, "_blank");  // Open in new tab
+                window.location.href = targetUrl;  // Also update current tab for fallback
+            } else {
+                document.body.innerHTML = "<h2>Invalid redirect link</h2>";
+            }
+        }
+    </script>
+</head>
+<body onload="redirect()">
+    <p>Redirecting...</p>
+</body>
+</html>
