@@ -1,17 +1,7 @@
 name: pr-site-build
 
 on:
-  # for forked repositories
   pull_request_target:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - closed
-  # for forks
-  pull_request:
     branches:
       - main
     types:
@@ -81,7 +71,6 @@ jobs:
     name: Deploy Site for PR
     runs-on: ubuntu-latest
     needs: build
-    # Note: only run when trigger is 'pull_request' in case pull request is from the same repo (see https://github.com/orgs/community/discussions/26829#discussioncomment-3253575)
     if: success() && (github.event_name == 'pull_request_target' || github.event.pull_request.base.repo.fork) && github.event.pull_request.merged != true && github.event.pull_request.state != 'closed'
     steps:
       - name: Checkout Repository
@@ -100,7 +89,6 @@ jobs:
           git config --global user.email "$$GIT_USER_EMAIL"
           git config --global user.name "$$GIT_USER"
 
-      # avoid hard-coding pages url in workflow => use github API to retrieve deployment website url (see https://stackoverflow.com/a/76354104/29917717 + https://docs.github.com/en/rest/pages/pages?apiVersion=2022-11-28#get-a-github-pages-site)
       - name: Switch to Pages Branch
         run: |
           gh_pages_branch=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.source.branch')
@@ -113,7 +101,7 @@ jobs:
       - name: Drop Previous Content
         run: |
           rm -rf @${{ env.PR_FOLDER }}
-          mkdir @${{ env.PR_FOLDER }}
+          mkdir -p @${{ env.PR_FOLDER }}
 
       - name: Extract Build Content
         run: |
@@ -144,13 +132,14 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Wait for 90 seconds
-        run: sleep 90s
+      - name: Wait for 60 seconds
+        run: sleep 60s
 
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: "Preview website is available [here](https://architecture.cloud.sap/redirect.html?url=https://architecture.cloud.sap/@${{ env.PR_FOLDER }})."
+          message: 'Preview website is available <a href="https://navyakhurana.github.io/PAA/@${{ env.PR_FOLDER }}" target="_blank" rel="noopener noreferrer">here</a>.'
+
   cleanup:
     name: Cleanup Merged PR
     runs-on: ubuntu-latest
