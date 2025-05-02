@@ -50,12 +50,11 @@ jobs:
         env:
           ARCH_API_KEY: ${{ secrets.ARCH_API_KEY }}
         run: |
-          echo "## ✅ Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
+          echo "## Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
           mkdir -p reports
           while IFS= read -r file; do
             echo "🔍 Validating $file"
             node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
-            echo -e "\n### 🖼️ ${file}" >> $GITHUB_STEP_SUMMARY
             cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
           done <<< "${{ steps.find_drawio.outputs.files }}"
 

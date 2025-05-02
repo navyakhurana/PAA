@@ -50,7 +50,7 @@ const generateReport = (filePath, results) => {
     else error++;
   });
 
-  let report = `## ✅ Validation Summary for: \`${fileName}\`\n\n`;
+  let report = `### Validation Summary for: \`${fileName}\`\n\n`;
 
   // Summary table
   report += `| Status     | Count |\n`;
@@ -65,7 +65,8 @@ const generateReport = (filePath, results) => {
     const { id, displayName, description, severity, results: issues } = item;
     const icon = severity === 'INFO' ? '✅' : severity === 'WARNING' ? '⚠️' : '❌';
 
-    report += `<details>\n<summary>${icon} **${displayName}** (Severity: ${severity})</summary>\n\n`;
+    report += `---\n`;
+    report += `#### ${icon} ${displayName} (Severity: ${severity})\n\n`;
     report += `- **ID**: \`${id}\`\n`;
     report += `- **Description**: ${description}\n`;
 
@@ -78,7 +79,7 @@ const generateReport = (filePath, results) => {
       report += `- ✅ No issues found.\n`;
     }
 
-    report += `</details>\n\n`;
+    report += `\n`;
   }
 
   return report;
