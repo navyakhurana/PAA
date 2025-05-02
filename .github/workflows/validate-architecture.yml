@@ -1,0 +1,78 @@
+name: Validate Architecture Diagrams
+
+on:
+  pull_request_target:
+    paths:
+      - "**/*.drawio"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  validate-diagrams:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Find .drawio Files in PR
+        id: find_drawio
+        run: |
+          DRAWIO_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }} | grep '\.drawio$' || true)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Validate Drawio Files
+        if: steps.find_drawio.outputs.files != ''
+        env:
+          ARCH_API_KEY: ${{ secrets.ARCH_API_KEY }}
+        run: |
+          mkdir -p reports
+          while IFS= read -r file; do
+            echo "🔍 Validating $file"
+            node src/_scripts/validateDrawio.js "$file"
+            mv validation_report.md "reports/$(basename "$file").md"
+          done <<< "${{ steps.find_drawio.outputs.files }}"
+
+      - name: Upload Validation Reports
+        if: steps.find_drawio.outputs.files != ''
+        uses: actions/upload-artifact@v3
+        with:
+          name: drawio-validation-reports
+          path: reports/
+
+      - name: Create Validation Summary Comment
+        if: steps.find_drawio.outputs.files != ''
+        run: |
+          echo "## ✅ Architecture Diagram Validation Report" > pr_comment.md
+          echo "Validation reports for each uploaded diagram are listed below." >> pr_comment.md
+          for f in reports/*.md; do
+            echo -e "\n<details><summary>$(basename "$f")</summary>\n\n\`\`\`markdown" >> pr_comment.md
+            cat "$f" >> pr_comment.md
+            echo -e "\n\`\`\`\n</details>" >> pr_comment.md
+          done
+          echo -e "\n---\n\n:information_source: The reports summarize any violations or warnings based on SAP architectural best practices." >> pr_comment.md
+
+      - name: Post Comment on PR
+        if: steps.find_drawio.outputs.files != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: ./pr_comment.md
