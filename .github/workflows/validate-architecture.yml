@@ -39,7 +39,8 @@ jobs:
       - name: Find .drawio Files in PR
         id: find_drawio
         run: |
-          DRAWIO_FILES=$(git diff --name-only ${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }} | grep '\.drawio$' || true)
+          git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+          DRAWIO_FILES=$(git diff --name-only ${{ github.base_ref }} ${{ github.event.pull_request.head.sha }} | grep '\.drawio$' || true)
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
