@@ -23,7 +23,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0 # Fetch full history to ensure you can access origin/main
+          fetch-depth: 0
 
       # Step 2: Setup Node.js
       - name: Setup Node.js
@@ -44,7 +44,7 @@ jobs:
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      # Step 5: Validate Drawio Files
+      # Step 5: Validate Drawio Files and write results to summary
       - name: Validate Drawio Files
         if: steps.find_drawio.outputs.files != ''
         env:
@@ -53,11 +53,9 @@ jobs:
           echo "## ✅ Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
           while IFS= read -r file; do
             echo "🔍 Validating $file"
-            VALIDATION_RESULT=$(node src/_scripts/validateDrawio.js "$file")
-
-            echo -e "\n<details><summary>${file}</summary>\n\n\`\`\`markdown" >> $GITHUB_STEP_SUMMARY
-            echo "$VALIDATION_RESULT" >> $GITHUB_STEP_SUMMARY
-            echo -e "\n\`\`\`\n</details>" >> $GITHUB_STEP_SUMMARY
+            node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
+            echo -e "\n### 🖼️ ${file}" >> $GITHUB_STEP_SUMMARY
+            cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
           done <<< "${{ steps.find_drawio.outputs.files }}"
 
       # Step 6: Upload Validation Reports
@@ -68,6 +66,7 @@ jobs:
           name: drawio-validation-reports
           path: reports/
 
+      # Step 7: Comment with Summary Tab Info
       - name: Comment with Summary Tab Info
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
@@ -80,11 +79,3 @@ jobs:
 
             ---
             _The validation follows SAP architectural best practices. Review warnings and errors carefully._
-
-      # Step 8: Post the Comment on PR
-      - name: Post Comment on PR
-        if: steps.find_drawio.outputs.files != ''
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body-path: ./pr_comment.md
