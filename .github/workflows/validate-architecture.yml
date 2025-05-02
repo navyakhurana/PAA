@@ -17,7 +17,6 @@ jobs:
       pull-requests: write
 
     steps:
-      # Step 1: Checkout PR Code
       - name: Checkout PR Code
         uses: actions/checkout@v4
         with:
@@ -25,17 +24,14 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: latest
 
-      # Step 3: Install Dependencies
       - name: Install Dependencies
         run: npm ci
 
-      # Step 4: Find .drawio Files in PR
       - name: Find .drawio Files in PR
         id: find_drawio
         run: |
@@ -44,7 +40,6 @@ jobs:
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      # Step 5: Validate Drawio Files and Generate Summary
       - name: Validate Drawio Files
         if: steps.find_drawio.outputs.files != ''
         env:
@@ -58,7 +53,27 @@ jobs:
             cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
           done <<< "${{ steps.find_drawio.outputs.files }}"
 
-      # Step 6: Upload Validation Reports
+      - name: Calculate Validation Summary Totals
+        id: calc_totals
+        run: |
+          TOTAL_WARNINGS=0
+          TOTAL_ERRORS=0
+          TOTAL_INFO=0
+
+          for summary in reports/*.summary.json; do
+            WARNINGS=$(jq '.warning' "$summary")
+            ERRORS=$(jq '.error' "$summary")
+            INFO=$(jq '.info' "$summary")
+
+            TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
+            TOTAL_ERRORS=$((TOTAL_ERRORS + ERRORS))
+            TOTAL_INFO=$((TOTAL_INFO + INFO))
+          done
+
+          echo "warnings=$TOTAL_WARNINGS" >> $GITHUB_OUTPUT
+          echo "errors=$TOTAL_ERRORS" >> $GITHUB_OUTPUT
+          echo "info=$TOTAL_INFO" >> $GITHUB_OUTPUT
+
       - name: Upload Validation Reports
         if: steps.find_drawio.outputs.files != ''
         uses: actions/upload-artifact@v4
@@ -66,7 +81,6 @@ jobs:
           name: drawio-validation-reports
           path: reports/
 
-      # Step 7: Comment on PR with Summary Info
       - name: Comment with Summary Tab Info
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
@@ -75,7 +89,14 @@ jobs:
           body: |
             ### ✅ Architecture Diagram Validation Report
 
-            Please find the detailed validation results for the uploaded architecture diagrams in the **[Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
+            A total of **${{ steps.find_drawio.outputs.files }}** diagram(s) were validated.
+
+            **Summary:**
+            - ⚠️ **Warnings**: ${{ steps.calc_totals.outputs.warnings }}
+            - ❌ **Errors**: ${{ steps.calc_totals.outputs.errors }}
+            - ✅ **Info**: ${{ steps.calc_totals.outputs.info }}
+
+            👉 View full details in the **[Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
 
             ---
-            _Note: These results are based on SAP architectural best practices. Please review any warnings or errors accordingly._
+            _Note: This check follows SAP architectural best practices. Please review issues above carefully._
