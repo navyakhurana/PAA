@@ -1,5 +1,4 @@
 name: Validate Architecture Diagrams
-
 on:
   pull_request_target:
     paths:
@@ -8,30 +7,29 @@ on:
       - opened
       - synchronize
       - reopened
-
 jobs:
   validate-diagrams:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
-
     steps:
+      # Step 1: Checkout PR Code
       - name: Checkout PR Code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
-
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: latest
-
+      # Step 3: Install Dependencies
       - name: Install Dependencies
         run: npm ci
-
+      # Step 4: Find .drawio Files in PR
       - name: Find .drawio Files in PR
         id: find_drawio
         run: |
@@ -39,69 +37,34 @@ jobs:
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Validate Drawio Files and Summarize
+      # Step 5: Validate Drawio Files and Generate Summary
+      - name: Validate Drawio Files
         if: steps.find_drawio.outputs.files != ''
-        id: validate
         env:
           ARCH_API_KEY: ${{ secrets.ARCH_API_KEY }}
         run: |
-          mkdir -p reports
           echo "## Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
-
-          TOTAL_WARNINGS=0
-          TOTAL_ERRORS=0
-          TOTAL_INFO=0
-          FILE_COUNT=0
-
+          mkdir -p reports
           while IFS= read -r file; do
             echo "🔍 Validating $file"
-            ((FILE_COUNT++))
             node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
-
-            WARNINGS=$(grep -o 'Severity: WARNING' "reports/$(basename "$file").md" | wc -l)
-            ERRORS=$(grep -o 'Severity: ERROR' "reports/$(basename "$file").md" | wc -l)
-            INFO=$(grep -o 'Severity: INFO' "reports/$(basename "$file").md" | wc -l)
-
-            TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
-            TOTAL_ERRORS=$((TOTAL_ERRORS + ERRORS))
-            TOTAL_INFO=$((TOTAL_INFO + INFO))
-
             cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
           done <<< "${{ steps.find_drawio.outputs.files }}"
-
-          echo "warnings=$TOTAL_WARNINGS" >> $GITHUB_OUTPUT
-          echo "errors=$TOTAL_ERRORS" >> $GITHUB_OUTPUT
-          echo "info=$TOTAL_INFO" >> $GITHUB_OUTPUT
-          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
-
+      # Step 6: Upload Validation Reports
       - name: Upload Validation Reports
         if: steps.find_drawio.outputs.files != ''
         uses: actions/upload-artifact@v4
         with:
           name: drawio-validation-reports
           path: reports/
-
-      - name: Comment with Summary Info
+      # Step 7: Comment on PR with Summary Info
+      - name: Comment with Summary Tab Info
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ### ✅ Architecture Diagram Validation Report
-
-            A total of **${{ steps.validate.outputs.file_count }}** diagram(s) were validated.
-
-            #### Summary:
-
-            | Status     | Count |
-            |------------|-------|
-            | ⚠️ Warning  | ${{ steps.validate.outputs.warnings }}     |
-            | ❌ Error    | ${{ steps.validate.outputs.errors }}     |
-            | ✅ Info     | ${{ steps.validate.outputs.info }}     |
-
-            Please find the detailed validation results for the uploaded architecture diagrams in the [Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
-
+            Please find the detailed validation results for the uploaded architecture diagrams in the **[Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
             ---
-
             _Note: These results are based on SAP architectural best practices. Please review any warnings or errors accordingly._
