@@ -50,29 +50,22 @@ const generateReport = (filePath, results) => {
     else error++;
   });
 
-  let report = `### Validation Summary for: \`${fileName}\`
-\n`;
+  let report = `### Validation Summary for: \`${fileName}\`\n\n`;
 
-  report += `| Status     | Count |
-`;
-  report += `|------------|-------|
-`;
-  report += `| Total      | ${total}   |
-`;
-  report += `| ✅ Info     | ${info}   |
-`;
-  report += `| ⚠️ Warning  | ${warning}   |
-`;
-  report += `| ❌ Error    | ${error}   |
-\n`;
+  report += `| Status | Count |\n`;
+  report += `| ------------| -------|\n`;
+  report += `| Total | ${total}   |\n`;
+  report += `| ✅ Info | ${info}   |\n`;
+  report += `| ⚠️ Warning | ${warning}   |\n`;
+  report += `| ❌ Error | ${error}   |\n\n`;
 
   for (const item of results) {
     const { id, displayName, description, severity, results: issues } = item;
     const icon = severity === 'INFO' ? '✅' : severity === 'WARNING' ? '⚠️' : '❌';
     const color = severity === 'WARNING' ? '<span style="color:orange">WARNING</span>' : (severity === 'ERROR' ? '<span style="color:red">ERROR</span>' : 'INFO');
 
-    report += `**${icon} ${displayName}** (Severity: ${color})\n\n`;
-    report += `- **ID**: \`${id}\`\n`;
+    report += `** ${icon} ${displayName}** (Severity: ${color}) \n\n`;
+    report += `- ** ID **: \`${id}\`\n`;
     report += `- **Description**: ${description}\n`;
 
     if (issues.length > 0) {

@@ -40,39 +40,40 @@ jobs:
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Validate Drawio Files
+      - name: Validate Drawio Files and Summarize
         if: steps.find_drawio.outputs.files != ''
+        id: validate
         env:
           ARCH_API_KEY: ${{ secrets.ARCH_API_KEY }}
         run: |
-          echo "## Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
           mkdir -p reports
-          while IFS= read -r file; do
-            echo "🔍 Validating $file"
-            node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
-            cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
-          done <<< "${{ steps.find_drawio.outputs.files }}"
+          echo "## Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
 
-      - name: Calculate Validation Summary Totals
-        id: calc_totals
-        run: |
           TOTAL_WARNINGS=0
           TOTAL_ERRORS=0
           TOTAL_INFO=0
+          FILE_COUNT=0
 
-          for summary in reports/*.summary.json; do
-            WARNINGS=$(jq '.warning' "$summary")
-            ERRORS=$(jq '.error' "$summary")
-            INFO=$(jq '.info' "$summary")
+          while IFS= read -r file; do
+            echo "🔍 Validating $file"
+            ((FILE_COUNT++))
+            node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
+
+            WARNINGS=$(grep -o 'Severity: WARNING' "reports/$(basename "$file").md" | wc -l)
+            ERRORS=$(grep -o 'Severity: ERROR' "reports/$(basename "$file").md" | wc -l)
+            INFO=$(grep -o 'Severity: INFO' "reports/$(basename "$file").md" | wc -l)
 
             TOTAL_WARNINGS=$((TOTAL_WARNINGS + WARNINGS))
             TOTAL_ERRORS=$((TOTAL_ERRORS + ERRORS))
             TOTAL_INFO=$((TOTAL_INFO + INFO))
-          done
+
+            cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
+          done <<< "${{ steps.find_drawio.outputs.files }}"
 
           echo "warnings=$TOTAL_WARNINGS" >> $GITHUB_OUTPUT
           echo "errors=$TOTAL_ERRORS" >> $GITHUB_OUTPUT
           echo "info=$TOTAL_INFO" >> $GITHUB_OUTPUT
+          echo "file_count=$FILE_COUNT" >> $GITHUB_OUTPUT
 
       - name: Upload Validation Reports
         if: steps.find_drawio.outputs.files != ''
@@ -81,7 +82,7 @@ jobs:
           name: drawio-validation-reports
           path: reports/
 
-      - name: Comment with Summary Tab Info
+      - name: Comment with Summary Info
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
         with:
@@ -89,14 +90,18 @@ jobs:
           body: |
             ### ✅ Architecture Diagram Validation Report
 
-            A total of **${{ steps.find_drawio.outputs.files }}** diagram(s) were validated.
+            A total of **${{ steps.validate.outputs.file_count }}** diagram(s) were validated.
 
-            **Summary:**
-            - ⚠️ **Warnings**: ${{ steps.calc_totals.outputs.warnings }}
-            - ❌ **Errors**: ${{ steps.calc_totals.outputs.errors }}
-            - ✅ **Info**: ${{ steps.calc_totals.outputs.info }}
+            #### Summary:
 
-            👉 View full details in the **[Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
+            | Status     | Count |
+            |------------|-------|
+            | ⚠️ Warning  | ${{ steps.validate.outputs.warnings }}     |
+            | ❌ Error    | ${{ steps.validate.outputs.errors }}     |
+            | ✅ Info     | ${{ steps.validate.outputs.info }}     |
+
+            Please find the detailed validation results for the uploaded architecture diagrams in the [Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
 
             ---
-            _Note: This check follows SAP architectural best practices. Please review issues above carefully._
+
+            _Note: These results are based on SAP architectural best practices. Please review any warnings or errors accordingly._
