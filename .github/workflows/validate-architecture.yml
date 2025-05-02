@@ -50,19 +50,14 @@ jobs:
         env:
           ARCH_API_KEY: ${{ secrets.ARCH_API_KEY }}
         run: |
-          mkdir -p reports
+          echo "## ✅ Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
           while IFS= read -r file; do
             echo "🔍 Validating $file"
-            
-            # Run the validation API and capture the output
             VALIDATION_RESULT=$(node src/_scripts/validateDrawio.js "$file")
 
-            # Log the validation result to GitHub Actions logs
-            echo "### Validation Result for $file:"
-            echo "$VALIDATION_RESULT"
-
-            # Save the validation result in markdown format
-            echo "$VALIDATION_RESULT" > "reports/$(basename "$file").md"
+            echo -e "\n<details><summary>${file}</summary>\n\n\`\`\`markdown" >> $GITHUB_STEP_SUMMARY
+            echo "$VALIDATION_RESULT" >> $GITHUB_STEP_SUMMARY
+            echo -e "\n\`\`\`\n</details>" >> $GITHUB_STEP_SUMMARY
           done <<< "${{ steps.find_drawio.outputs.files }}"
 
       # Step 6: Upload Validation Reports
@@ -73,19 +68,18 @@ jobs:
           name: drawio-validation-reports
           path: reports/
 
-      # Create the Validation Summary Comment
-      - name: Create Validation Summary Comment
+      - name: Comment with Summary Tab Info
         if: steps.find_drawio.outputs.files != ''
-        run: |
-          echo "## ✅ Architecture Diagram Validation Report" > pr_comment.md
-          echo "The validation results for the uploaded \`.drawio\` files can be found in the attached reports." >> pr_comment.md
-          echo -e "\nYou can download the detailed validation reports from the artifact below:" >> pr_comment.md
-          echo -e "\n- [Download the validation reports](https://github.com/navyakhurana/PAA/actions/runs/14789551839/artifacts)" >> pr_comment.md
-          echo -e "\n---\n\n:information_source: The reports summarize any violations or warnings based on SAP architectural best practices." >> pr_comment.md
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ✅ Architecture diagrams have been validated.
 
-          # Log the contents of the pr_comment.md file
-          echo "### Contents of the pr_comment.md file:"
-          cat pr_comment.md
+            👉 You can view the detailed validation results in the **[Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab of this GitHub Actions run.
+
+            ---
+            _The validation follows SAP architectural best practices. Review warnings and errors carefully._
 
       # Step 8: Post the Comment on PR
       - name: Post Comment on PR
