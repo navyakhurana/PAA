@@ -25,14 +25,14 @@ const validateDrawio = async (filePath) => {
     const validationData = response.data.results;
     const reportContent = generateReport(filePath, validationData);
 
-    // Log the report content to stdout (which will show up in GitHub Actions logs)
-    console.log(reportContent);
+    const outFile = `reports/${path.basename(filePath)}.md`;
+    const summaryFile = `reports/${path.basename(filePath)}.summary.json`;
+    fs.writeFileSync(outFile, reportContent.content);
+    fs.writeFileSync(summaryFile, JSON.stringify(reportContent.summary));
 
-    return reportContent;  // Return the report for further use in the workflow
-
+    console.log(`✅ Validation report generated: ${outFile}`);
   } catch (error) {
     console.error(`❌ Error validating ${filePath}:`, error.response?.data || error.message);
-    return null;
   }
 };
 
@@ -50,23 +50,28 @@ const generateReport = (filePath, results) => {
     else error++;
   });
 
-  let report = `### Validation Summary for: \`${fileName}\`\n\n`;
+  let report = `### Validation Summary for: \`${fileName}\`
+\n`;
 
-  // Summary table
-  report += `| Status     | Count |\n`;
-  report += `|------------|-------|\n`;
-  report += `| Total      | ${total}   |\n`;
-  report += `| ✅ Info     | ${info}   |\n`;
-  report += `| ⚠️ Warning  | ${warning}   |\n`;
-  report += `| ❌ Error    | ${error}   |\n\n`;
+  report += `| Status     | Count |
+`;
+  report += `|------------|-------|
+`;
+  report += `| Total      | ${total}   |
+`;
+  report += `| ✅ Info     | ${info}   |
+`;
+  report += `| ⚠️ Warning  | ${warning}   |
+`;
+  report += `| ❌ Error    | ${error}   |
+\n`;
 
-  // Detailed per-rule output
   for (const item of results) {
     const { id, displayName, description, severity, results: issues } = item;
     const icon = severity === 'INFO' ? '✅' : severity === 'WARNING' ? '⚠️' : '❌';
+    const color = severity === 'WARNING' ? '<span style="color:orange">WARNING</span>' : (severity === 'ERROR' ? '<span style="color:red">ERROR</span>' : 'INFO');
 
-    report += `---\n`;
-    report += `#### ${icon} ${displayName} (Severity: ${severity})\n\n`;
+    report += `**${icon} ${displayName}** (Severity: ${color})\n\n`;
     report += `- **ID**: \`${id}\`\n`;
     report += `- **Description**: ${description}\n`;
 
@@ -82,10 +87,12 @@ const generateReport = (filePath, results) => {
     report += `\n`;
   }
 
-  return report;
+  return {
+    content: report,
+    summary: { total, info, warning, error }
+  };
 };
 
-// Entry point
 const filePath = process.argv[2];
 if (!filePath || !fs.existsSync(filePath)) {
   console.error("❌ Please provide a valid .drawio file path");
