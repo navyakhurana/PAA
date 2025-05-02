@@ -65,6 +65,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ### ✅ Architecture Diagram Validation Report
+
             Please find the detailed validation results for the uploaded architecture diagrams in the **[Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
             ---
             _Note: These results are based on SAP architectural best practices. Please review any warnings or errors accordingly._
