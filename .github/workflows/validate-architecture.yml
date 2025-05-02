@@ -17,28 +17,34 @@ jobs:
       pull-requests: write
 
     steps:
+      # Step 1: Checkout PR Code
       - name: Checkout PR Code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0 # Fetch full history to ensure you can access origin/main
 
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: latest
 
+      # Step 3: Install Dependencies
       - name: Install Dependencies
         run: npm ci
 
+      # Step 4: Find .drawio Files in PR
       - name: Find .drawio Files in PR
         id: find_drawio
         run: |
-          DRAWIO_FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} ${{ github.event.pull_request.head.sha }} | grep '\.drawio$' || true)
+          DRAWIO_FILES=$(git diff --name-only origin/main ${{ github.event.pull_request.head.sha }} | grep '\.drawio$' || true)
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      # Step 5: Validate Drawio Files
       - name: Validate Drawio Files
         if: steps.find_drawio.outputs.files != ''
         env:
@@ -47,10 +53,11 @@ jobs:
           mkdir -p reports
           while IFS= read -r file; do
             echo "🔍 Validating $file"
-            node src/_scripts/validateDrawio.js "$file"
-            mv validation_report.md "reports/$(basename "$file").md"
+            # Run the validation API and generate the validation result in markdown format
+            node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
           done <<< "${{ steps.find_drawio.outputs.files }}"
 
+      # Step 6: Upload Validation Reports
       - name: Upload Validation Reports
         if: steps.find_drawio.outputs.files != ''
         uses: actions/upload-artifact@v4
@@ -58,18 +65,17 @@ jobs:
           name: drawio-validation-reports
           path: reports/
 
+      # Step 7: Create Comment with Link to Validation Report
       - name: Create Validation Summary Comment
         if: steps.find_drawio.outputs.files != ''
         run: |
           echo "## ✅ Architecture Diagram Validation Report" > pr_comment.md
-          echo "Validation reports for each uploaded diagram are listed below." >> pr_comment.md
-          for f in reports/*.md; do
-            echo -e "\n<details><summary>$(basename "$f")</summary>\n\n\`\`\`markdown" >> pr_comment.md
-            cat "$f" >> pr_comment.md
-            echo -e "\n\`\`\`\n</details>" >> pr_comment.md
-          done
+          echo "The validation results for the uploaded `.drawio` files can be found in the attached reports." >> pr_comment.md
+          echo -e "\nYou can download the detailed validation reports from the artifact below:" >> pr_comment.md
+          echo -e "\n- [Download the validation reports](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts)" >> pr_comment.md
           echo -e "\n---\n\n:information_source: The reports summarize any violations or warnings based on SAP architectural best practices." >> pr_comment.md
 
+      # Step 8: Post the Comment on PR
       - name: Post Comment on PR
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
