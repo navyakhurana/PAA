@@ -21,15 +21,9 @@ jobs:
       - name: Checkout PR Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{github.event.pull_request.head.sha}}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
-
-      # Step 2: Fetch the base branch explicitly (for forked PRs support)
-      - name: Fetch base branch for diff
-        run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}:${{ github.event.pull_request.base.ref }}
-          git checkout ${{ github.event.pull_request.base.ref }}
 
       # Step 3: Setup Node.js
       - name: Setup Node.js
