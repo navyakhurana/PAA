@@ -44,13 +44,14 @@ jobs:
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      # Step 5: Validate Drawio Files and write results to summary
+      # Step 5: Validate Drawio Files and Generate Summary
       - name: Validate Drawio Files
         if: steps.find_drawio.outputs.files != ''
         env:
           ARCH_API_KEY: ${{ secrets.ARCH_API_KEY }}
         run: |
           echo "## ✅ Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
+          mkdir -p reports
           while IFS= read -r file; do
             echo "🔍 Validating $file"
             node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
@@ -66,7 +67,7 @@ jobs:
           name: drawio-validation-reports
           path: reports/
 
-      # Step 7: Comment with Summary Tab Info
+      # Step 7: Comment on PR with Summary Info
       - name: Comment with Summary Tab Info
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
