@@ -10,7 +10,6 @@ if (!API_KEY) {
   process.exit(1);
 }
 
-
 const validateDrawio = async (filePath) => {
   try {
     const form = new FormData();
@@ -26,11 +25,14 @@ const validateDrawio = async (filePath) => {
     const validationData = response.data.results;
     const reportContent = generateReport(filePath, validationData);
 
-    const outPath = `validation_report.md`;
-    fs.writeFileSync(outPath, reportContent);
-    console.log(`✅ Validation report generated: ${outPath}`);
+    // Log the report content to stdout (which will show up in GitHub Actions logs)
+    console.log(reportContent);
+
+    return reportContent;  // Return the report for further use in the workflow
+
   } catch (error) {
     console.error(`❌ Error validating ${filePath}:`, error.response?.data || error.message);
+    return null;
   }
 };
 

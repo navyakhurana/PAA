@@ -53,8 +53,16 @@ jobs:
           mkdir -p reports
           while IFS= read -r file; do
             echo "🔍 Validating $file"
-            # Run the validation API and generate the validation result in markdown format
-            node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
+            
+            # Run the validation API and capture the output
+            VALIDATION_RESULT=$(node src/_scripts/validateDrawio.js "$file")
+
+            # Log the validation result to GitHub Actions logs
+            echo "### Validation Result for $file:"
+            echo "$VALIDATION_RESULT"
+
+            # Save the validation result in markdown format
+            echo "$VALIDATION_RESULT" > "reports/$(basename "$file").md"
           done <<< "${{ steps.find_drawio.outputs.files }}"
 
       # Step 6: Upload Validation Reports
