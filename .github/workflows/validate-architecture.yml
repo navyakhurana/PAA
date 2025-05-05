@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.sha}}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
 
       # Step 3: Setup Node.js
@@ -39,11 +38,12 @@ jobs:
       - name: Find .drawio Files in PR
         id: find_drawio
         run: |
-          git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
           DRAWIO_FILES=$(git diff --name-only ${{ github.base_ref }} ${{ github.event.pull_request.head.sha }} | grep '\.drawio$' || true)
           echo "files<<EOF" >> $GITHUB_OUTPUT
           echo "$DRAWIO_FILES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Step 6: Validate Drawio Files and Generate Summary
       - name: Validate Drawio Files
@@ -71,6 +71,8 @@ jobs:
       - name: Comment with Summary Tab Info
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
