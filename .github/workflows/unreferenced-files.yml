@@ -111,7 +111,8 @@ jobs:
           body: |
             This PR removes **unreferenced files** (images, docs, etc.) not used in any `README.md` file.
             Please review before merging.
-          branch: ${{ steps.create_branch.outputs.branch_name }} # Using branch name from the previous step
+          branch: ${{ steps.create_branch.outputs.branch_name }} # Branch created earlier
+          base: main # PR target branch
           delete-branch: true
           labels: cleanup
           assignees: ${{ github.actor }}
