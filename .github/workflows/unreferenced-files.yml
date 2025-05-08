@@ -113,7 +113,6 @@ jobs:
             Please review before merging.
           branch: ${{ steps.create_branch.outputs.branch_name }} # Branch created earlier
           base: main # PR target branch
-          delete-branch: true
           labels: cleanup
           assignees: ${{ github.actor }}
           draft: false
