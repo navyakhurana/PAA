@@ -1,26 +1,31 @@
-name: Find Unreferenced Files
+name: Unreferenced File Cleanup
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm_delete:
+        description: "Delete unreferenced files? (true/false)"
+        required: true
+        default: "false"
 
 jobs:
-  check-unused-files:
+  cleanup:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Find unreferenced files and write to summary
+      - name: Detect unreferenced files
         run: |
           echo "## 🔍 Unreferenced Files Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          FILE_DIRS=("assets" "diagrams" "docs")  # update as needed
-          FILE_EXTENSIONS=("*.png" "*.jpg" "*.jpeg" "*.svg" "*.drawio" "*.docx")  # update as needed
+          FILE_DIRS=("assets" "diagrams" "docs")
+          FILE_EXTENSIONS=("*.png" "*.jpg" "*.jpeg" "*.svg" "*.drawio" "*.docx")
           MARKDOWN_FILES=$(find . -name "*.md")
-
-          FOUND_UNUSED=0
+          DELETE_LIST="delete-list.txt"
+          > "$DELETE_LIST"
 
           for dir in "${FILE_DIRS[@]}"; do
             if [ -d "$dir" ]; then
@@ -38,13 +43,23 @@ jobs:
 
                   if [ "$referenced" = false ]; then
                     echo "- $file" >> $GITHUB_STEP_SUMMARY
-                    FOUND_UNUSED=1
+                    echo "$file" >> "$DELETE_LIST"
                   fi
                 done < <(find "$dir" -type f -name "$ext")
               done
             fi
           done
 
-          if [ "$FOUND_UNUSED" -eq 0 ]; then
+          if [ ! -s "$DELETE_LIST" ]; then
             echo "🎉 No unreferenced files found!" >> $GITHUB_STEP_SUMMARY
           fi
+
+      - name: Delete unreferenced files (if confirmed)
+        if: ${{ github.event.inputs.confirm_delete == 'true' }}
+        run: |
+          echo "🗑 Deleting unreferenced files..."
+          while read -r file; do
+            echo "Deleting: $file"
+            rm -f "$file"
+          done < delete-list.txt
+          echo "✅ Unreferenced files deleted."
