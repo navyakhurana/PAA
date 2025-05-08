@@ -8,26 +8,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Find unreferenced files
+      - name: Find unreferenced files and write to summary
         run: |
-          echo "Searching for unreferenced files..."
+          echo "## 🔍 Unreferenced Files Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Define directories to check for files
-          FILE_DIRS=("assets" "diagrams" "docs")  # customize as needed
-          FILE_EXTENSIONS=("*.png" "*.jpg" "*.jpeg" "*.svg" "*.drawio" "*.docx")  # update based on what you track
-
-          # Collect all markdown files
+          FILE_DIRS=("assets" "diagrams" "docs")  # update as needed
+          FILE_EXTENSIONS=("*.png" "*.jpg" "*.jpeg" "*.svg" "*.drawio" "*.docx")  # update as needed
           MARKDOWN_FILES=$(find . -name "*.md")
 
-          # Loop through files in specified directories
+          FOUND_UNUSED=0
+
           for dir in "${FILE_DIRS[@]}"; do
             if [ -d "$dir" ]; then
               for ext in "${FILE_EXTENSIONS[@]}"; do
                 find "$dir" -type f -name "$ext" | while read -r file; do
-                  # Check if this file is mentioned in any markdown file
                   basename=$(basename "$file")
                   referenced=false
                   for md in $MARKDOWN_FILES; do
@@ -38,9 +36,14 @@ jobs:
                   done
 
                   if [ "$referenced" = false ]; then
-                    echo "🔍 Unreferenced: $file"
+                    echo "- $file" >> $GITHUB_STEP_SUMMARY
+                    FOUND_UNUSED=1
                   fi
                 done
               done
             fi
           done
+
+          if [ "$FOUND_UNUSED" -eq 0 ]; then
+            echo "🎉 No unreferenced files found!" >> $GITHUB_STEP_SUMMARY
+          fi
