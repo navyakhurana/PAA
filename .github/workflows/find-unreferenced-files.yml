@@ -1,0 +1,46 @@
+name: Find Unreferenced Files
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-unused-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Find unreferenced files
+        run: |
+          echo "Searching for unreferenced files..."
+
+          # Define directories to check for files
+          FILE_DIRS=("assets" "diagrams" "docs")  # customize as needed
+          FILE_EXTENSIONS=("*.png" "*.jpg" "*.jpeg" "*.svg" "*.drawio" "*.docx")  # update based on what you track
+
+          # Collect all markdown files
+          MARKDOWN_FILES=$(find . -name "*.md")
+
+          # Loop through files in specified directories
+          for dir in "${FILE_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              for ext in "${FILE_EXTENSIONS[@]}"; do
+                find "$dir" -type f -name "$ext" | while read -r file; do
+                  # Check if this file is mentioned in any markdown file
+                  basename=$(basename "$file")
+                  referenced=false
+                  for md in $MARKDOWN_FILES; do
+                    if grep -q "$basename" "$md"; then
+                      referenced=true
+                      break
+                    fi
+                  done
+
+                  if [ "$referenced" = false ]; then
+                    echo "🔍 Unreferenced: $file"
+                  fi
+                done
+              done
+            fi
+          done
