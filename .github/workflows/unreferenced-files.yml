@@ -105,6 +105,6 @@ jobs:
             This PR removes unreferenced files that are not linked from any README or `.md` file.
             Please review before merging.
           base: main
-          head: ${{ steps.create_branch.outputs.branch_name }}
+          branch: ${{ steps.create_branch.outputs.branch_name }}
           labels: cleanup
           assignees: ${{ github.actor }}
