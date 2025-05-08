@@ -19,6 +19,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Detect unreferenced files
+        id: detect
         run: |
           echo "## 🔍 Unreferenced Files Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -54,7 +55,14 @@ jobs:
 
           if [ ! -s "$DELETE_LIST" ]; then
             echo "🎉 No unreferenced files found!" >> $GITHUB_STEP_SUMMARY
+            echo "no-unreferenced=true" >> $GITHUB_OUTPUT
+          else
+            echo "no-unreferenced=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Exit if no unreferenced files
+        if: steps.detect.outputs.no-unreferenced == 'true'
+        run: echo "Nothing to clean up. Exiting."
 
       - name: Delete unreferenced files (if confirmed)
         if: ${{ github.event.inputs.confirm_delete == 'true' }}
@@ -65,13 +73,15 @@ jobs:
             rm -f "$file"
           done < delete-list.txt
 
-      - name: Create a new branch for changes
+      - name: Create branch for cleanup
         if: ${{ github.event.inputs.confirm_delete == 'true' }}
+        id: create_branch
         run: |
-          NEW_BRANCH="delete-unused-files-$(date +%Y%m%d%H%M%S)"
-          git checkout -b "$NEW_BRANCH"
+          BRANCH_NAME="delete-unused-files-$(date +%Y%m%d%H%M%S)"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          git checkout -b "$BRANCH_NAME"
 
-      - name: Commit and push changes to new branch
+      - name: Commit and push changes
         if: ${{ github.event.inputs.confirm_delete == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
@@ -80,21 +90,21 @@ jobs:
           if ! git diff --quiet; then
             git add .
             git commit -m "🧹 Remove unreferenced files (auto-cleanup)"
-            git push --set-upstream origin "$NEW_BRANCH"
-            echo "✅ Changes pushed to branch: $NEW_BRANCH"
+            git push --set-upstream origin "${{ steps.create_branch.outputs.branch_name }}"
           else
             echo "⚠️ No changes to commit."
           fi
 
-      - name: Create a pull request
+      - name: Create Pull Request
         if: ${{ github.event.inputs.confirm_delete == 'true' }}
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "🧹 Remove unreferenced files (auto-cleanup)"
           body: |
-            This pull request removes unreferenced files automatically detected in the repository.
+            This PR removes unreferenced files that are not linked from any README or `.md` file.
+            Please review before merging.
           base: main
-          head: ${{ steps.create-branch.outputs.branch }}
+          head: ${{ steps.create_branch.outputs.branch_name }}
           labels: cleanup
           assignees: ${{ github.actor }}
