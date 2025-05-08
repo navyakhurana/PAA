@@ -25,7 +25,8 @@ jobs:
           for dir in "${FILE_DIRS[@]}"; do
             if [ -d "$dir" ]; then
               for ext in "${FILE_EXTENSIONS[@]}"; do
-                find "$dir" -type f -name "$ext" | while read -r file; do
+                while read -r file; do
+                  [ -z "$file" ] && continue
                   basename=$(basename "$file")
                   referenced=false
                   for md in $MARKDOWN_FILES; do
@@ -39,7 +40,7 @@ jobs:
                     echo "- $file" >> $GITHUB_STEP_SUMMARY
                     FOUND_UNUSED=1
                   fi
-                done
+                done < <(find "$dir" -type f -name "$ext")
               done
             fi
           done
