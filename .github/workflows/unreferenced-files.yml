@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Detect unreferenced files
@@ -26,15 +26,11 @@ jobs:
         run: |
           echo "## 🔍 Unreferenced Files Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Directories and extensions to check
           FILE_DIRS=("assets" "diagrams" "docs")
           FILE_EXTENSIONS=("*.png" "*.jpg" "*.jpeg" "*.svg" "*.drawio" "*.docx")
           MARKDOWN_FILES=$(find . -name "*.md")
           DELETE_LIST="delete-list.txt"
           > "$DELETE_LIST"
-
-          # Search for unreferenced files
           for dir in "${FILE_DIRS[@]}"; do
             if [ -d "$dir" ]; then
               for ext in "${FILE_EXTENSIONS[@]}"; do
@@ -48,7 +44,6 @@ jobs:
                       break
                     fi
                   done
-
                   if [ "$referenced" = false ]; then
                     echo "- $file" >> $GITHUB_STEP_SUMMARY
                     echo "$file" >> "$DELETE_LIST"
@@ -58,7 +53,6 @@ jobs:
             fi
           done
 
-          # Check if there are unreferenced files
           if [ ! -s "$DELETE_LIST" ]; then
             echo "🎉 No unreferenced files found!" >> $GITHUB_STEP_SUMMARY
             echo "no-unreferenced=true" >> $GITHUB_OUTPUT
@@ -71,21 +65,13 @@ jobs:
         run: echo "Nothing to clean up. Exiting."
 
       - name: Delete unreferenced files (if confirmed)
-        if: ${{ github.event.inputs.confirm_delete == 'true' && steps.detect.outputs.no-unreferenced != 'true' }}
+        if: ${{ github.event.inputs.confirm_delete == 'true' }}
         run: |
           echo "🗑 Deleting unreferenced files..."
           while read -r file; do
             echo "Deleting: $file"
             rm -f "$file"
           done < delete-list.txt
-
-      - name: Create branch for cleanup
-        if: ${{ github.event.inputs.confirm_delete == 'true' && steps.detect.outputs.no-unreferenced != 'true' }}
-        id: create_branch
-        run: |
-          BRANCH_NAME="delete-unused-files-$(date +%Y%m%d%H%M%S)"
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
-          git checkout -b "$BRANCH_NAME"
 
       - name: Commit and push changes
         if: ${{ github.event.inputs.confirm_delete == 'true' }}
@@ -96,13 +82,13 @@ jobs:
           if ! git diff --quiet; then
             git add .
             git commit -m "🧹 Remove unreferenced files (auto-cleanup)"
-            git push --force-with-lease --set-upstream origin "${{ steps.create_branch.outputs.branch_name }}"
+            git push --force-with-lease --set-upstream origin delete-unused-files
           else
             echo "⚠️ No changes to commit."
           fi
 
       - name: Create Pull Request
-        if: ${{ github.event.inputs.confirm_delete == 'true' && steps.detect.outputs.no-unreferenced != 'true' }}
+        if: ${{ github.event.inputs.confirm_delete == 'true' }}
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -111,9 +97,9 @@ jobs:
           body: |
             This PR removes **unreferenced files** (images, docs, etc.) not used in any `README.md` file.
             Please review before merging.
-          branch: ${{ steps.create_branch.outputs.branch_name }} # Branch created earlier
-          base: main # PR target branch
+          branch: delete-unused-files
+          base: main
+          delete-branch: true
           labels: cleanup
           assignees: ${{ github.actor }}
           draft: false
-        continue-on-error: true
