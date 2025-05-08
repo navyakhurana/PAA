@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -65,7 +65,13 @@ jobs:
             rm -f "$file"
           done < delete-list.txt
 
-      - name: Commit and push changes
+      - name: Create a new branch for changes
+        if: ${{ github.event.inputs.confirm_delete == 'true' }}
+        run: |
+          NEW_BRANCH="delete-unused-files-$(date +%Y%m%d%H%M%S)"
+          git checkout -b "$NEW_BRANCH"
+
+      - name: Commit and push changes to new branch
         if: ${{ github.event.inputs.confirm_delete == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
@@ -74,8 +80,21 @@ jobs:
           if ! git diff --quiet; then
             git add .
             git commit -m "🧹 Remove unreferenced files (auto-cleanup)"
-            git push
-            echo "✅ Changes committed and pushed."
+            git push --set-upstream origin "$NEW_BRANCH"
+            echo "✅ Changes pushed to branch: $NEW_BRANCH"
           else
             echo "⚠️ No changes to commit."
           fi
+
+      - name: Create a pull request
+        if: ${{ github.event.inputs.confirm_delete == 'true' }}
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "🧹 Remove unreferenced files (auto-cleanup)"
+          body: |
+            This pull request removes unreferenced files automatically detected in the repository.
+          base: main
+          head: ${{ steps.create-branch.outputs.branch }}
+          labels: cleanup
+          assignees: ${{ github.actor }}
