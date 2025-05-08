@@ -1,0 +1,81 @@
+name: Unreferenced File Cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_delete:
+        description: "Delete unreferenced files? (true/false)"
+        required: true
+        default: "false"
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Detect unreferenced files
+        run: |
+          echo "## 🔍 Unreferenced Files Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          FILE_DIRS=("assets" "diagrams" "docs")
+          FILE_EXTENSIONS=("*.png" "*.jpg" "*.jpeg" "*.svg" "*.drawio" "*.docx")
+          MARKDOWN_FILES=$(find . -name "*.md")
+          DELETE_LIST="delete-list.txt"
+          > "$DELETE_LIST"
+
+          for dir in "${FILE_DIRS[@]}"; do
+            if [ -d "$dir" ]; then
+              for ext in "${FILE_EXTENSIONS[@]}"; do
+                while read -r file; do
+                  [ -z "$file" ] && continue
+                  basename=$(basename "$file")
+                  referenced=false
+                  for md in $MARKDOWN_FILES; do
+                    if grep -q "$basename" "$md"; then
+                      referenced=true
+                      break
+                    fi
+                  done
+
+                  if [ "$referenced" = false ]; then
+                    echo "- $file" >> $GITHUB_STEP_SUMMARY
+                    echo "$file" >> "$DELETE_LIST"
+                  fi
+                done < <(find "$dir" -type f -name "$ext")
+              done
+            fi
+          done
+
+          if [ ! -s "$DELETE_LIST" ]; then
+            echo "🎉 No unreferenced files found!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Delete unreferenced files (if confirmed)
+        if: ${{ github.event.inputs.confirm_delete == 'true' }}
+        run: |
+          echo "🗑 Deleting unreferenced files..."
+          while read -r file; do
+            echo "Deleting: $file"
+            rm -f "$file"
+          done < delete-list.txt
+
+      - name: Commit and push changes
+        if: ${{ github.event.inputs.confirm_delete == 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git diff --quiet; then
+            git add .
+            git commit -m "🧹 Remove unreferenced files (auto-cleanup)"
+            git push
+            echo "✅ Changes committed and pushed."
+          else
+            echo "⚠️ No changes to commit."
+          fi
