@@ -6,13 +6,12 @@ const FormData = require('form-data');
 const API_URL = 'https://arch-val.cfapps.eu12.hana.ondemand.com/api/validate-architecture';
 const API_KEY = process.env.ARCH_API_KEY;
 
-if (!API_KEY) {
+if (!API_KEY && require.main === module) {
   console.error("❌ ARCH_API_KEY is not set in environment variables");
   process.exit(1);
 }
 
-// Call validation API
-const validateDrawio = async (filePath) => {
+const validateDrawio = async (filePath, silent = false) => {
   try {
     const form = new FormData();
     form.append('file', fs.createReadStream(filePath));
@@ -27,7 +26,10 @@ const validateDrawio = async (filePath) => {
     const validationData = response.data.results;
     const reportContent = generateReport(filePath, validationData);
 
-    console.log(reportContent); // Output to GitHub Actions log or summary
+    if (!silent) {
+      console.log(reportContent);
+    }
+
     return reportContent;
   } catch (error) {
     console.error(`❌ Error validating ${filePath}:`, error.response?.data || error.message);
@@ -35,33 +37,50 @@ const validateDrawio = async (filePath) => {
   }
 };
 
-// Generate Markdown table-style report
 const generateReport = (filePath, results) => {
   const fileName = path.basename(filePath);
+  const summaryRows = [];
 
-  let report = `### 📁 \`${fileName}\`\n\n`;
+  let total = results.length;
+  let info = 0;
+  let warning = 0;
+  let error = 0;
+
+  results.forEach(rule => {
+    if (rule.severity === 'INFO') info++;
+    else if (rule.severity === 'WARNING') warning++;
+    else error++;
+
+    summaryRows.push({
+      validationType: rule.displayName,
+      severity: rule.severity,
+      description: rule.description,
+    });
+  });
+
+  let report = `### \`${fileName}\`\n\n`;
   report += `| Validation Type | Severity | Description |\n`;
-  report += `|-----------------|----------|-------------|\n`;
+  report += `|------------------|----------|-------------|\n`;
 
-  for (const rule of results) {
-    const { displayName, severity, results: issues, description } = rule;
-    const icon = severity === 'INFO' ? '✅' : severity === 'WARNING' ? '⚠️' : '❌';
-
-    // Use first issue message or fallback to description
-    const shortDesc = issues?.length > 0
-      ? issues[0].message || description
-      : 'No issues found.';
-
-    report += `| ${displayName} | ${icon} ${severity} | ${shortDesc} |\n`;
+  for (const row of summaryRows) {
+    const icon = row.severity === 'INFO' ? '✅' : row.severity === 'WARNING' ? '⚠️' : '❌';
+    report += `| ${row.validationType} | ${icon} ${row.severity} | ${row.description} |\n`;
   }
+
+  report += `\n`;
 
   return report;
 };
 
-const filePath = process.argv[2];
-if (!filePath || !fs.existsSync(filePath)) {
-  console.error("❌ Please provide a valid .drawio file path");
-  process.exit(1);
+// CLI entry
+if (require.main === module) {
+  const filePath = process.argv[2];
+  if (!filePath || !fs.existsSync(filePath)) {
+    console.error("❌ Please provide a valid .drawio file path");
+    process.exit(1);
+  }
+  validateDrawio(filePath);
 }
 
-module.exports = validateDrawio(filePath);
+// Export for use in other scripts
+module.exports = validateDrawio;

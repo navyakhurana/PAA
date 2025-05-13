@@ -10,7 +10,7 @@ const inputFiles = process.argv.slice(2); // Read all passed drawio files
   let totalInfo = 0, totalWarning = 0, totalError = 0;
 
   for (const file of inputFiles) {
-    const reportContent = await validateDrawio(file); // true to suppress individual console logs
+    const reportContent = await validateDrawio(file, true); // true to suppress individual console logs
     if (reportContent) {
       allReports.push(reportContent.report);
       totalInfo += reportContent.counts.info;
