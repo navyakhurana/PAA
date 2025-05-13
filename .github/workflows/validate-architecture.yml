@@ -90,7 +90,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ### ✅ Architecture Diagram Validation Report
+            ### Architecture Diagram Validation Report
 
             ${{ steps.read_summary.outputs.summary }}
 
