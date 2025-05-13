@@ -64,4 +64,4 @@ if (!filePath || !fs.existsSync(filePath)) {
   process.exit(1);
 }
 
-validateDrawio(filePath);
+module.exports = validateDrawio(filePath);
