@@ -62,11 +62,9 @@ jobs:
         run: |
           echo "## Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
           mkdir -p reports
-          while IFS= read -r file; do
-            echo "🔍 Validating $file"
-            node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
-            cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
-          done <<< "${{ steps.find_drawio.outputs.files }}"
+          echo "${{ steps.find_drawio.outputs.files }}" > drawio_list.txt
+          node src/_scripts/validateAllDrawios.js $(cat drawio_list.txt) > reports/combined-report.md
+          cat reports/combined-report.md >> $GITHUB_STEP_SUMMARY
 
       # Step 6: Upload Validation Reports
       - name: Upload Validation Reports
