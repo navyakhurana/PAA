@@ -23,10 +23,11 @@ const validateDrawio = async (filePath, silent = false) => {
       },
     });
 
-    const validationData = response.data.results;
-    const reportContent = generateReport(filePath, validationData);
-    const counts = countSeverities(validationData);
+    // Filter out INFO severity rules
+    const filteredResults = response.data.results.filter(rule => rule.severity !== 'INFO');
 
+    const reportContent = generateReport(filePath, filteredResults);
+    const counts = countSeverities(filteredResults);
 
     if (!silent) console.log(reportContent);
 
@@ -41,25 +42,28 @@ const validateDrawio = async (filePath, silent = false) => {
 };
 
 const countSeverities = (results) => {
-  let info = 0, warning = 0, error = 0;
+  let warning = 0, error = 0;
   results.forEach(rule => {
-    if (rule.severity === 'INFO') info++;
-    else if (rule.severity === 'WARNING') warning++;
-    else error++;
+    if (rule.severity === 'WARNING') warning++;
+    else if (rule.severity === 'ERROR') error++;
   });
-  return { info, warning, error };
+  return { warning, error };
 };
 
 const generateReport = (filePath, results) => {
   const fileName = path.basename(filePath);
-
   let report = `### \`${fileName}\`\n\n`;
+
+  if (results.length === 0) {
+    report += `✅ No warnings or errors found.\n`;
+    return report;
+  }
 
   report += `| ID | Validation Type | Severity | Description | Issues |\n`;
   report += `|----|------------------|----------|-------------|--------|\n`;
 
   results.forEach(rule => {
-    const icon = rule.severity === 'INFO' ? '✅' : rule.severity === 'WARNING' ? '⚠️' : '❌';
+    const icon = rule.severity === 'WARNING' ? '⚠️' : '❌';
 
     const issuesList = rule.results
       .filter(issue => issue.message !== 'No issues found.')
@@ -87,5 +91,4 @@ if (require.main === module) {
   validateDrawio(filePath);
 }
 
-// Export for use in other scripts
 module.exports = validateDrawio;
