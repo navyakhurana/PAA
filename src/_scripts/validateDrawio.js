@@ -61,11 +61,10 @@ const generateReport = (filePath, results) => {
   results.forEach(rule => {
     const icon = rule.severity === 'INFO' ? '✅' : rule.severity === 'WARNING' ? '⚠️' : '❌';
 
-    // Format issues for inline display using <br>
     const issuesList = rule.results
       .filter(issue => issue.message !== 'No issues found.')
-      .map(issue =>
-        `${issue.message}<br>Component: \`${issue.component}\``
+      .map((issue, index) =>
+        `${index + 1}. ${issue.message}<br>Component: \`${issue.component}\``
       );
 
     const issuesCell = issuesList.length > 0
