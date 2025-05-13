@@ -52,35 +52,28 @@ const countSeverities = (results) => {
 
 const generateReport = (filePath, results) => {
   const fileName = path.basename(filePath);
-  const summaryRows = [];
-
-  let total = results.length;
-  let info = 0;
-  let warning = 0;
-  let error = 0;
-
-  results.forEach(rule => {
-    if (rule.severity === 'INFO') info++;
-    else if (rule.severity === 'WARNING') warning++;
-    else error++;
-
-    summaryRows.push({
-      validationType: rule.displayName,
-      severity: rule.severity,
-      description: rule.description,
-    });
-  });
 
   let report = `### \`${fileName}\`\n\n`;
-  report += `| Validation Type | Severity | Description |\n`;
-  report += `|------------------|----------|-------------|\n`;
 
-  for (const row of summaryRows) {
-    const icon = row.severity === 'INFO' ? '✅' : row.severity === 'WARNING' ? '⚠️' : '❌';
-    report += `| ${row.validationType} | ${icon} ${row.severity} | ${row.description} |\n`;
-  }
+  report += `| Validation Type | Severity | Description | Issues |\n`;
+  report += `|------------------|----------|-------------|--------|\n`;
 
-  report += `\n`;
+  results.forEach(rule => {
+    const icon = rule.severity === 'INFO' ? '✅' : rule.severity === 'WARNING' ? '⚠️' : '❌';
+
+    // Format issues for inline display using <br>
+    const issuesList = rule.results
+      .filter(issue => issue.message !== 'No issues found.')
+      .map(issue =>
+        `${issue.message}<br>Component: \`${issue.component}\``
+      );
+
+    const issuesCell = issuesList.length > 0
+      ? issuesList.join('<br><br>')
+      : '✅ No issues found.';
+
+    report += `| ${rule.displayName} | ${icon} | ${rule.description} | ${issuesCell} |\n`;
+  });
 
   return report;
 };
