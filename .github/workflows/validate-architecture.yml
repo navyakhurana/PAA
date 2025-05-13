@@ -63,7 +63,7 @@ jobs:
           echo "## Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
           mkdir -p reports
           echo "${{ steps.find_drawio.outputs.files }}" > drawio_list.txt
-          node src/_scripts/validateAllDrawio.js $(cat drawio_list.txt)
+          node src/_scripts/validateAllDrawios.js $(cat drawio_list.txt)
           cat reports/combined-report.md >> $GITHUB_STEP_SUMMARY
 
       # Step 6: Upload Validation Reports
