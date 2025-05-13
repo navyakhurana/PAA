@@ -25,16 +25,29 @@ const validateDrawio = async (filePath, silent = false) => {
 
     const validationData = response.data.results;
     const reportContent = generateReport(filePath, validationData);
+    const counts = countSeverities(validationData);
 
-    if (!silent) {
-      console.log(reportContent);
-    }
 
-    return reportContent;
+    if (!silent) console.log(reportContent);
+
+    return {
+      report: reportContent,
+      counts,
+    };
   } catch (error) {
     console.error(`❌ Error validating ${filePath}:`, error.response?.data || error.message);
     return null;
   }
+};
+
+const countSeverities = (results) => {
+  let info = 0, warning = 0, error = 0;
+  results.forEach(rule => {
+    if (rule.severity === 'INFO') info++;
+    else if (rule.severity === 'WARNING') warning++;
+    else error++;
+  });
+  return { info, warning, error };
 };
 
 const generateReport = (filePath, results) => {
