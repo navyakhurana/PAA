@@ -20,8 +20,7 @@ const inputFiles = process.argv.slice(2); // Read all passed drawio files
   }
 
   // Header Summary
-  let summary = `## 🧾 Architecture Diagram Validation Report\n\n`;
-  summary += `### 📊 Summary Across ${inputFiles.length} Diagram(s)\n\n`;
+  summary += `Summary Across ${inputFiles.length} Architecture Diagram(s)\n\n`;
   summary += `| Metric         | Count |\n|----------------|-------|\n`;
   summary += `| Total Architecture Diagrams | ${inputFiles.length} |\n`;
   summary += `| ✅ Info         | ${totalInfo} |\n`;
