@@ -55,18 +55,16 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       # Step 5: Validate Drawio Files and Generate Summary
-      - name: Validate Drawio Files
+      - name: Validate Drawio Files and Generate Reports
         if: steps.find_drawio.outputs.files != ''
         env:
           ARCH_API_KEY: ${{ secrets.ARCH_API_KEY }}
         run: |
           echo "## Architecture Diagram Validation Report" >> $GITHUB_STEP_SUMMARY
           mkdir -p reports
-          while IFS= read -r file; do
-            echo "🔍 Validating $file"
-            node src/_scripts/validateDrawio.js "$file" > "reports/$(basename "$file").md"
-            cat "reports/$(basename "$file").md" >> $GITHUB_STEP_SUMMARY
-          done <<< "${{ steps.find_drawio.outputs.files }}"
+          echo "${{ steps.find_drawio.outputs.files }}" > drawio_list.txt
+          node src/_scripts/validateAllDrawios.js $(cat drawio_list.txt)
+          cat reports/combined-report.md >> $GITHUB_STEP_SUMMARY
 
       # Step 6: Upload Validation Reports
       - name: Upload Validation Reports
@@ -76,7 +74,16 @@ jobs:
           name: drawio-validation-reports
           path: reports/
 
-      # Step 7: Comment on PR with Summary Info
+      # Step 7: Read Header Summary into ENV
+      - name: Read Header Summary into ENV
+        if: steps.find_drawio.outputs.files != ''
+        id: read_summary
+        run: |
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          cat reports/header-summary.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Step 8: Comment on PR with Summary Info
       - name: Comment with Summary Tab Info
         if: steps.find_drawio.outputs.files != ''
         uses: peter-evans/create-or-update-comment@v4
@@ -84,6 +91,8 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ### ✅ Architecture Diagram Validation Report
+
+            ${{ steps.read_summary.outputs.summary }}
 
             Please find the detailed validation results for the uploaded architecture diagrams in the **[Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})** tab.
 
