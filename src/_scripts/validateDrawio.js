@@ -55,8 +55,8 @@ const generateReport = (filePath, results) => {
 
   let report = `### \`${fileName}\`\n\n`;
 
-  report += `| Validation Type | Severity | Description | Issues |\n`;
-  report += `|------------------|----------|-------------|--------|\n`;
+  report += `| ID | Validation Type | Severity | Description | Issues |\n`;
+  report += `|----|------------------|----------|-------------|--------|\n`;
 
   results.forEach(rule => {
     const icon = rule.severity === 'INFO' ? '✅' : rule.severity === 'WARNING' ? '⚠️' : '❌';
@@ -71,7 +71,7 @@ const generateReport = (filePath, results) => {
       ? issuesList.join('<br><br>')
       : '✅ No issues found.';
 
-    report += `| ${rule.displayName} | ${icon} | ${rule.description} | ${issuesCell} |\n`;
+    report += `| ${rule.id} | ${rule.displayName} | ${icon} | ${rule.description} | ${issuesCell} |\n`;
   });
 
   return report;
