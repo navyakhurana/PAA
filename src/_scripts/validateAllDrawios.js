@@ -1,7 +1,6 @@
-// validateAllDrawios.js
 const fs = require('fs');
 const path = require('path');
-const validateDrawio = require('./validateDrawio'); // Import your single validator
+const validateDrawio = require('./validateDrawio'); // Validator URL
 
 const allReports = [];
 const inputFiles = process.argv.slice(2); // Read all passed drawio files
@@ -10,7 +9,7 @@ const inputFiles = process.argv.slice(2); // Read all passed drawio files
   let totalInfo = 0, totalWarning = 0, totalError = 0;
 
   for (const file of inputFiles) {
-    const reportContent = await validateDrawio(file, true); // true to suppress individual console logs
+    const reportContent = await validateDrawio(file, true); // true = suppress individual logs
     if (reportContent) {
       allReports.push(reportContent.report);
       totalInfo += reportContent.counts.info;
@@ -20,16 +19,25 @@ const inputFiles = process.argv.slice(2); // Read all passed drawio files
   }
 
   // Header Summary
-  summary = `Summary Across ${inputFiles.length} Architecture Diagram(s)\n\n`;
-  summary += `| Metric         | Count |\n|----------------|-------|\n`;
-  summary += `| Total Architecture Diagrams | ${inputFiles.length} |\n`;
-  summary += `| ✅ Info         | ${totalInfo} |\n`;
-  summary += `| ⚠️ Warning      | ${totalWarning} |\n`;
-  summary += `| ❌ Error        | ${totalError} |\n\n`;
-  summary += `---\n\n`;
+  const headerSummary =
+    `### Summary Across ${inputFiles.length} Architecture Diagram(s)\n\n` +
+    `| Metric                       | Count |\n` +
+    `|-----------------------------|-------|\n` +
+    `| Total Architecture Diagrams | ${inputFiles.length} |\n` +
+    `| ✅ Info                     | ${totalInfo} |\n` +
+    `| ⚠️ Warning                  | ${totalWarning} |\n` +
+    `| ❌ Error                    | ${totalError} |\n\n`;
 
-  // Append each report
-  summary += allReports.join('\n---\n\n');
+  // Full report includes header and all diagram reports
+  const fullReport = headerSummary + `---\n\n` + allReports.join('\n---\n\n');
 
-  console.log(summary);
+  // Ensure reports directory exists
+  fs.mkdirSync('reports', { recursive: true });
+
+  // Write files
+  fs.writeFileSync('reports/header-summary.md', headerSummary);
+  fs.writeFileSync('reports/combined-report.md', fullReport);
+
+  // Optional: log full report
+  console.log(fullReport);
 })();
