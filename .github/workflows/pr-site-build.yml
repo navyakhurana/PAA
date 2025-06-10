@@ -109,14 +109,14 @@ jobs:
 
       - name: Drop Previous Content
         run: |
-          rm -rf @${{ env.PR_FOLDER }}
-          mkdir -p @${{ env.PR_FOLDER }}
+          rm -rf @$PR_FOLDER
+          mkdir -p @$env.PR_FOLDER
 
       - name: Extract Build Content
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
-            mv build/* @${{ env.PR_FOLDER }}/
-            cd @${{ env.PR_FOLDER }}/
+            mv build/* @$PR_FOLDER/
+            cd @$env.PR_FOLDER/
             tar -xvf github-pages/artifact.tar
             rm github-pages/artifact.tar
           else
@@ -147,7 +147,7 @@ jobs:
       - name: Add PR Comment with Preview Link
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: 'Preview website is available <a href="https://navyakhurana.github.io/PAA/@${{ env.PR_FOLDER }}" target="_blank" rel="noopener noreferrer">here</a>.'
+          message: 'Preview website is available <a href="https://navyakhurana.github.io/PAA/@$PR_FOLDER" target="_blank" rel="noopener noreferrer">here</a>.'
 
   cleanup:
     name: Cleanup Merged PR
@@ -176,10 +176,10 @@ jobs:
 
       - name: Delete Folder of Merged PR
         run: |
-          rm -rf @${{ env.PR_FOLDER }}
+          rm -rf @$PR_FOLDER
 
       - name: Commit and Push Changes
         run: |
           git add -A
-          git commit -m "cleanup: removed folder @${{ env.PR_FOLDER }} after merge" || echo "No changes to commit"
+          git commit -m "cleanup: removed folder @$PR_FOLDER after merge" || echo "No changes to commit"
           git push origin ${{ env.gh_pages_branch }}
