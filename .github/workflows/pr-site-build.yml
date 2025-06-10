@@ -49,7 +49,7 @@ jobs:
       - name: Patch docusaurus.config.js for PR builds
         run: |
           sed -E -i "s^url:(..*)^url: '${{ env.url }}',^g" docusaurus.config.js
-          sed -E -i "s^baseUrl:(..*)^baseUrl: '/${{ env.base_url }}/@${{ env.PR_FOLDER }}',^g" docusaurus.config.js
+          sed -E -i "s^baseUrl:(..*)^baseUrl: '/${{ env.base_url }}/@$PR_FOLDER',^g" docusaurus.config.js
           sed -E -i "s^title: 'Build resilient apps with SAP BTP',^title: 'Build resilient apps with SAP BTP (PR: #${PR_NUMBER})',^g" docusaurus.config.js
           sed -E -i "s^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP'^title: 'Develop a multitenant Software as a Service application in SAP BTP using CAP (PR: #${PR_NUMBER})'^g" docusaurus.config.js
           sed -E -i "s^logo: \{^logo: \{href: '${{ github.event.pull_request.html_url }}',^g" docusaurus.config.js
@@ -110,13 +110,13 @@ jobs:
       - name: Drop Previous Content
         run: |
           rm -rf @$PR_FOLDER
-          mkdir -p @$env.PR_FOLDER
+          mkdir -p @$PR_FOLDER
 
       - name: Extract Build Content
         run: |
           if [[ -d "build" && "$(ls -A build)" ]]; then
             mv build/* @$PR_FOLDER/
-            cd @$env.PR_FOLDER/
+            cd @$PR_FOLDER/
             tar -xvf github-pages/artifact.tar
             rm github-pages/artifact.tar
           else
