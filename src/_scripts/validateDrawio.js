@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const FormData = require('form-data');
 
-const API_URL = 'https://arch-val.cfapps.eu12.hana.ondemand.com/api/validate-architecture';
+const API_URL = 'https://technical-field-enablement-archval-5n0ulssf-dev-arch-val3.cfapps.eu12.hana.ondemand.com/api/validate-architecture';
 const API_KEY = process.env.ARCH_API_KEY;
 
 if (!API_KEY && require.main === module) {
@@ -23,11 +23,18 @@ const validateDrawio = async (filePath, silent = false) => {
       },
     });
 
-    // Filter out INFO severity rules
-    const filteredResults = response.data.results.filter(rule => rule.severity !== 'INFO');
+    // Process validation results from llmResults
+    const validationResults = response.data.llmResults || [];
+    const processedResults = validationResults.map(result => ({
+      id: result.ID || result.id,
+      displayName: result['Validation Type'] || result.validationType || result.displayName,
+      severity: result.Severity || result.severity || 'ERROR',
+      description: result.Description || result.description,
+      issues: result.Issues || result.issues || 'No specific issues provided'
+    }));
 
-    const reportContent = generateReport(filePath, filteredResults);
-    const counts = countSeverities(filteredResults);
+    const reportContent = generateReport(filePath, processedResults);
+    const counts = countSeverities(processedResults);
 
     if (!silent) console.log(reportContent);
 
@@ -60,22 +67,12 @@ const generateReport = (filePath, results) => {
   }
 
   report += `| ID | Validation Type | Severity | Description | Issues |\n`;
-  report += `|----|------------------|----------|-------------|--------|\n`;
+  report += `|----|-----------------|----------|-------------|--------|\n`;
 
   results.forEach(rule => {
     const icon = rule.severity === 'WARNING' ? '⚠️' : '❌';
 
-    const issuesList = rule.results
-      .filter(issue => issue.message !== 'No issues found.')
-      .map((issue, index) =>
-        `${index + 1}. ${issue.message}<br>Component: \`${issue.component}\``
-      );
-
-    const issuesCell = issuesList.length > 0
-      ? issuesList.join('<br><br>')
-      : '✅ No issues found.';
-
-    report += `| ${rule.id} | ${rule.displayName} | ${icon} | ${rule.description} | ${issuesCell} |\n`;
+    report += `| ${rule.id} | ${rule.displayName} | ${icon} | ${rule.description} | ${rule.issues} |\n`;
   });
 
   return report;
